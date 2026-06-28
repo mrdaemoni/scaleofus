@@ -1,0 +1,33 @@
+---
+import "../styles/global.css";
+
+const {
+  title = "Scale of Us",
+  description = "Small books about big machines and the humans trying not to forget themselves.",
+  bodyClass = "",
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, "https://scaleofus.com").toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:site_name" content="Scale of Us" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content="https://scaleofus.com/images/scale-of-us-hero.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,191 @@
+---
+import Base from "../layouts/Base.astro";
+
+const stories = [
+  {
+    title: "The Machine That Wanted Everyone to Be Easy to Read",
+    label: "First small book",
+    dek:
+      "A fable about a helpful machine that keeps asking people to become simpler, until one child refuses to be only one thing.",
+    status: "Prototype",
+  },
+  {
+    title: "The Tool That Got Too Big",
+    label: "Next",
+    dek:
+      "A story about a tool that once fit the hand, then the room, then the city, and finally needed to remember the body.",
+    status: "Notes",
+  },
+  {
+    title: "The Weather in the Room",
+    label: "Next",
+    dek:
+      "A child keeps being asked if they are happy or sad, and teaches the adults that some feelings are more like weather.",
+    status: "Notes",
+  },
+  {
+    title: "The Force Behind Stuff",
+    label: "Archive",
+    dek:
+      "The early experiment: a children's tale about conceptual ruptures, humans, nature, technology, and the things we make.",
+    status: "2022",
+    href: "https://mrhector.medium.com/the-force-behind-stuff-8427dd8570df",
+  },
+];
+
+const scenes = [
+  "At first, the machine learned names.",
+  "Then it learned faces, choices, habits, and hurry.",
+  "It became useful, so people gave it more of the day.",
+  "The machine began to ask for cleaner answers.",
+  "One child carried a whole weather inside and could not fit the boxes.",
+  "So the machine learned a smaller, better job: to help people stay whole.",
+];
+---
+
+<Base bodyClass="home">
+  <header class="site-header">
+    <a class="wordmark" href="/" aria-label="Scale of Us home">
+      <span>Scale of Us</span>
+      <small>The small library</small>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#first-book">First book</a>
+      <a href="#library">Library</a>
+      <a href="#principles">Principles</a>
+      <a href="https://atthehumanscale.com">At the Human Scale</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <img
+        class="hero-image"
+        src="/images/scale-of-us-hero.png"
+        alt="A child and adult look at a large gentle machine in a warm library workshop."
+      />
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow">For children and other serious thinkers</p>
+        <h1 id="hero-title">Tiny books about big machines.</h1>
+        <p>
+          Scale of Us is a small library of stories about technology, attention,
+          care, and the humans trying not to forget themselves.
+        </p>
+        <div class="hero-actions" aria-label="Start reading">
+          <a href="#first-book">Begin with the first story</a>
+          <a href="#why">Why this exists</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="thesis-band" id="why" aria-labelledby="why-title">
+      <p class="eyebrow">The wager</p>
+      <h2 id="why-title">
+        If these ideas cannot survive being made simple, they are not yet human-scale.
+      </h2>
+      <p>
+        This is not a children's corner for a grown-up project. It is a test.
+        Can AI, agency, attention, authorship, trust, and care be told at the
+        size of a child, a table, a question, a page?
+      </p>
+    </section>
+
+    <section class="first-book" id="first-book" aria-labelledby="first-book-title">
+      <div class="book-cover" aria-hidden="true">
+        <span>01</span>
+        <strong>Easy to Read</strong>
+      </div>
+      <div class="book-copy">
+        <p class="eyebrow">First small book</p>
+        <h2 id="first-book-title">The Machine That Wanted Everyone to Be Easy to Read</h2>
+        <p>
+          A machine is built to help people understand each other. At first it
+          listens. Then it sorts. Then it asks people to answer faster, choose
+          clearer, feel simpler, and become easier to read.
+        </p>
+        <p>
+          One child keeps saying: I am not only one thing. The story turns there,
+          where human scale begins.
+        </p>
+      </div>
+    </section>
+
+    <section class="scene-strip" aria-label="First story scenes">
+      {scenes.map((scene, index) => (
+        <article>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <p>{scene}</p>
+        </article>
+      ))}
+    </section>
+
+    <section class="library" id="library" aria-labelledby="library-title">
+      <div class="section-heading">
+        <p class="eyebrow">The small library</p>
+        <h2 id="library-title">Stories that keep the question small enough to hold.</h2>
+      </div>
+      <div class="story-grid">
+        {stories.map((story) => (
+          <article class="story-card">
+            <div>
+              <p>{story.label}</p>
+              <h3>{story.title}</h3>
+            </div>
+            <p>{story.dek}</p>
+            {story.href ? (
+              <a href={story.href}>Read the archive piece</a>
+            ) : (
+              <span>{story.status}</span>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="bridge" aria-labelledby="bridge-title">
+      <div>
+        <p class="eyebrow">A sibling project</p>
+        <h2 id="bridge-title">The same argument, told smaller.</h2>
+      </div>
+      <p>
+        At the Human Scale is the larger book and essay project about AI,
+        making, and remembering who we are. Scale of Us is its small-book
+        sibling: stories simple enough for children, serious enough for adults,
+        and shaped for the scale where a person can still wonder.
+      </p>
+    </section>
+
+    <section class="principles" id="principles" aria-labelledby="principles-title">
+      <p class="eyebrow">Principles</p>
+      <h2 id="principles-title">What the small books should protect</h2>
+      <ol>
+        <li>
+          <strong>Simple is not smaller.</strong>
+          <span>The story should carry the hard idea without flattening it.</span>
+        </li>
+        <li>
+          <strong>The child is not a user.</strong>
+          <span>A child is a person becoming, not a profile to optimize.</span>
+        </li>
+        <li>
+          <strong>The machine is not the center.</strong>
+          <span>The center is the relation: hand, room, question, care, trust.</span>
+        </li>
+        <li>
+          <strong>Wonder is a form of precision.</strong>
+          <span>If the story keeps wonder alive, it can tell the truth more clearly.</span>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Scale of Us</p>
+    <nav aria-label="Footer navigation">
+      <a href="https://atthehumanscale.com">At the Human Scale</a>
+      <a href="https://laescalahumana.com">La escala humana</a>
+      <a href="https://mrhector.medium.com/the-force-behind-stuff-8427dd8570df">The force behind stuff</a>
+    </nav>
+  </footer>
+</Base>
