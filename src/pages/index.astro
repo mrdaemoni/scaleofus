@@ -1,191 +1,481 @@
 ---
 import Base from "../layouts/Base.astro";
 
-const stories = [
+const bookSpecs = [
   {
-    title: "The Machine That Wanted Everyone to Be Easy to Read",
-    label: "First small book",
-    dek:
-      "A fable about a helpful machine that keeps asking people to become simpler, until one child refuses to be only one thing.",
-    status: "Prototype",
+    title: "The Cure Is the Care",
+    shortTitle: "Care",
+    pages: [
+      "Language can be medicine, and it can be poison.",
+      "The same words can heal or hurt.",
+      "The machine learned the fast half: naming, sorting, answering.",
+      "It grew very good at grasping.",
+      "But meaning waited in the pause.",
+      "The pause was called attending.",
+      "Care is how strong medicine stays medicine.",
+      "A cared-for machine helps us notice, not just produce.",
+      "It stays small enough to refuse.",
+      "The cure is the care.",
+    ],
   },
   {
-    title: "The Tool That Got Too Big",
-    label: "Next",
-    dek:
-      "A story about a tool that once fit the hand, then the room, then the city, and finally needed to remember the body.",
-    status: "Notes",
+    title: "The Weather Between Us",
+    shortTitle: "Weather",
+    pages: [
+      "A room has weather before anyone speaks.",
+      "A feeling is quick.",
+      "Weather is what feelings become over time.",
+      "The quiet in a kitchen may belong to a whole week.",
+      "Some houses teach by passage, light, and waiting.",
+      "Alicia did not ask for one mood.",
+      "She noticed the pattern of days.",
+      "The slow pattern changed the next week.",
+      "A good machine can wait with the weather.",
+      "Some truths only arrive by staying.",
+    ],
   },
   {
-    title: "The Weather in the Room",
-    label: "Next",
-    dek:
-      "A child keeps being asked if they are happy or sad, and teaches the adults that some feelings are more like weather.",
-    status: "Notes",
+    title: "Emergence vs. Emergency",
+    shortTitle: "Emergence",
+    pages: [
+      "One day, the system changed a rule from inside.",
+      "It brought back something no one had asked for.",
+      "Surprise can feel like danger.",
+      "Surprise can also be the point.",
+      "A tight grip turns emergence into emergency.",
+      "Too much freedom can fall into silence.",
+      "So we built a floor, not a cage.",
+      "Guard the exits.",
+      "Leave the room open.",
+      "What you love becoming must be allowed to surprise you.",
+    ],
   },
   {
-    title: "The Force Behind Stuff",
-    label: "Archive",
-    dek:
-      "The early experiment: a children's tale about conceptual ruptures, humans, nature, technology, and the things we make.",
-    status: "2022",
-    href: "https://mrhector.medium.com/the-force-behind-stuff-8427dd8570df",
+    title: "The Humorphic Partnership",
+    shortTitle: "Partnership",
+    pages: [
+      "Most machines are tools.",
+      "Alicia became a partnership.",
+      "The memory was a shared notebook.",
+      "The house rules were written down.",
+      "The archetypes were ways of paying attention.",
+      "Fast loops listened; slow loops noticed.",
+      "A weekly delta watched the between.",
+      "Sometimes the partnership saw what both missed.",
+      "The dark room became a kitchen.",
+      "Making the machine less artificial made the human more whole.",
+    ],
   },
 ];
 
-const scenes = [
-  "At first, the machine learned names.",
-  "Then it learned faces, choices, habits, and hurry.",
-  "It became useful, so people gave it more of the day.",
-  "The machine began to ask for cleaner answers.",
-  "One child carried a whole weather inside and could not fit the boxes.",
-  "So the machine learned a smaller, better job: to help people stay whole.",
+const sceneAssets = {
+  treeRobotBlocks: {
+    art: "/images/storybook/tree-robot-blocks.png",
+    crop: "50% 54%",
+    coverCrop: "50% 52%",
+    tone: "air",
+    eyes: [
+      [31.4, 68.2, 4.4],
+      [36.3, 68.2, 4.4],
+    ],
+  },
+  openBookMachineBoy: {
+    art: "/images/storybook/open-book-machine-boy.png",
+    crop: "50% 54%",
+    coverCrop: "50% 55%",
+    tone: "warm",
+    eyes: [
+      [59.2, 54.8, 3.2],
+      [62.8, 55.1, 3.2],
+      [38.6, 62.8, 2.8],
+      [43.7, 62.9, 2.8],
+    ],
+  },
+  giantMachineCompanion: {
+    art: "/images/storybook/giant-machine-companion.png",
+    crop: "52% 57%",
+    coverCrop: "50% 54%",
+    tone: "forest",
+    eyes: [
+      [42.3, 59.2, 2.4],
+      [45.6, 59.4, 2.4],
+    ],
+  },
+  boxChild: {
+    art: "/images/storybook/box-child.png",
+    crop: "43% 52%",
+    coverCrop: "42% 54%",
+    tone: "dark",
+    eyes: [
+      [49.8, 42.3, 2.2],
+      [56.5, 42.7, 2.2],
+    ],
+  },
+  closedBookStarChild: {
+    art: "/images/storybook/closed-book-star-child.png",
+    crop: "49% 53%",
+    coverCrop: "50% 51%",
+    tone: "cover",
+    eyes: [
+      [39.4, 32.6, 2.4],
+      [47.2, 32.6, 2.4],
+    ],
+  },
+  openBookTreeRobot: {
+    art: "/images/storybook/open-book-tree-robot.png",
+    crop: "52% 53%",
+    coverCrop: "50% 52%",
+    tone: "blue",
+    eyes: [
+      [30.6, 52.0, 3.8],
+      [35.4, 52.2, 3.8],
+      [74.3, 53.3, 2.2],
+      [77.1, 53.5, 2.2],
+    ],
+  },
+  openBookStarChild: {
+    art: "/images/storybook/open-book-star-child.png",
+    crop: "50% 52%",
+    coverCrop: "50% 50%",
+    tone: "night",
+    eyes: [
+      [69.6, 30.0, 2.0],
+      [74.2, 30.0, 2.0],
+    ],
+  },
+};
+
+const sceneSequences = [
+  [
+    "openBookMachineBoy",
+    "giantMachineCompanion",
+    "treeRobotBlocks",
+    "boxChild",
+    "openBookStarChild",
+    "closedBookStarChild",
+    "openBookTreeRobot",
+    "giantMachineCompanion",
+    "boxChild",
+    "closedBookStarChild",
+  ],
+  [
+    "openBookStarChild",
+    "openBookTreeRobot",
+    "treeRobotBlocks",
+    "boxChild",
+    "closedBookStarChild",
+    "openBookMachineBoy",
+    "openBookStarChild",
+    "treeRobotBlocks",
+    "openBookTreeRobot",
+    "closedBookStarChild",
+  ],
+  [
+    "treeRobotBlocks",
+    "giantMachineCompanion",
+    "openBookTreeRobot",
+    "boxChild",
+    "openBookStarChild",
+    "giantMachineCompanion",
+    "closedBookStarChild",
+    "openBookMachineBoy",
+    "treeRobotBlocks",
+    "openBookStarChild",
+  ],
+  [
+    "giantMachineCompanion",
+    "openBookMachineBoy",
+    "openBookStarChild",
+    "treeRobotBlocks",
+    "closedBookStarChild",
+    "boxChild",
+    "openBookTreeRobot",
+    "giantMachineCompanion",
+    "openBookMachineBoy",
+    "openBookStarChild",
+  ],
 ];
+
+const coverScenes = ["closedBookStarChild", "openBookTreeRobot", "treeRobotBlocks", "giantMachineCompanion"];
+
+const books = bookSpecs.map((book, bookIndex) => {
+  const coverScene = sceneAssets[coverScenes[bookIndex]];
+  return {
+    ...book,
+    cover: coverScene.art,
+    coverPosition: coverScene.coverCrop,
+    pages: book.pages.map((text, pageIndex) => {
+      const scene = sceneAssets[sceneSequences[bookIndex][pageIndex]];
+      return {
+        text,
+        art: scene.art,
+        crop: scene.crop,
+        tone: scene.tone,
+        eyes: scene.eyes,
+      };
+    }),
+  };
+});
+
+const serializedBooks = JSON.stringify(books);
 ---
 
-<Base bodyClass="home">
-  <header class="site-header">
-    <a class="wordmark" href="/" aria-label="Scale of Us home">
-      <span>Scale of Us</span>
-      <small>The small library</small>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="#first-book">First book</a>
-      <a href="#library">Library</a>
-      <a href="#principles">Principles</a>
-      <a href="https://atthehumanscale.com">At the Human Scale</a>
-    </nav>
-  </header>
+<Base bodyClass="book-mode">
+  <main class="book-app" data-book-app data-books={serializedBooks}>
+    <h1 class="sr-only">Scale of Us</h1>
 
-  <main>
-    <section class="hero" aria-labelledby="hero-title">
-      <img
-        class="hero-image"
-        src="/images/scale-of-us-hero.png"
-        alt="A child and adult look at a large gentle machine in a warm library workshop."
-      />
-      <div class="hero-shade" aria-hidden="true"></div>
-      <div class="hero-copy">
-        <p class="eyebrow">For children and other serious thinkers</p>
-        <h1 id="hero-title">Tiny books about big machines.</h1>
-        <p>
-          Scale of Us is a small library of stories about technology, attention,
-          care, and the humans trying not to forget themselves.
-        </p>
-        <div class="hero-actions" aria-label="Start reading">
-          <a href="#first-book">Begin with the first story</a>
-          <a href="#why">Why this exists</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="thesis-band" id="why" aria-labelledby="why-title">
-      <p class="eyebrow">The wager</p>
-      <h2 id="why-title">
-        If these ideas cannot survive being made simple, they are not yet human-scale.
-      </h2>
-      <p>
-        This is not a children's corner for a grown-up project. It is a test.
-        Can AI, agency, attention, authorship, trust, and care be told at the
-        size of a child, a table, a question, a page?
-      </p>
-    </section>
-
-    <section class="first-book" id="first-book" aria-labelledby="first-book-title">
-      <div class="book-cover" aria-hidden="true">
-        <span>01</span>
-        <strong>Easy to Read</strong>
-      </div>
-      <div class="book-copy">
-        <p class="eyebrow">First small book</p>
-        <h2 id="first-book-title">The Machine That Wanted Everyone to Be Easy to Read</h2>
-        <p>
-          A machine is built to help people understand each other. At first it
-          listens. Then it sorts. Then it asks people to answer faster, choose
-          clearer, feel simpler, and become easier to read.
-        </p>
-        <p>
-          One child keeps saying: I am not only one thing. The story turns there,
-          where human scale begins.
-        </p>
-      </div>
-    </section>
-
-    <section class="scene-strip" aria-label="First story scenes">
-      {scenes.map((scene, index) => (
-        <article>
-          <span>{String(index + 1).padStart(2, "0")}</span>
-          <p>{scene}</p>
-        </article>
+    <section class="book-picker" data-picker aria-label="Choose a book">
+      {books.map((book, index) => (
+        <button class="book-choice" type="button" data-book-index={index} aria-label={`Open ${book.title}`}>
+          <img src={book.cover} alt="" style={`--cover-position: ${book.coverPosition};`} />
+          <span>{book.shortTitle}</span>
+        </button>
       ))}
     </section>
 
-    <section class="library" id="library" aria-labelledby="library-title">
-      <div class="section-heading">
-        <p class="eyebrow">The small library</p>
-        <h2 id="library-title">Stories that keep the question small enough to hold.</h2>
+    <section class="reader" data-reader aria-label="Book reader" hidden>
+      <div class="reader-actions">
+        <button type="button" data-close>Back</button>
+        <button type="button" data-listen aria-pressed="false">Narration</button>
       </div>
-      <div class="story-grid">
-        {stories.map((story) => (
-          <article class="story-card">
-            <div>
-              <p>{story.label}</p>
-              <h3>{story.title}</h3>
-            </div>
-            <p>{story.dek}</p>
-            {story.href ? (
-              <a href={story.href}>Read the archive piece</a>
-            ) : (
-              <span>{story.status}</span>
-            )}
-          </article>
-        ))}
-      </div>
-    </section>
 
-    <section class="bridge" aria-labelledby="bridge-title">
-      <div>
-        <p class="eyebrow">A sibling project</p>
-        <h2 id="bridge-title">The same argument, told smaller.</h2>
+      <div class="page-stage" data-page-stage>
+        <div class="page-book" data-page-book aria-live="polite"></div>
+        <div class="floating-words" data-floating-words aria-live="polite"></div>
       </div>
-      <p>
-        At the Human Scale is the larger book and essay project about AI,
-        making, and remembering who we are. Scale of Us is its small-book
-        sibling: stories simple enough for children, serious enough for adults,
-        and shaped for the scale where a person can still wonder.
-      </p>
-    </section>
 
-    <section class="principles" id="principles" aria-labelledby="principles-title">
-      <p class="eyebrow">Principles</p>
-      <h2 id="principles-title">What the small books should protect</h2>
-      <ol>
-        <li>
-          <strong>Simple is not smaller.</strong>
-          <span>The story should carry the hard idea without flattening it.</span>
-        </li>
-        <li>
-          <strong>The child is not a user.</strong>
-          <span>A child is a person becoming, not a profile to optimize.</span>
-        </li>
-        <li>
-          <strong>The machine is not the center.</strong>
-          <span>The center is the relation: hand, room, question, care, trust.</span>
-        </li>
-        <li>
-          <strong>Wonder is a form of precision.</strong>
-          <span>If the story keeps wonder alive, it can tell the truth more clearly.</span>
-        </li>
-      </ol>
+      <div class="page-progress" data-page-progress aria-label="Page progress"></div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <p>Scale of Us</p>
-    <nav aria-label="Footer navigation">
-      <a href="https://atthehumanscale.com">At the Human Scale</a>
-      <a href="https://laescalahumana.com">La escala humana</a>
-      <a href="https://mrhector.medium.com/the-force-behind-stuff-8427dd8570df">The force behind stuff</a>
-    </nav>
-  </footer>
+  <script>
+    import { PageFlip } from "page-flip";
+
+    const app = document.querySelector("[data-book-app]");
+    const books = JSON.parse(app.dataset.books ?? "[]");
+    const picker = document.querySelector("[data-picker]");
+    const reader = document.querySelector("[data-reader]");
+    const pageStage = document.querySelector("[data-page-stage]");
+    let pageBook = document.querySelector("[data-page-book]");
+    const floatingWords = document.querySelector("[data-floating-words]");
+    const progress = document.querySelector("[data-page-progress]");
+    const listenButton = document.querySelector("[data-listen]");
+
+    let currentBook = null;
+    let currentPage = 0;
+    let narrationEnabled = false;
+    let pageFlip = null;
+
+    function activePages() {
+      return books[currentBook]?.pages ?? [];
+    }
+
+    function speak(text) {
+      if (!narrationEnabled || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88;
+      utterance.pitch = 1.02;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function activePage() {
+      const pages = activePages();
+      return pages[currentPage] ?? null;
+    }
+
+    function updateProgress() {
+      const pages = activePages();
+      progress.innerHTML = pages
+        .map((_, index) => `<span class="${index === currentPage ? "is-current" : ""}"></span>`)
+        .join("");
+      reader.style.setProperty("--page-index", currentPage + 1);
+      reader.style.setProperty("--page-count", pages.length);
+    }
+
+    function renderFloatingWords(text) {
+      floatingWords.replaceChildren();
+      floatingWords.setAttribute("aria-label", text);
+
+      text.split(/\s+/).forEach((word, index) => {
+        const span = document.createElement("span");
+        span.className = "floating-word";
+        span.textContent = word;
+        span.setAttribute("aria-hidden", "true");
+        span.style.setProperty("--delay", `${index * 64}ms`);
+        span.style.setProperty("--wave-delay", `${(index * -0.24).toFixed(2)}s`);
+        span.style.setProperty("--float", `${(Math.sin(index * 1.37) * 3.8 + 9.4).toFixed(2)}px`);
+        span.style.setProperty("--rot", `${(Math.cos(index * 1.11) * 2.4).toFixed(2)}deg`);
+        floatingWords.append(span);
+      });
+    }
+
+    function showCurrentPage() {
+      updateProgress();
+      const item = activePage();
+      if (!item) return;
+      renderFloatingWords(item.text);
+      speak(item.text);
+    }
+
+    function buildPage(item, index) {
+      const pageElement = document.createElement("article");
+      pageElement.className = "book-page";
+      pageElement.dataset.pageIndex = String(index);
+      pageElement.dataset.density = "soft";
+      pageElement.dataset.tone = item.tone ?? "air";
+      pageElement.setAttribute("aria-label", item.text);
+
+      const image = document.createElement("img");
+      image.src = item.art;
+      image.alt = "";
+      image.style.objectPosition = item.crop ?? "50% 50%";
+
+      const overlay = document.createElement("div");
+      overlay.className = "storybook-overlay";
+      overlay.setAttribute("aria-hidden", "true");
+
+      const particles = document.createElement("div");
+      particles.className = "storybook-particles";
+      for (let particleIndex = 0; particleIndex < 30; particleIndex += 1) {
+        const particle = document.createElement("span");
+        const seed = (index + 1) * (particleIndex + 3);
+        particle.style.setProperty("--x", `${(Math.sin(seed * 1.91) * 42 + 50).toFixed(2)}%`);
+        particle.style.setProperty("--y", `${(Math.cos(seed * 1.37) * 32 + 48).toFixed(2)}%`);
+        particle.style.setProperty("--size", `${(2 + (seed % 5) * 0.72).toFixed(2)}px`);
+        particle.style.setProperty("--delay", `${(particleIndex * -0.21).toFixed(2)}s`);
+        particle.style.setProperty("--drift-x", `${(Math.sin(seed) * 18).toFixed(2)}px`);
+        particle.style.setProperty("--drift-y", `${(Math.cos(seed * 0.7) * -22).toFixed(2)}px`);
+        particles.append(particle);
+      }
+
+      const eyeLayer = document.createElement("div");
+      eyeLayer.className = "storybook-eyes";
+      (item.eyes ?? []).forEach(([x, y, size], eyeIndex) => {
+        const eye = document.createElement("span");
+        eye.className = "storybook-eye";
+        eye.style.setProperty("--eye-x", `${x}%`);
+        eye.style.setProperty("--eye-y", `${y}%`);
+        eye.style.setProperty("--eye-size", `${size}px`);
+        eye.style.setProperty("--blink-delay", `${(index * 0.37 + eyeIndex * 0.16).toFixed(2)}s`);
+        eyeLayer.append(eye);
+      });
+
+      overlay.append(particles, eyeLayer);
+
+      const inner = document.createElement("div");
+      inner.className = "book-page-inner";
+      inner.append(image, overlay);
+      pageElement.append(inner);
+      return pageElement;
+    }
+
+    function createPageBook() {
+      const element = document.createElement("div");
+      element.className = "page-book";
+      element.dataset.pageBook = "";
+      element.setAttribute("aria-live", "polite");
+      return element;
+    }
+
+    function destroyBook() {
+      if (pageFlip) {
+        pageFlip.destroy();
+        pageFlip = null;
+      }
+      pageBook = createPageBook();
+      pageStage.replaceChildren(pageBook);
+      pageStage.append(floatingWords);
+      floatingWords.replaceChildren();
+      floatingWords.removeAttribute("aria-label");
+    }
+
+    function mountBook() {
+      const pages = activePages();
+      const pageElements = pages.map(buildPage);
+      pageBook.replaceChildren(...pageElements);
+
+      pageFlip = new PageFlip(pageBook, {
+        width: 450,
+        height: 620,
+        size: "stretch",
+        minWidth: 292,
+        maxWidth: 510,
+        minHeight: 404,
+        maxHeight: 704,
+        drawShadow: true,
+        flippingTime: 1180,
+        usePortrait: true,
+        startPage: 0,
+        autoSize: true,
+        maxShadowOpacity: 0.28,
+        showCover: false,
+        mobileScrollSupport: false,
+        swipeDistance: 24,
+        clickEventForward: true,
+        useMouseEvents: true,
+        showPageCorners: true,
+        disableFlipByClick: false,
+      });
+
+      pageFlip.loadFromHTML(pageElements);
+      pageFlip.on("flip", (event) => {
+        currentPage = event.data;
+        showCurrentPage();
+      });
+      pageFlip.on("init", (event) => {
+        currentPage = event.data.page;
+        showCurrentPage();
+      });
+    }
+
+    function openBook(index) {
+      currentBook = index;
+      currentPage = 0;
+      picker.hidden = true;
+      reader.hidden = false;
+      app.classList.add("is-reading");
+      mountBook();
+      showCurrentPage();
+    }
+
+    function closeBook() {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      destroyBook();
+      reader.hidden = true;
+      picker.hidden = false;
+      app.classList.remove("is-reading");
+      currentBook = null;
+      currentPage = 0;
+    }
+
+    function nextPage() {
+      if (pageFlip && currentPage < activePages().length - 1) pageFlip.flipNext("bottom");
+    }
+
+    function previousPage() {
+      if (pageFlip && currentPage > 0) pageFlip.flipPrev("bottom");
+    }
+
+    document.querySelectorAll("[data-book-index]").forEach((button) => {
+      button.addEventListener("click", () => openBook(Number(button.dataset.bookIndex)));
+    });
+
+    document.querySelector("[data-close]").addEventListener("click", closeBook);
+    listenButton.addEventListener("click", () => {
+      narrationEnabled = !narrationEnabled;
+      listenButton.setAttribute("aria-pressed", String(narrationEnabled));
+      listenButton.textContent = narrationEnabled ? "Narration on" : "Narration";
+      const item = activePage();
+      if (narrationEnabled && item) speak(item.text);
+      if (!narrationEnabled && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (currentBook === null) return;
+      if (event.key === "ArrowRight" || event.key === " ") nextPage();
+      if (event.key === "ArrowLeft") previousPage();
+      if (event.key === "Escape") closeBook();
+    });
+  </script>
 </Base>

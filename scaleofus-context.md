@@ -127,7 +127,8 @@ Key files:
 - `src/pages/index.astro`
 - `src/styles/global.css`
 - `src/layouts/Base.astro`
-- `public/images/scale-of-us-hero.png`
+- `public/images/storybook/`
+- `STYLE_ALGORITHM.md`
 - `public/CNAME`
 - `public/_redirects`
 - `public/.nojekyll`
@@ -148,75 +149,67 @@ Build:
 npm run build
 ```
 
+The site now uses supplied storybook images in `public/images/storybook/`.
+`npm run build` does not regenerate artwork.
+
 The build has already been verified successfully with `npm run build`.
 
 The local preview was checked at:
 
-`http://127.0.0.1:4328/`
+`http://127.0.0.1:4321/`
 
-Desktop and mobile visual QA passed. The page has no broken hero image, no body
-level horizontal overflow, and no browser console errors observed during QA.
+For the current four-book version, build and supplied asset checks passed.
+Browser automation was blocked on `127.0.0.1` during this pass, so do a manual
+desktop/mobile click-through when changing layout or flip behavior.
 
 ## Current Homepage Shape
 
-The first version includes:
+The site is now a very simple flipbook rather than a scrolling homepage.
 
-1. Hero
-   - "Tiny books about big machines."
-   - "For children and other serious thinkers."
-   - Warm generated library-workshop hero image.
+1. Book picker
+   - A pink background.
+   - Four tappable book covers, one for each published At the Human Scale essay.
+   - No nav, hero, thesis section, footer, or explanatory page sections.
 
-2. The Wager
-   - "If these ideas cannot survive being made simple, they are not yet
-     human-scale."
+2. Reader
+   - One supplied cinematic picture-book image per page, cropped for the page.
+   - The current pass uses supplied storybook PNGs as the real artwork instead
+     of generated SVG scenes.
+   - One sentence of narration text per page, displayed below the book as
+     floating words with a subtle wave.
+   - Ten pages per book.
+   - Page turns use the `page-flip` package for a more natural paper curl,
+     shadows, click, drag, and swipe behavior.
+   - A small narration toggle uses browser speech synthesis.
+   - The current visual reference is a cinematic miniature storybook world:
+     blue-gray atmosphere, deep sage/teal pages, peach light, soft leaf texture,
+     a grounded book shadow, blinking child figures, wind, drifting leaves,
+     paper trees, glowing stars, block stacks, machine companions, and
+     occasional falling branches.
 
-3. First Small Book Prototype
-   - `The Machine That Wanted Everyone to Be Easy to Read`
+## Current Book Set
 
-4. Scene Strip
-   - Six simple beats for the first story.
+Each book compresses one At the Human Scale essay into ten picture-book pages:
 
-5. Small Library
-   - `The Machine That Wanted Everyone to Be Easy to Read`
-   - `The Tool That Got Too Big`
-   - `The Weather in the Room`
-   - `The Force Behind Stuff`
+1. `The Cure Is the Care`
+   - Language as medicine and poison.
+   - Grasping versus attending.
+   - Care as the dose that keeps the machine human-scale.
 
-6. Sibling Project Bridge
-   - Connects Scale of Us back to At the Human Scale.
+2. `The Weather Between Us`
+   - A feeling is quick; weather is what feelings become over time.
+   - Rooms, houses, and relationships reveal themselves through duration.
+   - Good AI should be able to wait with the pattern.
 
-7. Principles
-   - Simple is not smaller.
-   - The child is not a user.
-   - The machine is not the center.
-   - Wonder is a form of precision.
+3. `Emergence vs. Emergency`
+   - Surprise can be danger or becoming, depending on posture.
+   - The system needs a floor, not a cage.
+   - Guard the exits, but leave the room open.
 
-## First Story Concept
-
-Working title:
-
-`The Machine That Wanted Everyone to Be Easy to Read`
-
-Premise:
-
-A machine is built to help people understand each other. At first it listens.
-Then it sorts. Then it asks people to answer faster, choose clearer, feel
-simpler, and become easier to read.
-
-One child keeps saying:
-
-> I am not only one thing.
-
-That is where the story turns, and where human scale begins.
-
-Scene beats:
-
-1. At first, the machine learned names.
-2. Then it learned faces, choices, habits, and hurry.
-3. It became useful, so people gave it more of the day.
-4. The machine began to ask for cleaner answers.
-5. One child carried a whole weather inside and could not fit the boxes.
-6. So the machine learned a smaller, better job: to help people stay whole.
+4. `The Humorphic Partnership`
+   - Alicia as partnership rather than tool.
+   - Shared memory, house rules, archetypes, and loops of attention.
+   - Making the machine less artificial helps the human stay whole.
 
 ## Future Story Seeds
 
@@ -290,31 +283,27 @@ The visual world should feel:
 - Rich enough for adults.
 - Inviting enough for children.
 
-Current hero image:
+Current visual system:
 
-`public/images/scale-of-us-hero.png`
+- The site now uses supplied cinematic storybook images as the artwork.
+- Images live in `public/images/storybook/`.
+- The treatment is documented in `STYLE_ALGORITHM.md`.
+- Pages crop the images and add a fake animation layer: particles, soft glow,
+  breathing zoom, and small blinking eye overlays.
 
-Generated asset prompt used:
+Drawing grammar:
 
-```text
-Use case: illustration-story
-Asset type: website hero image for a literary children's philosophy imprint called Scale of Us
-Primary request: create a warm, thoughtful children's-book style illustration about big machines and human scale.
-Scene/backdrop: a quiet library-workshop at dusk with shelves, paper models, small lamps, and a large gentle abstract machine in the background shaped like nested tools and windows, not a robot.
-Subject: one child and one adult standing beside a table of tiny paper houses and simple tools, looking at the large machine with curiosity rather than fear.
-Style/medium: painterly editorial children's book illustration, hand-drawn texture, sophisticated but accessible, no cartoon exaggeration.
-Composition/framing: wide landscape composition suitable for a website hero, with useful negative space near the left and lower center for overlay text if needed.
-Lighting/mood: warm lamplight, reflective, inviting, wonder without hype.
-Color palette: warm coral, ink black, soft blue, leaf green, pale paper, small accents of golden yellow; avoid a one-note beige, dark blue tech, or purple gradient palette.
-Text: no text.
-Constraints: no logos, no readable words, no screens dominating the scene, no sci-fi armor, no cute mascot robot, no watermark.
-```
+- Do not redraw the supplied image style unless explicitly asked.
+- Use the supplied images as backgrounds and crop them intentionally.
+- Fake life with overlays: blinking eye dots, glowing particles, soft page glow,
+  and slow image breathing.
+- Keep the UI quiet so the images do the aesthetic work.
 
 ## Deployment Notes
 
 Recommended:
 
-1. Create a new GitHub repo called `scaleofus`.
+1. Use the existing GitHub repo `mrdaemoni/scaleofus`.
 2. Push `/Users/alicia/Documents/Playground/scaleofus` to that repo.
 3. Deploy it as a static Astro site.
 4. Point `scaleofus.com` to that deployment.
@@ -340,4 +329,3 @@ Use this prompt when creating the new Codex sidebar project for Scale of Us:
 > `atthehumanscale.com`, but let Scale of Us have its own repo, identity,
 > deployment, visual voice, and story world. Start by inspecting the existing
 > Astro project, then help refine, deploy, or extend it.
-
