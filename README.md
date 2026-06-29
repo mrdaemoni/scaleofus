@@ -17,8 +17,12 @@ Read `scaleofus-context.md` first when opening this as a fresh Codex sidebar pro
 npm install
 npm run dev
 npm run build
+npm run build:pages
 ```
 
 The site uses supplied storybook images in `public/images/storybook/`. Pages crop
 those images and add a lightweight overlay for blinking eyes, glowing particles,
 and subtle breathing motion.
+
+For GitHub Pages branch publishing, run `npm run build:pages`, commit the
+generated `docs/` folder, then set Pages to publish from `main` and `/docs`.

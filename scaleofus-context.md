@@ -147,10 +147,13 @@ Build:
 
 ```sh
 npm run build
+npm run build:pages
 ```
 
 The site now uses supplied storybook images in `public/images/storybook/`.
 `npm run build` does not regenerate artwork.
+`npm run build:pages` writes the deployable static site into `docs/` for
+GitHub Pages branch publishing.
 
 The build has already been verified successfully with `npm run build`.
 
@@ -305,7 +308,7 @@ Recommended:
 
 1. Use the existing GitHub repo `mrdaemoni/scaleofus`.
 2. Push `/Users/alicia/Documents/Playground/scaleofus` to that repo.
-3. Deploy it as a static Astro site.
+3. In GitHub Pages, publish from branch `main` and folder `/docs`.
 4. Point `scaleofus.com` to that deployment.
 5. Keep `atthehumanscale.com` and `scaleofus.com` as separate sites that link
    to each other.

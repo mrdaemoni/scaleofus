@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Scale of Us">
+  <rect width="96" height="96" rx="18" fill="#f7d8cd"/>
+  <circle cx="30" cy="34" r="10" fill="#2d211f"/>
+  <circle cx="62" cy="34" r="10" fill="#2d211f"/>
+  <path d="M24 66c9-17 35-17 48 0" fill="none" stroke="#2d211f" stroke-width="9" stroke-linecap="round"/>
+  <path d="M17 72h62" stroke="#4d7c70" stroke-width="7" stroke-linecap="round"/>
+</svg>

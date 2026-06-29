@@ -8,6 +8,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "build:pages": "astro build && rm -rf docs && cp -R dist docs",
     "preview": "astro preview",
     "astro": "astro"
   },
