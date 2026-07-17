@@ -6,9 +6,8 @@ This is the standalone site for `scaleofus.com`, built as a sibling project to A
 
 The current experience is an immersive reading and listening edition of
 *The Boy Who Tried to Catch the Wind*. The nine-chapter climb holds all 38
-planned drawing beats, three work-in-progress illustrations, the original
-14:45 narration, chapter-aware audio progress, and a separate grown-ups room
-for the story's philosophical lineages.
+pale-ink drawing studies, the original 14:45 narration, two-way story/audio
+progress, and a separate grown-ups room for the story's philosophical lineages.
 
 Read `scaleofus-context.md` first when opening this as a fresh Codex sidebar project.
 

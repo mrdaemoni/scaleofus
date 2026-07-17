@@ -1,17 +1,15 @@
 ---
 import Base from "../layouts/Base.astro";
 import storyMarkdown from "../content/the-boy-who-tried-to-catch-the-wind.md?raw";
+import storyTimings from "../content/story-timings.json";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
 
 const duration = 885.54;
-const chapters = parseStoryMarkdown(storyMarkdown, duration);
+const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
 const chapterData = chapters.map(({ number, title, id, start }) => ({ number, title, id, start }));
-
-const featuredArt: Record<number, { src: string; position: string }> = {
-  1: { src: "/images/wind-story/wip-opening.jpg", position: "50% 52%" },
-  25: { src: "/images/wind-story/wip-mirrors.jpg", position: "50% 50%" },
-  30: { src: "/images/wind-story/wip-summit.jpg", position: "50% 52%" },
-};
+const beatData = chapters.flatMap((chapter) =>
+  chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
+);
 ---
 
 <Base
@@ -32,10 +30,10 @@ const featuredArt: Record<number, { src: string; position: string }> = {
     </nav>
   </header>
 
-  <main data-story-app data-chapters={JSON.stringify(chapterData)}>
+  <main data-story-app data-chapters={JSON.stringify(chapterData)} data-beats={JSON.stringify(beatData)}>
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <img src="/images/wind-story/wip-opening.jpg" alt="" fetchpriority="high" />
+        <img src="/images/wind-story/beats/beat-01.jpg" alt="" fetchpriority="high" />
       </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
@@ -55,13 +53,20 @@ const featuredArt: Record<number, { src: string; position: string }> = {
         </div>
       </div>
 
-      <p class="cover-note">Temporary drawings · final art to come</p>
+      <p class="cover-note">38 pale ink studies · final art to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
     </section>
 
     <div class="reader-shell" id="story">
       <aside class="chapter-rail" aria-label="Chapters">
-        <p>Your climb</p>
+        <div class="mountain-nav-art" aria-hidden="true">
+          <span class="mountain-face"></span>
+          <span class="mountain-snow"></span>
+          <span class="mountain-path path-one"></span>
+          <span class="mountain-path path-two"></span>
+          <span class="mountain-path path-three"></span>
+        </div>
+        <p>The climb</p>
         <ol>
           {chapters.map((chapter) => (
             <li>
@@ -93,29 +98,23 @@ const featuredArt: Record<number, { src: string; position: string }> = {
 
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
-                const art = featuredArt[beat.number];
                 return (
-                  <article class={`story-beat ${art ? "has-featured-art" : "has-study"}`} data-beat={beat.number}>
+                  <article
+                    class="story-beat has-featured-art"
+                    id={`beat-${beat.number}`}
+                    data-beat={beat.number}
+                    data-start={beat.start}
+                    data-end={beat.end}
+                  >
                     <figure class="beat-visual">
-                      {art ? (
-                        <img
-                          src={art.src}
-                          alt={`Work-in-progress drawing ${beat.number}: ${beat.prompt}`}
-                          loading={beat.number === 1 ? "eager" : "lazy"}
-                          style={`object-position: ${art.position}`}
-                        />
-                      ) : (
-                        <div class={`drawing-study study-${chapter.number}`} aria-label={`Drawing study ${beat.number}: ${beat.prompt}`}>
-                          <span class="study-line line-a"></span>
-                          <span class="study-line line-b"></span>
-                          <span class="study-line line-c"></span>
-                          <span class="study-object object-a"></span>
-                          <span class="study-object object-b"></span>
-                        </div>
-                      )}
+                      <img
+                        src={`/images/wind-story/beats/beat-${String(beat.number).padStart(2, "0")}.jpg`}
+                        alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                        loading={beat.number === 1 ? "eager" : "lazy"}
+                      />
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span>{art ? "work in progress" : "visual study"}</span>
+                        <span>pale ink study</span>
                       </figcaption>
                     </figure>
 
@@ -169,7 +168,7 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       />
       <div class="dock-time"><span data-current-time>0:00</span><span>{formatTime(duration)}</span></div>
     </div>
-    <button class="follow-toggle" type="button" data-follow aria-pressed="false">
+    <button class="follow-toggle" type="button" data-follow aria-pressed="true">
       <span aria-hidden="true"></span> Follow the voice
     </button>
     <button class="dock-collapse" type="button" data-collapse aria-label="Minimize audio player" aria-expanded="true">⌄</button>
@@ -189,11 +188,17 @@ const featuredArt: Record<number, { src: string; position: string }> = {
     const collapse = document.querySelector<HTMLButtonElement>("[data-collapse]");
     const readingProgress = document.querySelector<HTMLElement>("[data-reading-progress]");
     const chapters = JSON.parse(app?.dataset.chapters ?? "[]");
+    const beats = JSON.parse(app?.dataset.beats ?? "[]");
     const chapterElements = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
     const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-chapter-link]")];
+    const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
     let activeChapter = 0;
-    let followNarration = false;
-    let lastFollowedChapter = -1;
+    let activeBeat = -1;
+    let followNarration = true;
+    let lastAutoScrolledBeat = -1;
+    let suppressScrollSeekUntil = 0;
+    let lastUserScrollIntent = 0;
+    let scrollSeekFrame = 0;
 
     const format = (seconds: number) => {
       const minutes = Math.floor(seconds / 60);
@@ -201,24 +206,43 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       return `${minutes}:${String(remainder).padStart(2, "0")}`;
     };
 
-    const setChapter = (index: number, source: "scroll" | "audio" = "scroll") => {
+    const setChapter = (index: number) => {
       if (index < 0 || !chapters[index]) return;
       activeChapter = index;
       chapterLinks.forEach((link, linkIndex) => link.toggleAttribute("aria-current", linkIndex === index));
       if (currentChapter) currentChapter.textContent = `Chapter ${["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][index]} · ${chapters[index].title}`;
+    };
 
-      if (source === "audio" && followNarration && lastFollowedChapter !== index) {
-        lastFollowedChapter = index;
-        chapterElements[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const beatForTime = (seconds: number) => {
+      let index = 0;
+      beats.forEach((beat: { start: number }, beatIndex: number) => {
+        if (seconds >= beat.start) index = beatIndex;
+      });
+      return index;
+    };
+
+    const setBeat = (index: number, source: "audio" | "scroll" | "restore" = "scroll") => {
+      if (index < 0 || !beats[index]) return;
+      const changed = activeBeat !== index;
+      activeBeat = index;
+      beatElements.forEach((element, elementIndex) => {
+        element.classList.toggle("is-current-beat", elementIndex === index);
+        element.toggleAttribute("aria-current", elementIndex === index);
+      });
+      setChapter(Number(beats[index].chapter) - 1);
+
+      if (source === "audio" && followNarration && changed && lastAutoScrolledBeat !== index) {
+        lastAutoScrolledBeat = index;
+        suppressScrollSeekUntil = Date.now() + 1500;
+        beatElements[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     };
 
-    const chapterForTime = (seconds: number) => {
-      let index = 0;
-      chapters.forEach((chapter: { start: number }, chapterIndex: number) => {
-        if (seconds >= chapter.start) index = chapterIndex;
-      });
-      return index;
+    const updateAudioPosition = () => {
+      if (!audio || !seek || !currentTime) return;
+      seek.value = String(audio.currentTime);
+      seek.style.setProperty("--played", `${(audio.currentTime / Number(seek.max)) * 100}%`);
+      currentTime.textContent = format(audio.currentTime);
     };
 
     const updatePlayState = () => {
@@ -234,6 +258,10 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       if (audio.paused) {
         try {
           await audio.play();
+          if (followNarration) {
+            lastAutoScrolledBeat = -1;
+            setBeat(beatForTime(audio.currentTime), "audio");
+          }
         } catch {
           return;
         }
@@ -249,11 +277,8 @@ const featuredArt: Record<number, { src: string; position: string }> = {
     audio?.addEventListener("ended", updatePlayState);
 
     audio?.addEventListener("timeupdate", () => {
-      if (!seek || !currentTime) return;
-      seek.value = String(audio.currentTime);
-      seek.style.setProperty("--played", `${(audio.currentTime / Number(seek.max)) * 100}%`);
-      currentTime.textContent = format(audio.currentTime);
-      setChapter(chapterForTime(audio.currentTime), "audio");
+      updateAudioPosition();
+      setBeat(beatForTime(audio.currentTime), "audio");
       try {
         localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
       } catch {}
@@ -262,22 +287,28 @@ const featuredArt: Record<number, { src: string; position: string }> = {
     seek?.addEventListener("input", () => {
       if (!audio) return;
       audio.currentTime = Number(seek.value);
-      lastFollowedChapter = -1;
-      setChapter(chapterForTime(audio.currentTime), "audio");
+      lastAutoScrolledBeat = -1;
+      updateAudioPosition();
+      setBeat(beatForTime(audio.currentTime), "audio");
     });
 
     chapterLinks.forEach((link, index) => {
       link.addEventListener("click", () => {
-        if (audio && !audio.paused) audio.currentTime = Number(link.dataset.start ?? 0);
+        if (audio) {
+          audio.currentTime = Number(link.dataset.start ?? 0);
+          updateAudioPosition();
+        }
         setChapter(index);
+        const targetBeat = beats.findIndex((beat: { chapter: number }) => beat.chapter === index + 1);
+        if (targetBeat >= 0) setBeat(targetBeat, "scroll");
       });
     });
 
     follow?.addEventListener("click", () => {
       followNarration = !followNarration;
       follow.setAttribute("aria-pressed", String(followNarration));
-      lastFollowedChapter = -1;
-      if (followNarration && audio) setChapter(chapterForTime(audio.currentTime), "audio");
+      lastAutoScrolledBeat = -1;
+      if (followNarration && audio) setBeat(beatForTime(audio.currentTime), "audio");
     });
 
     collapse?.addEventListener("click", () => {
@@ -287,24 +318,55 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       collapse.textContent = collapsed ? "⌃" : "⌄";
     });
 
-    const observer = new IntersectionObserver(
+    const chapterObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const index = chapterElements.indexOf(entry.target as HTMLElement);
-            if (!audio || audio.paused) setChapter(index, "scroll");
+            if (!audio || audio.paused) setChapter(index);
           }
         });
       },
       { rootMargin: "-28% 0px -62%", threshold: 0 },
     );
-    chapterElements.forEach((chapter) => observer.observe(chapter));
+    chapterElements.forEach((chapter) => chapterObserver.observe(chapter));
 
     const beatObserver = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-seen", entry.isIntersecting)),
       { rootMargin: "-10% 0px -10%", threshold: 0.16 },
     );
-    document.querySelectorAll("[data-beat]").forEach((beat) => beatObserver.observe(beat));
+    beatElements.forEach((beat) => beatObserver.observe(beat));
+
+    const markUserScrollIntent = () => {
+      lastUserScrollIntent = Date.now();
+    };
+    addEventListener("wheel", markUserScrollIntent, { passive: true });
+    addEventListener("touchstart", markUserScrollIntent, { passive: true });
+    addEventListener("pointerdown", markUserScrollIntent, { passive: true });
+    addEventListener("keydown", (event) => {
+      if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) markUserScrollIntent();
+    });
+
+    const syncAudioFromViewport = () => {
+      scrollSeekFrame = 0;
+      if (!audio || Date.now() < suppressScrollSeekUntil || Date.now() - lastUserScrollIntent > 1200) return;
+      const center = innerHeight * 0.5;
+      let closest = -1;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      beatElements.forEach((element, index) => {
+        const rect = element.getBoundingClientRect();
+        const distance = Math.abs(rect.top + rect.height * 0.5 - center);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closest = index;
+        }
+      });
+      if (closest < 0 || closest === activeBeat) return;
+      audio.currentTime = Number(beats[closest].start);
+      lastAutoScrolledBeat = closest;
+      updateAudioPosition();
+      setBeat(closest, "scroll");
+    };
 
     const updateReadingProgress = () => {
       if (!readingProgress) return;
@@ -312,7 +374,10 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       const ratio = available > 0 ? window.scrollY / available : 0;
       readingProgress.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
     };
-    addEventListener("scroll", updateReadingProgress, { passive: true });
+    addEventListener("scroll", () => {
+      updateReadingProgress();
+      if (!scrollSeekFrame) scrollSeekFrame = requestAnimationFrame(syncAudioFromViewport);
+    }, { passive: true });
     updateReadingProgress();
 
     addEventListener("pointermove", (event) => {
@@ -324,10 +389,27 @@ const featuredArt: Record<number, { src: string; position: string }> = {
       const saved = Number(localStorage.getItem("scaleofus-wind-progress"));
       if (audio && seek && Number.isFinite(saved) && saved > 5 && saved < Number(seek.max) - 5) {
         audio.currentTime = saved;
-        seek.value = String(saved);
-        currentTime && (currentTime.textContent = format(saved));
-        setChapter(chapterForTime(saved));
+        updateAudioPosition();
+        setBeat(beatForTime(saved), "restore");
       }
     } catch {}
+
+    if (location.hash.startsWith("#beat-")) {
+      const beatNumber = Number(location.hash.replace("#beat-", ""));
+      const beatIndex = beats.findIndex((beat: { number: number }) => beat.number === beatNumber);
+      if (beatIndex >= 0 && audio) {
+        audio.currentTime = Number(beats[beatIndex].start);
+        updateAudioPosition();
+        setBeat(beatIndex, "restore");
+      }
+    } else if (location.hash.startsWith("#chapter-")) {
+      const chapterIndex = chapters.findIndex((chapter: { id: string }) => `#${chapter.id}` === location.hash);
+      const beatIndex = beats.findIndex((beat: { chapter: number }) => beat.chapter === chapterIndex + 1);
+      if (chapterIndex >= 0 && beatIndex >= 0 && audio) {
+        audio.currentTime = Number(beats[beatIndex].start);
+        updateAudioPosition();
+        setBeat(beatIndex, "restore");
+      }
+    }
   </script>
 </Base>

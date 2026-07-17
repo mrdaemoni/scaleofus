@@ -2,6 +2,8 @@ export type StoryBeat = {
   number: number;
   prompt: string;
   paragraphs: string[];
+  start: number;
+  end: number;
 };
 
 export type StoryChapter = {
@@ -34,7 +36,11 @@ const slugify = (value: string) =>
 
 const wordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
-export function parseStoryMarkdown(raw: string, duration = 885.54): StoryChapter[] {
+export function parseStoryMarkdown(
+  raw: string,
+  duration = 885.54,
+  timings: ReadonlyArray<{ number: number; start: number; end: number }> = [],
+): StoryChapter[] {
   const chapters: StoryChapter[] = [];
   let chapter: StoryChapter | null = null;
   let beat: StoryBeat | null = null;
@@ -64,6 +70,8 @@ export function parseStoryMarkdown(raw: string, duration = 885.54): StoryChapter
         number: Number(drawingMatch[1]),
         prompt: drawingMatch[2],
         paragraphs: [],
+        start: 0,
+        end: 0,
       };
       chapter.beats.push(beat);
       continue;
@@ -87,6 +95,19 @@ export function parseStoryMarkdown(raw: string, duration = 885.54): StoryChapter
     item.start = Math.round((elapsedWords / totalWords) * duration);
     elapsedWords += chapterWords[index];
   });
+
+  if (timings.length) {
+    const timingByNumber = new Map(timings.map((timing) => [timing.number, timing]));
+    chapters.forEach((item) => {
+      item.beats.forEach((itemBeat) => {
+        const timing = timingByNumber.get(itemBeat.number);
+        if (!timing) return;
+        itemBeat.start = timing.start;
+        itemBeat.end = timing.end;
+      });
+      item.start = item.beats[0]?.start ?? item.start;
+    });
+  }
 
   return chapters;
 }
