@@ -8,7 +8,7 @@ const {
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, "https://scaleofus.com").toString();
-const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pale.jpg";
+const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pink.jpg";
 ---
 
 <!doctype html>
@@ -18,7 +18,7 @@ const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pale.jpg";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#42494a" />
+    <meta name="theme-color" content="#4b4749" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:site_name" content="Scale of Us" />

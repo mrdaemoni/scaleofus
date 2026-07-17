@@ -10,6 +10,12 @@ const chapterData = chapters.map(({ number, title, id, start }) => ({ number, ti
 const beatData = chapters.flatMap((chapter) =>
   chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
 );
+const motionByBeat = [
+  "wind", "card", "glow", "path", "glow", "trail", "tap", "stream", "pebble", "smoke",
+  "flame", "glow", "wheel", "question", "clay", "sun", "pond", "ripple", "rain", "leaf",
+  "garden", "sprout", "flower", "path", "windows", "mirrors", "card", "still", "wind", "sky",
+  "fragments", "gifts", "breath", "map", "windows", "breath", "page", "wind",
+];
 ---
 
 <Base
@@ -53,7 +59,7 @@ const beatData = chapters.flatMap((chapter) =>
         </div>
       </div>
 
-      <p class="cover-note">38 pale ink studies · final art to come</p>
+      <p class="cover-note">38 rose-gray ink studies · final art to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
     </section>
 
@@ -62,9 +68,12 @@ const beatData = chapters.flatMap((chapter) =>
         <div class="mountain-nav-art" aria-hidden="true">
           <span class="mountain-face"></span>
           <span class="mountain-snow"></span>
+          <span class="mountain-ridge ridge-one"></span>
+          <span class="mountain-ridge ridge-two"></span>
           <span class="mountain-path path-one"></span>
           <span class="mountain-path path-two"></span>
           <span class="mountain-path path-three"></span>
+          <span class="mountain-summit"></span>
         </div>
         <p>The climb</p>
         <ol>
@@ -98,6 +107,7 @@ const beatData = chapters.flatMap((chapter) =>
 
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
+                const motion = motionByBeat[beat.number - 1] ?? "drift";
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -107,14 +117,19 @@ const beatData = chapters.flatMap((chapter) =>
                     data-end={beat.end}
                   >
                     <figure class="beat-visual">
-                      <img
-                        src={`/images/wind-story/beats/beat-${String(beat.number).padStart(2, "0")}.jpg`}
-                        alt={`Drawing ${beat.number}: ${beat.prompt}`}
-                        loading={beat.number === 1 ? "eager" : "lazy"}
-                      />
+                      <div class="beat-art-frame" data-cinematic-art data-motion={motion}>
+                        <img
+                          src={`/images/wind-story/beats/beat-${String(beat.number).padStart(2, "0")}.jpg`}
+                          alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                          loading={beat.number === 1 ? "eager" : "lazy"}
+                        />
+                        <div class={`cinematic-layer motion-${motion}`} aria-hidden="true">
+                          {[1, 2, 3, 4, 5].map((mark) => <i class={`motion-mark mark-${mark}`}></i>)}
+                        </div>
+                      </div>
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span>pale ink study</span>
+                        <span>rose-gray ink study</span>
                       </figcaption>
                     </figure>
 
@@ -192,6 +207,7 @@ const beatData = chapters.flatMap((chapter) =>
     const chapterElements = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
     const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-chapter-link]")];
     const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
+    const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
     let activeChapter = 0;
     let activeBeat = -1;
     let followNarration = true;
@@ -199,6 +215,7 @@ const beatData = chapters.flatMap((chapter) =>
     let suppressScrollSeekUntil = 0;
     let lastUserScrollIntent = 0;
     let scrollSeekFrame = 0;
+    let cinematicFrame = 0;
 
     const format = (seconds: number) => {
       const minutes = Math.floor(seconds / 60);
@@ -374,11 +391,32 @@ const beatData = chapters.flatMap((chapter) =>
       const ratio = available > 0 ? window.scrollY / available : 0;
       readingProgress.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
     };
+
+    const updateCinematicMotion = () => {
+      cinematicFrame = 0;
+      cinematicFrames.forEach((frame, index) => {
+        const rect = frame.getBoundingClientRect();
+        if (rect.bottom < -innerHeight * 0.35 || rect.top > innerHeight * 1.35) return;
+        const progress = Math.min(1, Math.max(0, (innerHeight - rect.top) / (innerHeight + rect.height)));
+        const centered = progress - 0.5;
+        const direction = index % 2 === 0 ? 1 : -1;
+        frame.style.setProperty("--motion-x", `${centered * direction * 24}px`);
+        frame.style.setProperty("--motion-y", `${centered * -15}px`);
+        frame.style.setProperty("--image-shift", `${centered * -9}px`);
+      });
+    };
+
+    const requestCinematicMotion = () => {
+      if (!cinematicFrame) cinematicFrame = requestAnimationFrame(updateCinematicMotion);
+    };
     addEventListener("scroll", () => {
       updateReadingProgress();
       if (!scrollSeekFrame) scrollSeekFrame = requestAnimationFrame(syncAudioFromViewport);
+      requestCinematicMotion();
     }, { passive: true });
+    addEventListener("resize", requestCinematicMotion, { passive: true });
     updateReadingProgress();
+    updateCinematicMotion();
 
     addEventListener("pointermove", (event) => {
       document.documentElement.style.setProperty("--pointer-x", `${event.clientX / innerWidth - 0.5}`);
