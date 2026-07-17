@@ -1,0 +1,62 @@
+---
+import Base from "../layouts/Base.astro";
+import readingMarkdown from "../content/further-reading-for-grown-ups.md?raw";
+import { inlineMarkdown, parseReadingMarkdown } from "../lib/story";
+
+const reading = parseReadingMarkdown(readingMarkdown);
+---
+
+<Base
+  title="Further Reading for Grown-ups — Scale of Us"
+  description="The old ideas and thinkers keeping company with The Boy Who Tried to Catch the Wind."
+  bodyClass="grown-ups-page"
+>
+  <header class="grown-nav">
+    <a class="wordmark dark" href="/" aria-label="Scale of Us, back to the story">
+      <span>Scale</span><i>of</i><span>Us</span>
+    </a>
+    <a class="back-to-story" href="/">← Back to the story</a>
+  </header>
+
+  <main class="grown-main">
+    <section class="grown-hero" aria-labelledby="grown-title">
+      <p class="eyebrow">After the wind</p>
+      <h1 id="grown-title">Further Reading<br />for Grown-ups</h1>
+      {reading.intro.map((paragraph) => <p>{paragraph}</p>)}
+      <div class="not-a-key">
+        <span aria-hidden="true">↳</span>
+        <p>None of this is a key to the story. A fable should stay bigger than its sources.</p>
+      </div>
+    </section>
+
+    <div class="grown-layout">
+      <aside class="reading-rail" aria-label="Further reading chapters">
+        <p>Nine lineages</p>
+        <ol>
+          {reading.chapters.map((chapter) => (
+            <li><a href={`#${chapter.id}`}><span>{chapter.numeral}</span>{chapter.title}</a></li>
+          ))}
+        </ol>
+      </aside>
+
+      <div class="reading-notes">
+        {reading.chapters.map((chapter) => (
+          <article id={chapter.id} class="reading-note">
+            <header>
+              <p>Chapter {chapter.numeral}</p>
+              <h2>{chapter.title}</h2>
+            </header>
+            <div class="note-body">
+              {chapter.paragraphs.map((paragraph) => <p><Fragment set:html={inlineMarkdown(paragraph)} /></p>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <footer class="grown-footer">
+      <p>The path is still the path. The notes are only what we carried onto it.</p>
+      <a class="primary-action" href="/">Read the story again <span aria-hidden="true">↺</span></a>
+    </footer>
+  </main>
+</Base>

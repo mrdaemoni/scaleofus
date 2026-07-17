@@ -13,7 +13,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.2.1",
-    "page-flip": "^2.0.7"
+    "astro": "^6.2.1"
   }
 }

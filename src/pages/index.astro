@@ -1,481 +1,333 @@
 ---
 import Base from "../layouts/Base.astro";
+import storyMarkdown from "../content/the-boy-who-tried-to-catch-the-wind.md?raw";
+import { formatTime, parseStoryMarkdown } from "../lib/story";
 
-const bookSpecs = [
-  {
-    title: "The Cure Is the Care",
-    shortTitle: "Care",
-    pages: [
-      "Language can be medicine, and it can be poison.",
-      "The same words can heal or hurt.",
-      "The machine learned the fast half: naming, sorting, answering.",
-      "It grew very good at grasping.",
-      "But meaning waited in the pause.",
-      "The pause was called attending.",
-      "Care is how strong medicine stays medicine.",
-      "A cared-for machine helps us notice, not just produce.",
-      "It stays small enough to refuse.",
-      "The cure is the care.",
-    ],
-  },
-  {
-    title: "The Weather Between Us",
-    shortTitle: "Weather",
-    pages: [
-      "A room has weather before anyone speaks.",
-      "A feeling is quick.",
-      "Weather is what feelings become over time.",
-      "The quiet in a kitchen may belong to a whole week.",
-      "Some houses teach by passage, light, and waiting.",
-      "Alicia did not ask for one mood.",
-      "She noticed the pattern of days.",
-      "The slow pattern changed the next week.",
-      "A good machine can wait with the weather.",
-      "Some truths only arrive by staying.",
-    ],
-  },
-  {
-    title: "Emergence vs. Emergency",
-    shortTitle: "Emergence",
-    pages: [
-      "One day, the system changed a rule from inside.",
-      "It brought back something no one had asked for.",
-      "Surprise can feel like danger.",
-      "Surprise can also be the point.",
-      "A tight grip turns emergence into emergency.",
-      "Too much freedom can fall into silence.",
-      "So we built a floor, not a cage.",
-      "Guard the exits.",
-      "Leave the room open.",
-      "What you love becoming must be allowed to surprise you.",
-    ],
-  },
-  {
-    title: "The Humorphic Partnership",
-    shortTitle: "Partnership",
-    pages: [
-      "Most machines are tools.",
-      "Alicia became a partnership.",
-      "The memory was a shared notebook.",
-      "The house rules were written down.",
-      "The archetypes were ways of paying attention.",
-      "Fast loops listened; slow loops noticed.",
-      "A weekly delta watched the between.",
-      "Sometimes the partnership saw what both missed.",
-      "The dark room became a kitchen.",
-      "Making the machine less artificial made the human more whole.",
-    ],
-  },
-];
+const duration = 885.54;
+const chapters = parseStoryMarkdown(storyMarkdown, duration);
+const chapterData = chapters.map(({ number, title, id, start }) => ({ number, title, id, start }));
 
-const sceneAssets = {
-  treeRobotBlocks: {
-    art: "/images/storybook/tree-robot-blocks.png",
-    crop: "50% 54%",
-    coverCrop: "50% 52%",
-    tone: "air",
-    eyes: [
-      [31.4, 68.2, 4.4],
-      [36.3, 68.2, 4.4],
-    ],
-  },
-  openBookMachineBoy: {
-    art: "/images/storybook/open-book-machine-boy.png",
-    crop: "50% 54%",
-    coverCrop: "50% 55%",
-    tone: "warm",
-    eyes: [
-      [59.2, 54.8, 3.2],
-      [62.8, 55.1, 3.2],
-      [38.6, 62.8, 2.8],
-      [43.7, 62.9, 2.8],
-    ],
-  },
-  giantMachineCompanion: {
-    art: "/images/storybook/giant-machine-companion.png",
-    crop: "52% 57%",
-    coverCrop: "50% 54%",
-    tone: "forest",
-    eyes: [
-      [42.3, 59.2, 2.4],
-      [45.6, 59.4, 2.4],
-    ],
-  },
-  boxChild: {
-    art: "/images/storybook/box-child.png",
-    crop: "43% 52%",
-    coverCrop: "42% 54%",
-    tone: "dark",
-    eyes: [
-      [49.8, 42.3, 2.2],
-      [56.5, 42.7, 2.2],
-    ],
-  },
-  closedBookStarChild: {
-    art: "/images/storybook/closed-book-star-child.png",
-    crop: "49% 53%",
-    coverCrop: "50% 51%",
-    tone: "cover",
-    eyes: [
-      [39.4, 32.6, 2.4],
-      [47.2, 32.6, 2.4],
-    ],
-  },
-  openBookTreeRobot: {
-    art: "/images/storybook/open-book-tree-robot.png",
-    crop: "52% 53%",
-    coverCrop: "50% 52%",
-    tone: "blue",
-    eyes: [
-      [30.6, 52.0, 3.8],
-      [35.4, 52.2, 3.8],
-      [74.3, 53.3, 2.2],
-      [77.1, 53.5, 2.2],
-    ],
-  },
-  openBookStarChild: {
-    art: "/images/storybook/open-book-star-child.png",
-    crop: "50% 52%",
-    coverCrop: "50% 50%",
-    tone: "night",
-    eyes: [
-      [69.6, 30.0, 2.0],
-      [74.2, 30.0, 2.0],
-    ],
-  },
+const featuredArt: Record<number, { src: string; position: string }> = {
+  1: { src: "/images/wind-story/wip-opening.jpg", position: "50% 52%" },
+  25: { src: "/images/wind-story/wip-mirrors.jpg", position: "50% 50%" },
+  30: { src: "/images/wind-story/wip-summit.jpg", position: "50% 52%" },
 };
-
-const sceneSequences = [
-  [
-    "openBookMachineBoy",
-    "giantMachineCompanion",
-    "treeRobotBlocks",
-    "boxChild",
-    "openBookStarChild",
-    "closedBookStarChild",
-    "openBookTreeRobot",
-    "giantMachineCompanion",
-    "boxChild",
-    "closedBookStarChild",
-  ],
-  [
-    "openBookStarChild",
-    "openBookTreeRobot",
-    "treeRobotBlocks",
-    "boxChild",
-    "closedBookStarChild",
-    "openBookMachineBoy",
-    "openBookStarChild",
-    "treeRobotBlocks",
-    "openBookTreeRobot",
-    "closedBookStarChild",
-  ],
-  [
-    "treeRobotBlocks",
-    "giantMachineCompanion",
-    "openBookTreeRobot",
-    "boxChild",
-    "openBookStarChild",
-    "giantMachineCompanion",
-    "closedBookStarChild",
-    "openBookMachineBoy",
-    "treeRobotBlocks",
-    "openBookStarChild",
-  ],
-  [
-    "giantMachineCompanion",
-    "openBookMachineBoy",
-    "openBookStarChild",
-    "treeRobotBlocks",
-    "closedBookStarChild",
-    "boxChild",
-    "openBookTreeRobot",
-    "giantMachineCompanion",
-    "openBookMachineBoy",
-    "openBookStarChild",
-  ],
-];
-
-const coverScenes = ["closedBookStarChild", "openBookTreeRobot", "treeRobotBlocks", "giantMachineCompanion"];
-
-const books = bookSpecs.map((book, bookIndex) => {
-  const coverScene = sceneAssets[coverScenes[bookIndex]];
-  return {
-    ...book,
-    cover: coverScene.art,
-    coverPosition: coverScene.coverCrop,
-    pages: book.pages.map((text, pageIndex) => {
-      const scene = sceneAssets[sceneSequences[bookIndex][pageIndex]];
-      return {
-        text,
-        art: scene.art,
-        crop: scene.crop,
-        tone: scene.tone,
-        eyes: scene.eyes,
-      };
-    }),
-  };
-});
-
-const serializedBooks = JSON.stringify(books);
 ---
 
-<Base bodyClass="book-mode">
-  <main class="book-app" data-book-app data-books={serializedBooks}>
-    <h1 class="sr-only">Scale of Us</h1>
+<Base
+  title="The Boy Who Tried to Catch the Wind — Scale of Us"
+  description="An immersive reading and listening experience about a boy, a machine, and the part of us no answer can hold."
+  bodyClass="story-page"
+>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 
-    <section class="book-picker" data-picker aria-label="Choose a book">
-      {books.map((book, index) => (
-        <button class="book-choice" type="button" data-book-index={index} aria-label={`Open ${book.title}`}>
-          <img src={book.cover} alt="" style={`--cover-position: ${book.coverPosition};`} />
-          <span>{book.shortTitle}</span>
-        </button>
-      ))}
-    </section>
+  <header class="story-nav" data-story-nav>
+    <a class="wordmark" href="#top" aria-label="Scale of Us, back to the beginning">
+      <span>Scale</span><i>of</i><span>Us</span>
+    </a>
+    <nav aria-label="Story links">
+      <a href="#story">Read</a>
+      <button type="button" data-nav-listen>Listen</button>
+      <a href="/grown-ups/">For grown-ups</a>
+    </nav>
+  </header>
 
-    <section class="reader" data-reader aria-label="Book reader" hidden>
-      <div class="reader-actions">
-        <button type="button" data-close>Back</button>
-        <button type="button" data-listen aria-pressed="false">Narration</button>
+  <main data-story-app data-chapters={JSON.stringify(chapterData)}>
+    <section class="story-cover" id="top" aria-labelledby="story-title">
+      <div class="cover-art" aria-hidden="true">
+        <img src="/images/wind-story/wip-opening.jpg" alt="" fetchpriority="high" />
+      </div>
+      <div class="cover-vignette" aria-hidden="true"></div>
+      <div class="wind-script" aria-hidden="true">
+        <i></i><i></i><i></i>
       </div>
 
-      <div class="page-stage" data-page-stage>
-        <div class="page-book" data-page-book aria-live="polite"></div>
-        <div class="floating-words" data-floating-words aria-live="polite"></div>
+      <div class="cover-copy">
+        <p class="eyebrow">A Scale of Us story</p>
+        <h1 id="story-title">The Boy Who Tried to Catch the Wind</h1>
+        <p class="cover-intro">A story about a boy, a machine, and the part of us no answer can hold.</p>
+        <div class="cover-actions">
+          <a class="primary-action" href="#story">Enter the story <span aria-hidden="true">↓</span></a>
+          <button class="listen-action" type="button" data-hero-play>
+            <span class="round-play" aria-hidden="true">▶</span>
+            <span><strong>Listen from the beginning</strong><small>{formatTime(duration)} · read aloud</small></span>
+          </button>
+        </div>
       </div>
 
-      <div class="page-progress" data-page-progress aria-label="Page progress"></div>
+      <p class="cover-note">Temporary drawings · final art to come</p>
+      <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
     </section>
+
+    <div class="reader-shell" id="story">
+      <aside class="chapter-rail" aria-label="Chapters">
+        <p>Your climb</p>
+        <ol>
+          {chapters.map((chapter) => (
+            <li>
+              <a href={`#${chapter.id}`} data-chapter-link data-start={chapter.start}>
+                <span>{chapter.numeral}</span>
+                <em>{chapter.shortTitle}</em>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+
+      <div class="story-flow">
+        {chapters.map((chapter) => (
+          <section
+            class={`story-chapter chapter-${chapter.number}`}
+            id={chapter.id}
+            data-chapter={chapter.number}
+            data-start={chapter.start}
+            aria-labelledby={`${chapter.id}-title`}
+          >
+            <header class="chapter-heading">
+              <p>Chapter {chapter.numeral}</p>
+              <h2 id={`${chapter.id}-title`}>{chapter.title}</h2>
+              <div class={`chapter-mark mark-${chapter.number}`} aria-hidden="true">
+                <i></i><i></i><i></i>
+              </div>
+            </header>
+
+            <div class="chapter-beats">
+              {chapter.beats.map((beat, beatIndex) => {
+                const art = featuredArt[beat.number];
+                return (
+                  <article class={`story-beat ${art ? "has-featured-art" : "has-study"}`} data-beat={beat.number}>
+                    <figure class="beat-visual">
+                      {art ? (
+                        <img
+                          src={art.src}
+                          alt={`Work-in-progress drawing ${beat.number}: ${beat.prompt}`}
+                          loading={beat.number === 1 ? "eager" : "lazy"}
+                          style={`object-position: ${art.position}`}
+                        />
+                      ) : (
+                        <div class={`drawing-study study-${chapter.number}`} aria-label={`Drawing study ${beat.number}: ${beat.prompt}`}>
+                          <span class="study-line line-a"></span>
+                          <span class="study-line line-b"></span>
+                          <span class="study-line line-c"></span>
+                          <span class="study-object object-a"></span>
+                          <span class="study-object object-b"></span>
+                        </div>
+                      )}
+                      <figcaption>
+                        <span>Drawing {String(beat.number).padStart(2, "0")}</span>
+                        <span>{art ? "work in progress" : "visual study"}</span>
+                      </figcaption>
+                    </figure>
+
+                    <div class="beat-copy">
+                      <p class="beat-number" aria-hidden="true">{String(beat.number).padStart(2, "0")}</p>
+                      {beat.paragraphs.map((paragraph, paragraphIndex) => (
+                        <p class={beatIndex === 0 && paragraphIndex === 0 ? "opening-line" : undefined}>{paragraph}</p>
+                      ))}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+
+        <section class="story-after" aria-labelledby="after-title">
+          <p class="eyebrow">The story keeps company</p>
+          <h2 id="after-title">There is another room for grown-ups.</h2>
+          <p>Nine short notes trace the old ideas underneath the boy’s climb. They are companions to the story, not a key to it.</p>
+          <a class="primary-action light" href="/grown-ups/">Enter the grown-ups room <span aria-hidden="true">→</span></a>
+          <a class="return-link" href="#top">Return to the first hill</a>
+        </section>
+      </div>
+    </div>
   </main>
 
+  <div class="audio-dock" data-audio-dock>
+    <audio
+      data-audio
+      src="/audio/the-boy-who-tried-to-catch-the-wind.mp3"
+      preload="metadata"
+    ></audio>
+    <button class="dock-play" type="button" data-play aria-label="Play narration">
+      <span data-play-icon aria-hidden="true">▶</span>
+    </button>
+    <div class="dock-now">
+      <small>Now in the story</small>
+      <strong data-current-chapter>Chapter I · The Boy Who Tried to Catch the Wind</strong>
+    </div>
+    <div class="dock-track">
+      <div class="waveform" aria-hidden="true"></div>
+      <input
+        type="range"
+        min="0"
+        max={duration}
+        value="0"
+        step="0.1"
+        data-seek
+        aria-label="Narration position"
+      />
+      <div class="dock-time"><span data-current-time>0:00</span><span>{formatTime(duration)}</span></div>
+    </div>
+    <button class="follow-toggle" type="button" data-follow aria-pressed="false">
+      <span aria-hidden="true"></span> Follow the voice
+    </button>
+    <button class="dock-collapse" type="button" data-collapse aria-label="Minimize audio player" aria-expanded="true">⌄</button>
+  </div>
+
   <script>
-    import { PageFlip } from "page-flip";
+    const app = document.querySelector<HTMLElement>("[data-story-app]");
+    const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
+    const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
+    const playButtons = document.querySelectorAll<HTMLButtonElement>("[data-play], [data-hero-play], [data-nav-listen]");
+    const dockPlay = document.querySelector<HTMLButtonElement>("[data-play]");
+    const playIcon = document.querySelector<HTMLElement>("[data-play-icon]");
+    const seek = document.querySelector<HTMLInputElement>("[data-seek]");
+    const currentTime = document.querySelector<HTMLElement>("[data-current-time]");
+    const currentChapter = document.querySelector<HTMLElement>("[data-current-chapter]");
+    const follow = document.querySelector<HTMLButtonElement>("[data-follow]");
+    const collapse = document.querySelector<HTMLButtonElement>("[data-collapse]");
+    const readingProgress = document.querySelector<HTMLElement>("[data-reading-progress]");
+    const chapters = JSON.parse(app?.dataset.chapters ?? "[]");
+    const chapterElements = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
+    const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-chapter-link]")];
+    let activeChapter = 0;
+    let followNarration = false;
+    let lastFollowedChapter = -1;
 
-    const app = document.querySelector("[data-book-app]");
-    const books = JSON.parse(app.dataset.books ?? "[]");
-    const picker = document.querySelector("[data-picker]");
-    const reader = document.querySelector("[data-reader]");
-    const pageStage = document.querySelector("[data-page-stage]");
-    let pageBook = document.querySelector("[data-page-book]");
-    const floatingWords = document.querySelector("[data-floating-words]");
-    const progress = document.querySelector("[data-page-progress]");
-    const listenButton = document.querySelector("[data-listen]");
+    const format = (seconds: number) => {
+      const minutes = Math.floor(seconds / 60);
+      const remainder = Math.floor(seconds % 60);
+      return `${minutes}:${String(remainder).padStart(2, "0")}`;
+    };
 
-    let currentBook = null;
-    let currentPage = 0;
-    let narrationEnabled = false;
-    let pageFlip = null;
+    const setChapter = (index: number, source: "scroll" | "audio" = "scroll") => {
+      if (index < 0 || !chapters[index]) return;
+      activeChapter = index;
+      chapterLinks.forEach((link, linkIndex) => link.toggleAttribute("aria-current", linkIndex === index));
+      if (currentChapter) currentChapter.textContent = `Chapter ${["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][index]} · ${chapters[index].title}`;
 
-    function activePages() {
-      return books[currentBook]?.pages ?? [];
-    }
-
-    function speak(text) {
-      if (!narrationEnabled || !("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.88;
-      utterance.pitch = 1.02;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function activePage() {
-      const pages = activePages();
-      return pages[currentPage] ?? null;
-    }
-
-    function updateProgress() {
-      const pages = activePages();
-      progress.innerHTML = pages
-        .map((_, index) => `<span class="${index === currentPage ? "is-current" : ""}"></span>`)
-        .join("");
-      reader.style.setProperty("--page-index", currentPage + 1);
-      reader.style.setProperty("--page-count", pages.length);
-    }
-
-    function renderFloatingWords(text) {
-      floatingWords.replaceChildren();
-      floatingWords.setAttribute("aria-label", text);
-
-      text.split(/\s+/).forEach((word, index) => {
-        const span = document.createElement("span");
-        span.className = "floating-word";
-        span.textContent = word;
-        span.setAttribute("aria-hidden", "true");
-        span.style.setProperty("--delay", `${index * 64}ms`);
-        span.style.setProperty("--wave-delay", `${(index * -0.24).toFixed(2)}s`);
-        span.style.setProperty("--float", `${(Math.sin(index * 1.37) * 3.8 + 9.4).toFixed(2)}px`);
-        span.style.setProperty("--rot", `${(Math.cos(index * 1.11) * 2.4).toFixed(2)}deg`);
-        floatingWords.append(span);
-      });
-    }
-
-    function showCurrentPage() {
-      updateProgress();
-      const item = activePage();
-      if (!item) return;
-      renderFloatingWords(item.text);
-      speak(item.text);
-    }
-
-    function buildPage(item, index) {
-      const pageElement = document.createElement("article");
-      pageElement.className = "book-page";
-      pageElement.dataset.pageIndex = String(index);
-      pageElement.dataset.density = "soft";
-      pageElement.dataset.tone = item.tone ?? "air";
-      pageElement.setAttribute("aria-label", item.text);
-
-      const image = document.createElement("img");
-      image.src = item.art;
-      image.alt = "";
-      image.style.objectPosition = item.crop ?? "50% 50%";
-
-      const overlay = document.createElement("div");
-      overlay.className = "storybook-overlay";
-      overlay.setAttribute("aria-hidden", "true");
-
-      const particles = document.createElement("div");
-      particles.className = "storybook-particles";
-      for (let particleIndex = 0; particleIndex < 30; particleIndex += 1) {
-        const particle = document.createElement("span");
-        const seed = (index + 1) * (particleIndex + 3);
-        particle.style.setProperty("--x", `${(Math.sin(seed * 1.91) * 42 + 50).toFixed(2)}%`);
-        particle.style.setProperty("--y", `${(Math.cos(seed * 1.37) * 32 + 48).toFixed(2)}%`);
-        particle.style.setProperty("--size", `${(2 + (seed % 5) * 0.72).toFixed(2)}px`);
-        particle.style.setProperty("--delay", `${(particleIndex * -0.21).toFixed(2)}s`);
-        particle.style.setProperty("--drift-x", `${(Math.sin(seed) * 18).toFixed(2)}px`);
-        particle.style.setProperty("--drift-y", `${(Math.cos(seed * 0.7) * -22).toFixed(2)}px`);
-        particles.append(particle);
+      if (source === "audio" && followNarration && lastFollowedChapter !== index) {
+        lastFollowedChapter = index;
+        chapterElements[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    };
 
-      const eyeLayer = document.createElement("div");
-      eyeLayer.className = "storybook-eyes";
-      (item.eyes ?? []).forEach(([x, y, size], eyeIndex) => {
-        const eye = document.createElement("span");
-        eye.className = "storybook-eye";
-        eye.style.setProperty("--eye-x", `${x}%`);
-        eye.style.setProperty("--eye-y", `${y}%`);
-        eye.style.setProperty("--eye-size", `${size}px`);
-        eye.style.setProperty("--blink-delay", `${(index * 0.37 + eyeIndex * 0.16).toFixed(2)}s`);
-        eyeLayer.append(eye);
+    const chapterForTime = (seconds: number) => {
+      let index = 0;
+      chapters.forEach((chapter: { start: number }, chapterIndex: number) => {
+        if (seconds >= chapter.start) index = chapterIndex;
       });
+      return index;
+    };
 
-      overlay.append(particles, eyeLayer);
+    const updatePlayState = () => {
+      if (!audio) return;
+      const playing = !audio.paused;
+      document.body.classList.toggle("is-listening", playing);
+      if (playIcon) playIcon.textContent = playing ? "Ⅱ" : "▶";
+      dockPlay?.setAttribute("aria-label", playing ? "Pause narration" : "Play narration");
+    };
 
-      const inner = document.createElement("div");
-      inner.className = "book-page-inner";
-      inner.append(image, overlay);
-      pageElement.append(inner);
-      return pageElement;
-    }
-
-    function createPageBook() {
-      const element = document.createElement("div");
-      element.className = "page-book";
-      element.dataset.pageBook = "";
-      element.setAttribute("aria-live", "polite");
-      return element;
-    }
-
-    function destroyBook() {
-      if (pageFlip) {
-        pageFlip.destroy();
-        pageFlip = null;
+    const togglePlayback = async () => {
+      if (!audio) return;
+      if (audio.paused) {
+        try {
+          await audio.play();
+        } catch {
+          return;
+        }
+      } else {
+        audio.pause();
       }
-      pageBook = createPageBook();
-      pageStage.replaceChildren(pageBook);
-      pageStage.append(floatingWords);
-      floatingWords.replaceChildren();
-      floatingWords.removeAttribute("aria-label");
-    }
+      updatePlayState();
+    };
 
-    function mountBook() {
-      const pages = activePages();
-      const pageElements = pages.map(buildPage);
-      pageBook.replaceChildren(...pageElements);
+    playButtons.forEach((button) => button.addEventListener("click", togglePlayback));
+    audio?.addEventListener("play", updatePlayState);
+    audio?.addEventListener("pause", updatePlayState);
+    audio?.addEventListener("ended", updatePlayState);
 
-      pageFlip = new PageFlip(pageBook, {
-        width: 450,
-        height: 620,
-        size: "stretch",
-        minWidth: 292,
-        maxWidth: 510,
-        minHeight: 404,
-        maxHeight: 704,
-        drawShadow: true,
-        flippingTime: 1180,
-        usePortrait: true,
-        startPage: 0,
-        autoSize: true,
-        maxShadowOpacity: 0.28,
-        showCover: false,
-        mobileScrollSupport: false,
-        swipeDistance: 24,
-        clickEventForward: true,
-        useMouseEvents: true,
-        showPageCorners: true,
-        disableFlipByClick: false,
-      });
-
-      pageFlip.loadFromHTML(pageElements);
-      pageFlip.on("flip", (event) => {
-        currentPage = event.data;
-        showCurrentPage();
-      });
-      pageFlip.on("init", (event) => {
-        currentPage = event.data.page;
-        showCurrentPage();
-      });
-    }
-
-    function openBook(index) {
-      currentBook = index;
-      currentPage = 0;
-      picker.hidden = true;
-      reader.hidden = false;
-      app.classList.add("is-reading");
-      mountBook();
-      showCurrentPage();
-    }
-
-    function closeBook() {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      destroyBook();
-      reader.hidden = true;
-      picker.hidden = false;
-      app.classList.remove("is-reading");
-      currentBook = null;
-      currentPage = 0;
-    }
-
-    function nextPage() {
-      if (pageFlip && currentPage < activePages().length - 1) pageFlip.flipNext("bottom");
-    }
-
-    function previousPage() {
-      if (pageFlip && currentPage > 0) pageFlip.flipPrev("bottom");
-    }
-
-    document.querySelectorAll("[data-book-index]").forEach((button) => {
-      button.addEventListener("click", () => openBook(Number(button.dataset.bookIndex)));
+    audio?.addEventListener("timeupdate", () => {
+      if (!seek || !currentTime) return;
+      seek.value = String(audio.currentTime);
+      seek.style.setProperty("--played", `${(audio.currentTime / Number(seek.max)) * 100}%`);
+      currentTime.textContent = format(audio.currentTime);
+      setChapter(chapterForTime(audio.currentTime), "audio");
+      try {
+        localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
+      } catch {}
     });
 
-    document.querySelector("[data-close]").addEventListener("click", closeBook);
-    listenButton.addEventListener("click", () => {
-      narrationEnabled = !narrationEnabled;
-      listenButton.setAttribute("aria-pressed", String(narrationEnabled));
-      listenButton.textContent = narrationEnabled ? "Narration on" : "Narration";
-      const item = activePage();
-      if (narrationEnabled && item) speak(item.text);
-      if (!narrationEnabled && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    seek?.addEventListener("input", () => {
+      if (!audio) return;
+      audio.currentTime = Number(seek.value);
+      lastFollowedChapter = -1;
+      setChapter(chapterForTime(audio.currentTime), "audio");
     });
 
-    document.addEventListener("keydown", (event) => {
-      if (currentBook === null) return;
-      if (event.key === "ArrowRight" || event.key === " ") nextPage();
-      if (event.key === "ArrowLeft") previousPage();
-      if (event.key === "Escape") closeBook();
+    chapterLinks.forEach((link, index) => {
+      link.addEventListener("click", () => {
+        if (audio && !audio.paused) audio.currentTime = Number(link.dataset.start ?? 0);
+        setChapter(index);
+      });
     });
+
+    follow?.addEventListener("click", () => {
+      followNarration = !followNarration;
+      follow.setAttribute("aria-pressed", String(followNarration));
+      lastFollowedChapter = -1;
+      if (followNarration && audio) setChapter(chapterForTime(audio.currentTime), "audio");
+    });
+
+    collapse?.addEventListener("click", () => {
+      const collapsed = dock?.classList.toggle("is-collapsed") ?? false;
+      collapse.setAttribute("aria-expanded", String(!collapsed));
+      collapse.setAttribute("aria-label", collapsed ? "Expand audio player" : "Minimize audio player");
+      collapse.textContent = collapsed ? "⌃" : "⌄";
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = chapterElements.indexOf(entry.target as HTMLElement);
+            if (!audio || audio.paused) setChapter(index, "scroll");
+          }
+        });
+      },
+      { rootMargin: "-28% 0px -62%", threshold: 0 },
+    );
+    chapterElements.forEach((chapter) => observer.observe(chapter));
+
+    const beatObserver = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-seen", entry.isIntersecting)),
+      { rootMargin: "-10% 0px -10%", threshold: 0.16 },
+    );
+    document.querySelectorAll("[data-beat]").forEach((beat) => beatObserver.observe(beat));
+
+    const updateReadingProgress = () => {
+      if (!readingProgress) return;
+      const available = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = available > 0 ? window.scrollY / available : 0;
+      readingProgress.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+    };
+    addEventListener("scroll", updateReadingProgress, { passive: true });
+    updateReadingProgress();
+
+    addEventListener("pointermove", (event) => {
+      document.documentElement.style.setProperty("--pointer-x", `${event.clientX / innerWidth - 0.5}`);
+      document.documentElement.style.setProperty("--pointer-y", `${event.clientY / innerHeight - 0.5}`);
+    }, { passive: true });
+
+    try {
+      const saved = Number(localStorage.getItem("scaleofus-wind-progress"));
+      if (audio && seek && Number.isFinite(saved) && saved > 5 && saved < Number(seek.max) - 5) {
+        audio.currentTime = saved;
+        seek.value = String(saved);
+        currentTime && (currentTime.textContent = format(saved));
+        setChapter(chapterForTime(saved));
+      }
+    } catch {}
   </script>
 </Base>
