@@ -8,7 +8,8 @@ The current experience is an immersive reading and listening edition of
 *The Boy Who Tried to Catch the Wind*. The nine-chapter climb holds all 38
 rose-gray ink drawing studies with scroll-responsive cinematic layers, the
 original 14:45 narration, two-way story/audio progress, and a separate grown-ups
-room for the story's philosophical lineages.
+room for the story's philosophical lineages. A shell-pink reading ground and
+clouded mountain rail carry the visual system across the full site.
 
 Read `scaleofus-context.md` first when opening this as a fresh Codex sidebar project.
 

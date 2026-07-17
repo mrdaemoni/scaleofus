@@ -1,22 +1,24 @@
 :root {
   color-scheme: light;
-  --night: #4b4749;
-  --night-soft: #625c5f;
-  --ink: #55595a;
-  --paper: #f1e5e2;
-  --paper-deep: #dfd1d0;
-  --mist: #cbc4c4;
+  --night: #58494e;
+  --night-soft: #715e64;
+  --ink: #5b5356;
+  --paper: #f3dfe1;
+  --paper-deep: #e2c9cd;
+  --mist: #d9c4c7;
   --sage: #9ea09d;
-  --clay: #aa9698;
-  --ember: #b99fa2;
-  --gold: #c7a9ad;
-  --blush: #d8b9bd;
-  --blush-deep: #bd989f;
-  --line: rgba(83, 90, 89, 0.17);
+  --clay: #ad8e95;
+  --ember: #bc969e;
+  --gold: #c69ba4;
+  --blush: #d8acb3;
+  --blush-deep: #b98792;
+  --line: rgba(104, 82, 89, 0.18);
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --pointer-x: 0;
   --pointer-y: 0;
+  --nav-cloud-lift: 0px;
+  --nav-cloud-drift: 0px;
 }
 
 * {
@@ -171,7 +173,7 @@ img {
   align-items: center;
   overflow: hidden;
   isolation: isolate;
-  background: #f1e3df;
+  background: #f2dcdf;
 }
 
 .cover-art,
@@ -197,9 +199,9 @@ img {
 .cover-vignette {
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(241, 227, 223, 0.97) 0%, rgba(241, 227, 223, 0.88) 27%, rgba(216, 185, 189, 0.1) 63%, transparent 82%),
-    linear-gradient(0deg, rgba(225, 199, 200, 0.5), transparent 34%),
-    rgba(216, 185, 189, 0.08);
+    linear-gradient(90deg, rgba(243, 223, 225, 0.97) 0%, rgba(243, 223, 225, 0.89) 27%, rgba(216, 172, 179, 0.15) 63%, transparent 82%),
+    linear-gradient(0deg, rgba(226, 193, 198, 0.54), transparent 34%),
+    rgba(216, 172, 179, 0.12);
 }
 
 .cover-vignette::after {
@@ -422,7 +424,9 @@ img {
   overflow: hidden;
   padding: 86px 18px 116px;
   border-right: 1px solid var(--line);
-  background: rgba(239, 235, 225, 0.92);
+  background:
+    repeating-linear-gradient(101deg, rgba(126, 98, 106, 0.022) 0 1px, transparent 1px 9px),
+    rgba(243, 223, 225, 0.94);
   backdrop-filter: blur(16px);
 }
 
@@ -451,12 +455,71 @@ img {
   pointer-events: none;
 }
 
+.nav-cloud {
+  position: absolute;
+  z-index: 0;
+  width: 62px;
+  height: 18px;
+  border-bottom: 1px solid rgba(113, 90, 97, 0.26);
+  border-radius: 50%;
+  background: rgba(249, 232, 234, 0.36);
+  opacity: 0.72;
+  transform: translate3d(var(--nav-cloud-drift), var(--nav-cloud-lift), 0);
+  transition: transform 180ms linear;
+}
+
+.nav-cloud::before,
+.nav-cloud::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  border: 1px solid rgba(113, 90, 97, 0.22);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0;
+  background: rgba(248, 229, 232, 0.46);
+  transform-origin: bottom;
+  animation: cloudBreathe 11s ease-in-out infinite;
+}
+
+.nav-cloud::before {
+  left: 12px;
+  width: 27px;
+  height: 16px;
+}
+
+.nav-cloud::after {
+  right: 8px;
+  width: 22px;
+  height: 11px;
+  animation-delay: -4.5s;
+}
+
+.cloud-one {
+  top: 20%;
+  left: -8px;
+}
+
+.cloud-two {
+  top: 46%;
+  right: -15px;
+  width: 76px;
+  opacity: 0.58;
+}
+
+.cloud-three {
+  top: 69%;
+  left: 13px;
+  width: 51px;
+  opacity: 0.48;
+}
+
 .mountain-face,
 .mountain-snow,
 .mountain-path,
 .mountain-ridge,
 .mountain-summit {
   position: absolute;
+  z-index: 1;
   display: block;
 }
 
@@ -481,6 +544,7 @@ img {
 }
 
 .mountain-path {
+  z-index: 2;
   height: 11%;
   border-top: 1px dashed rgba(85, 89, 90, 0.62);
   border-radius: 50%;
@@ -509,6 +573,7 @@ img {
 }
 
 .mountain-ridge {
+  z-index: 2;
   width: 1px;
   height: 42%;
   background: linear-gradient(180deg, rgba(85, 89, 90, 0.46), transparent);
@@ -530,6 +595,7 @@ img {
 }
 
 .mountain-summit {
+  z-index: 3;
   top: 9.5%;
   left: 51%;
   width: 5px;
@@ -549,7 +615,7 @@ img {
 
 .chapter-rail ol {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
   height: min(70svh, 650px);
 }
@@ -615,7 +681,7 @@ img {
 .chapter-rail a[aria-current]::before {
   height: 7px;
   background: var(--night-soft);
-  box-shadow: 0 0 0 4px rgba(239, 235, 225, 0.62), 0 0 0 5px rgba(83, 90, 89, 0.32);
+  box-shadow: 0 0 0 4px rgba(243, 223, 225, 0.72), 0 0 0 5px rgba(104, 82, 89, 0.32);
 }
 
 .story-flow {
@@ -626,9 +692,10 @@ img {
   --chapter-accent: var(--sage);
   position: relative;
   overflow: clip;
-  padding: 0 clamp(24px, 5vw, 78px) 12vh;
+  padding: 0 clamp(24px, 4vw, 58px) 12vh;
   background:
-    radial-gradient(circle at 78% 13%, color-mix(in srgb, var(--chapter-accent) 17%, transparent), transparent 34%),
+    radial-gradient(circle at 78% 13%, color-mix(in srgb, var(--chapter-accent) 24%, transparent), transparent 36%),
+    linear-gradient(180deg, rgba(255, 243, 243, 0.12), transparent 38%),
     var(--paper);
 }
 
@@ -655,19 +722,19 @@ img {
 
 .chapter-7 {
   background:
-    radial-gradient(circle at 50% 12%, rgba(216, 185, 189, 0.15), transparent 28%),
-    linear-gradient(180deg, #696164, #504c4e 72%, #5d5659);
-  color: var(--paper);
+    radial-gradient(circle at 50% 12%, rgba(246, 226, 228, 0.34), transparent 28%),
+    linear-gradient(180deg, #c8aab1, #d7bdc2 72%, #ead3d6);
+  color: var(--night);
 }
 
 .chapter-7::before {
-  opacity: 0.22;
-  filter: invert(1);
+  opacity: 0.34;
+  filter: none;
 }
 
 .chapter-8 {
   background:
-    linear-gradient(180deg, #ddd2d2 0%, #e8dddd 22%, var(--paper) 100%);
+    linear-gradient(180deg, #e0c9cd 0%, #ead5d8 22%, var(--paper) 100%);
 }
 
 .chapter-heading {
@@ -769,9 +836,9 @@ img {
   position: relative;
   min-height: 92svh;
   display: grid;
-  grid-template-columns: minmax(280px, 1.13fr) minmax(290px, 0.87fr);
+  grid-template-columns: minmax(330px, 1.22fr) minmax(290px, 0.78fr);
   align-items: center;
-  gap: clamp(36px, 6vw, 100px);
+  gap: clamp(32px, 5vw, 78px);
   padding: 8vh 0;
   opacity: 0.24;
   transform: translateY(42px);
@@ -793,6 +860,10 @@ img {
 
 .story-beat:nth-child(even) .beat-visual {
   order: 2;
+}
+
+.story-beat:nth-child(even) {
+  grid-template-columns: minmax(290px, 0.78fr) minmax(330px, 1.22fr);
 }
 
 .beat-visual {
@@ -843,8 +914,8 @@ img {
 
 .chapter-7 .beat-art-frame,
 .chapter-7 .drawing-study {
-  border-color: rgba(241, 229, 226, 0.18);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.34);
+  border-color: rgba(88, 73, 78, 0.18);
+  box-shadow: 0 30px 90px rgba(109, 76, 87, 0.2);
 }
 
 .chapter-7 .beat-art-frame::after {
@@ -1412,8 +1483,8 @@ img {
   justify-items: start;
   padding: clamp(90px, 13vw, 190px) clamp(30px, 9vw, 150px);
   background:
-    radial-gradient(circle at 75% 25%, rgba(199, 169, 173, 0.16), transparent 28%),
-    var(--night);
+    radial-gradient(circle at 75% 25%, rgba(244, 214, 218, 0.2), transparent 28%),
+    #80656d;
   color: var(--paper);
 }
 
@@ -1458,7 +1529,7 @@ img {
   gap: 17px;
   padding: 13px 16px;
   border: 1px solid rgba(238, 230, 210, 0.13);
-  background: rgba(75, 71, 73, 0.95);
+  background: rgba(112, 82, 91, 0.95);
   color: var(--paper);
   box-shadow: 0 18px 65px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(22px);
@@ -1653,7 +1724,7 @@ img {
 
 .grown-ups-page {
   background:
-    radial-gradient(circle at 82% 2%, rgba(190, 151, 158, 0.16), transparent 25%),
+    radial-gradient(circle at 82% 2%, rgba(183, 126, 140, 0.2), transparent 25%),
     var(--paper);
 }
 
@@ -1935,6 +2006,11 @@ img {
   62% { transform: translateX(28px) skewX(-8deg); opacity: 0.12; }
 }
 
+@keyframes cloudBreathe {
+  0%, 100% { transform: scaleX(0.97) translateY(0); opacity: 0.68; }
+  50% { transform: scaleX(1.04) translateY(-2px); opacity: 0.92; }
+}
+
 @keyframes breatheWind {
   0%, 100% { transform: translateX(0) scaleX(1); }
   50% { transform: translateX(-18px) scaleX(1.025); }
@@ -1994,7 +2070,7 @@ img {
   }
 
   .story-chapter {
-    padding-inline: clamp(25px, 6vw, 60px);
+    padding-inline: clamp(20px, 4vw, 44px);
   }
 
   .audio-dock {
@@ -2138,7 +2214,7 @@ img {
   }
 
   .story-chapter {
-    padding: 0 21px 10vh;
+    padding: 0 16px 10vh;
   }
 
   .chapter-heading {
