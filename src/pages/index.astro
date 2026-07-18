@@ -148,10 +148,17 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                         data-cinematic-art
                         data-motion={motion}
                       >
+                        <div class="art-placeholder" aria-hidden="true">
+                          <span>{String(beat.number).padStart(2, "0")}</span>
+                          <div class="placeholder-wind"><i></i><i></i><i></i></div>
+                          <strong>Drawing to come</strong>
+                          <small>{beat.prompt}</small>
+                        </div>
                         <img
                           class={beat.number <= windStoryReader.artwork.originalThrough ? "is-hand-sketch" : undefined}
                           src={artForBeat(beat.number)}
                           alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                          data-story-art
                           loading={beat.number === 1 ? "eager" : "lazy"}
                         />
                         <div class={`cinematic-layer motion-${motion}`} aria-hidden="true">
@@ -160,7 +167,7 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                       </div>
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span>{beat.number <= windStoryReader.artwork.originalThrough ? "original reMarkable sketch" : "rose-gray ink study"}</span>
+                        <span data-art-status>{beat.number <= windStoryReader.artwork.originalThrough ? "original reMarkable sketch" : "rose-gray ink study"}</span>
                       </figcaption>
                     </figure>
 

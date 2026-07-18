@@ -30,6 +30,7 @@ const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-p
 const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
 const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
+const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-story-art]")];
 const readerHome = document.querySelector<HTMLAnchorElement>("[data-reader-home]");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
@@ -377,6 +378,25 @@ const updateCinematicMotion = () => {
 const requestCinematicMotion = () => {
   if (!cinematicFrame) cinematicFrame = requestAnimationFrame(updateCinematicMotion);
 };
+
+storyArtImages.forEach((image) => {
+  const frame = image.closest<HTMLElement>("[data-cinematic-art]");
+  const status = frame?.closest("figure")?.querySelector<HTMLElement>("[data-art-status]");
+  const artworkStatus = status?.textContent ?? "artwork";
+  const showPlaceholder = () => {
+    frame?.classList.add("is-missing-art");
+    image.setAttribute("aria-hidden", "true");
+    if (status) status.textContent = "drawing placeholder";
+  };
+  const showArtwork = () => {
+    frame?.classList.remove("is-missing-art");
+    image.removeAttribute("aria-hidden");
+    if (status) status.textContent = artworkStatus;
+  };
+  image.addEventListener("error", showPlaceholder);
+  image.addEventListener("load", showArtwork);
+  if (image.complete && image.naturalWidth === 0) showPlaceholder();
+});
 
 playButtons.forEach((button) => button.addEventListener("click", togglePlayback));
 audio?.addEventListener("play", () => {
