@@ -100,6 +100,68 @@ const chapterOneV2Ink = await sharp({
   .joinChannel(chapterOneV2Mask)
   .png()
   .toBuffer();
+
+const chapterOneV2Variants = [
+  // The chapter begins with the whole figure, then moves through tactile
+  // details before returning to the complete departure scene in beat eight.
+  { number: 1, crop: { left: 0, top: 0, width: 2700, height: 2000 } },
+  { number: 2, crop: { left: 560, top: 1790, width: 980, height: 1040 } },
+  { number: 3, crop: { left: 90, top: 120, width: 2510, height: 1580 } },
+  { number: 4, crop: { left: 790, top: 1990, width: 700, height: 830 } },
+  { number: 5, crop: { left: 1190, top: 1810, width: 1960, height: 1020 } },
+  { number: 6, crop: { left: 0, top: 0, width: 3010, height: 660 } },
+  { number: 7, crop: { left: 850, top: 430, width: 1760, height: 1730 } },
+];
+
+for (const variant of chapterOneV2Variants) {
+  const detail = variant.crop
+    ? await sharp(chapterOneV2Ink).extract(variant.crop).png().toBuffer()
+    : chapterOneV2Ink;
+  const fitted = await sharp(detail)
+    .resize({
+      width: 1120,
+      height: 720,
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+  const file = `chapter-01-v2-beat-${String(variant.number).padStart(2, "0")}.png`;
+  await sharp({
+    create: {
+      width: 1200,
+      height: 800,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([{ input: fitted, gravity: "center" }])
+    .png({ compressionLevel: 9, palette: true, quality: 94 })
+    .toFile(path.join(outputDir, file));
+}
+
+const chapterOneCoverFigure = await sharp(chapterOneV2Ink)
+  .resize({
+    width: 440,
+    height: 380,
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toBuffer();
+
+await sharp({
+  create: {
+    width: 1600,
+    height: 1000,
+    channels: 4,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  },
+})
+  .composite([{ input: chapterOneCoverFigure, left: 1080, top: 500 }])
+  .png({ compressionLevel: 9, palette: true, quality: 94 })
+  .toFile(path.join(outputDir, "chapter-01-v2-cover.png"));
+
 const chapterOneV2Fitted = await sharp(chapterOneV2Ink)
   .resize({
     width: 1120,
@@ -122,4 +184,4 @@ await sharp({
   .png({ compressionLevel: 9, palette: true, quality: 94 })
   .toFile(path.join(outputDir, "beat-08-leaving-town-v2.png"));
 
-console.log(`Rendered ${scenes.length} storyboard sketches and the chapter-one V2 leaving-town drawing.`);
+console.log(`Rendered ${scenes.length} storyboard sketches and the complete chapter-one V2 detail sequence.`);

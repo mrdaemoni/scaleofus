@@ -17,6 +17,7 @@ export type StoryReaderConfig = {
     duration: number;
   };
   artwork: {
+    cover?: string;
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;

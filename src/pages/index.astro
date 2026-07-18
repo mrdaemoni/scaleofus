@@ -51,7 +51,7 @@ const beatData = chapters.flatMap((chapter) =>
 const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.number, beat]));
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
-const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
 ---
 
 <Base

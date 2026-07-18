@@ -2,7 +2,7 @@
 
 Source: `incoming/Scale 1 - page 1.svg`, downloaded from the Gmail message “Document from my reMarkable: Scale 1” on July 17, 2026.
 
-Chapter 1 V2 addition: `incoming/chapter-01-v2-page-09.svg`, downloaded from the Gmail message “Document from my reMarkable: Remarkable-The Boy Who Tried to Catch the Wind (reMarkable sketchbook)” on July 18, 2026. It is used for the leaving-town beat with the boy, backpack, and curling wind.
+Chapter 1 V2 addition: `incoming/chapter-01-v2-page-09.svg`, downloaded from the Gmail message “Document from my reMarkable: Remarkable-The Boy Who Tried to Catch the Wind (reMarkable sketchbook)” on July 18, 2026. The email contains one SVG attachment and the page contains one complete drawing: the boy leaving with his bag beneath curling wind. The site treats that single drawing as a Chapter 1 motif, moving through details of the wind, face, hand, card, bread, feet, and finally the full scene. A separate wide composition keeps the same boy small on the opening cover.
 
 ## What already works
 

@@ -2938,11 +2938,11 @@ body.is-listening .mountain-climber {
 
   .cover-art {
     top: 7%;
-    right: -13vw;
+    right: -6vw;
     bottom: auto;
     width: 86vw;
     height: 48svh;
-    opacity: 0.28;
+    opacity: 0.38;
   }
 
   .cover-vignette {
