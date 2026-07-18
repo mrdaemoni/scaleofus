@@ -13,7 +13,7 @@
   --blush: #d8acb3;
   --blush-deep: #b98792;
   --line: rgba(104, 82, 89, 0.18);
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --serif: "Playwrite IE Variable", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, cursive;
   --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --title-weight: 400;
   --body-weight: 100;
@@ -122,7 +122,7 @@ img {
   color: var(--night);
   font-family: var(--serif);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--title-weight);
   letter-spacing: -0.03em;
 }
 
@@ -277,8 +277,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(55px, 7.1vw, 108px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.066em;
-  line-height: 0.86;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
 }
 
 .cover-intro {
@@ -771,8 +771,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(54px, 7vw, 104px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.06em;
-  line-height: 0.9;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
 }
 
 .chapter-mark {
@@ -1557,8 +1557,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(52px, 7vw, 104px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.06em;
-  line-height: 0.92;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
 }
 
 .story-after > p:not(.eyebrow) {
@@ -1664,7 +1664,7 @@ img {
 .dock-chapters a strong {
   font-family: var(--serif);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--title-weight);
 }
 
 .dock-chapters a small {
@@ -1947,8 +1947,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(64px, 9.6vw, 145px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.075em;
-  line-height: 0.82;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
 }
 
 .grown-hero > p:not(.eyebrow) {
@@ -2010,6 +2010,7 @@ img {
 
 .reading-rail a span {
   font-family: var(--serif);
+  font-weight: var(--title-weight);
 }
 
 .reading-rail a:hover,
@@ -2043,8 +2044,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(42px, 5vw, 72px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.055em;
-  line-height: 0.95;
+  letter-spacing: -0.025em;
+  line-height: 1;
 }
 
 .note-body p {
@@ -2095,8 +2096,8 @@ img {
   font-family: var(--serif);
   font-size: clamp(42px, 5.5vw, 82px);
   font-weight: var(--title-weight);
-  letter-spacing: -0.05em;
-  line-height: 0.98;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
 }
 
 @keyframes cinematicWind {
