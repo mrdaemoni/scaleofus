@@ -15,8 +15,8 @@ export const windStoryReader: StoryReaderConfig = {
   title: "The Boy Who Tried to Catch the Wind",
   intro: "A story about a boy, a machine, and the part of us no answer can hold.",
   audio: {
-    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3",
-    duration: 885.54,
+    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=image-edition-20260718",
+    duration: 877.3,
   },
   artwork: {
     originalThrough: 11,

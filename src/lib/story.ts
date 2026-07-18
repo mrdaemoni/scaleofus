@@ -38,7 +38,7 @@ const wordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).l
 export function parseStoryMarkdown(
   raw: string,
   duration = 885.54,
-  timings: ReadonlyArray<{ number: number; start: number; end: number }> = [],
+  timings: ReadonlyArray<{ number: number; start: number; end: number; chapterStart?: number }> = [],
 ): StoryChapter[] {
   const chapters: StoryChapter[] = [];
   let chapter: StoryChapter | null = null;
@@ -105,7 +105,9 @@ export function parseStoryMarkdown(
         itemBeat.start = timing.start;
         itemBeat.end = timing.end;
       });
-      item.start = item.beats[0]?.start ?? item.start;
+      const firstBeat = item.beats[0];
+      const firstTiming = firstBeat ? timingByNumber.get(firstBeat.number) : undefined;
+      item.start = firstTiming?.chapterStart ?? item.beats[0]?.start ?? item.start;
     });
   }
 

@@ -14,17 +14,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import unicodedata
 from difflib import SequenceMatcher
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_AUDIO = Path(
-    "/Users/alicia/Documents/mrhector-alicia/Podcasts/"
-    "The Boy Who Tried to Catch the Wind/wavs/"
-    "Story01_v5_the-boy-who-tried-to-catch-the-wind.wav"
-)
+DEFAULT_AUDIO = ROOT / "public/audio/the-boy-who-tried-to-catch-the-wind.mp3"
 
 # Exact spot checks for boundary words that the full-recording Whisper pass
 # merges into a neighboring segment. Indices are zero-based manuscript words.
@@ -34,14 +31,27 @@ WORD_CUE_OVERRIDES: dict[int, dict[int, dict[str, float]]] = {}
 def manuscript_beats(markdown: str) -> list[dict]:
     beats: list[dict] = []
     current: dict | None = None
+    chapter_number = 0
+    chapter_title = ""
     for raw_line in markdown.splitlines():
         line = raw_line.strip()
+        chapter = re.match(r"^## Chapter ([A-Za-z]+)\s*(?:—|:)\s*(.+)$", line)
+        if chapter:
+            chapter_number += 1
+            chapter_title = chapter.group(2)
+            current = None
+            continue
         drawing = (
             re.match(r"^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$", line)
             or re.match(r"^\*\(drawing (\d+):\s*(.+)\)\*$", line, re.IGNORECASE)
         )
         if drawing:
-            current = {"number": int(drawing.group(1)), "paragraphs": []}
+            current = {
+                "number": int(drawing.group(1)),
+                "chapter": chapter_number,
+                "chapterTitle": chapter_title,
+                "paragraphs": [],
+            }
             beats.append(current)
             continue
         if (
@@ -111,6 +121,96 @@ def align_tokens(target: list[str], heard: list[dict]) -> list[int | None]:
     return mapping
 
 
+def align_manuscript(target: list[str], heard: list[dict]) -> list[int | None]:
+    """Align a full manuscript while keeping dynamic-programming gaps small."""
+
+    heard_tokens = [word["normalized"] for word in heard]
+    matcher = SequenceMatcher(None, target, heard_tokens, autojunk=False)
+    mapping: list[int | None] = [None] * len(target)
+    target_cursor = 0
+    heard_cursor = 0
+
+    for block in matcher.get_matching_blocks():
+        if block.a > target_cursor:
+            local = align_tokens(
+                target[target_cursor:block.a],
+                heard[heard_cursor:block.b],
+            )
+            for index, heard_index in enumerate(local, start=target_cursor):
+                if heard_index is not None:
+                    mapping[index] = heard_cursor + heard_index
+
+        for offset in range(block.size):
+            mapping[block.a + offset] = block.b + offset
+
+        target_cursor = block.a + block.size
+        heard_cursor = block.b + block.size
+
+    return mapping
+
+
+def probe_audio_duration(audio: Path) -> float:
+    result = subprocess.run(
+        [
+            "ffprobe", "-v", "error", "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1", str(audio),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return float(result.stdout.strip())
+
+
+def detect_chapter_starts(audio: Path, duration: float, chapter_count: int) -> list[float]:
+    """Use the deliberate long silences as chapter-title entry points."""
+
+    result = subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-i", str(audio), "-af",
+            "silencedetect=noise=-42dB:d=2.8", "-f", "null", "-",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    candidates: list[float] = []
+    for match in re.finditer(
+        r"silence_end:\s*([0-9.]+)\s*\|\s*silence_duration:\s*([0-9.]+)",
+        result.stderr,
+    ):
+        silence_end = float(match.group(1))
+        if silence_end < duration - 2.0:
+            candidates.append(round(silence_end, 3))
+
+    if len(candidates) != chapter_count:
+        print(
+            f"warning: found {len(candidates)} chapter-sized silences for "
+            f"{chapter_count} chapters; chapter navigation will fall back to first words"
+        )
+        return []
+    return candidates
+
+
+def words_from_openai_whisper(path: Path) -> list[dict]:
+    transcript = json.loads(path.read_text())
+    heard_words: list[dict] = []
+    for segment in transcript.get("segments", []):
+        for word in segment.get("words", []):
+            normalized = normalize(word.get("word", ""))
+            if normalized:
+                heard_words.append(
+                    {
+                        "word": word["word"].strip(),
+                        "normalized": normalized,
+                        "start": float(word["start"]),
+                        "end": float(word["end"]),
+                        "probability": round(float(word.get("probability", 0.0)), 4),
+                    }
+                )
+    return heard_words
+
+
 def interpolate_missing(
     display_words: list[str],
     mapping: list[int | None],
@@ -152,17 +252,23 @@ def interpolate_missing(
             word_end = left + (right - left) * elapsed / weight_total
             cues[gap_start + offset] = {"start": word_start, "end": word_end}
 
-    result: list[dict] = []
+    starts: list[float] = []
     previous_start = beat_start
-    for index, cue in enumerate(cues):
+    for cue in cues:
         assert cue is not None
         start = max(0.0, previous_start, cue["start"])
-        next_start = cues[index + 1]["start"] if index + 1 < len(cues) and cues[index + 1] else beat_end
-        end = max(start + 0.035, min(cue["end"], max(start + 0.035, next_start)))
+        starts.append(start)
+        previous_start = start + 0.022
+
+    result: list[dict] = []
+    for index, cue in enumerate(cues):
+        assert cue is not None
+        start = starts[index]
+        next_start = starts[index + 1] if index + 1 < len(starts) else beat_end
+        end = min(max(start + 0.018, cue["end"]), max(start + 0.018, next_start - 0.001))
         if index == len(cues) - 1:
             end = max(end, start + 0.08)
         result.append({"start": round(start, 3), "end": round(end, 3)})
-        previous_start = start + 0.001
     return result
 
 
@@ -170,9 +276,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--audio", type=Path, default=DEFAULT_AUDIO)
     parser.add_argument("--story", type=Path, default=ROOT / "src/content/the-boy-who-tried-to-catch-the-wind.md")
-    parser.add_argument("--beats", type=Path, default=ROOT / "src/content/story-timings.json")
     parser.add_argument("--output", type=Path, default=ROOT / "src/content/story-word-timings.json")
+    parser.add_argument("--timing-output", type=Path, default=ROOT / "src/content/story-timings.json")
+    parser.add_argument("--transcript-json", type=Path)
     parser.add_argument("--model", default="small.en")
+    parser.add_argument("--model-label")
     args = parser.parse_args()
 
     preserved_speakers: dict[tuple[int, int], list[str]] = {}
@@ -186,76 +294,96 @@ def main() -> None:
         except (json.JSONDecodeError, KeyError, TypeError):
             preserved_speakers = {}
 
-    try:
-        from faster_whisper import WhisperModel
-    except ImportError as error:
-        raise SystemExit("Install faster-whisper in the active Python environment first.") from error
-
     manuscript = manuscript_beats(args.story.read_text())
-    timing_rows = json.loads(args.beats.read_text())
-    timing_by_number = {row["number"]: row for row in timing_rows}
+    audio_duration = probe_audio_duration(args.audio)
+    chapter_count = max(beat["chapter"] for beat in manuscript)
+    chapter_starts = detect_chapter_starts(args.audio, audio_duration, chapter_count)
 
-    model = WhisperModel(args.model, device="cpu", compute_type="int8")
-    segments, info = model.transcribe(
-        str(args.audio),
-        language="en",
-        beam_size=5,
-        best_of=5,
-        word_timestamps=True,
-        vad_filter=False,
-        condition_on_previous_text=True,
+    if args.transcript_json:
+        heard_words = words_from_openai_whisper(args.transcript_json)
+        model_label = args.model_label or "openai-whisper"
+    else:
+        try:
+            from faster_whisper import WhisperModel
+        except ImportError as error:
+            raise SystemExit(
+                "Install faster-whisper or pass an OpenAI Whisper JSON file with --transcript-json."
+            ) from error
+
+        model = WhisperModel(args.model, device="cpu", compute_type="int8")
+        segments, _ = model.transcribe(
+            str(args.audio),
+            language="en",
+            beam_size=5,
+            best_of=5,
+            word_timestamps=True,
+            vad_filter=False,
+            condition_on_previous_text=True,
+        )
+        heard_words = []
+        for segment in segments:
+            for word in segment.words or []:
+                normalized = normalize(word.word)
+                if normalized:
+                    heard_words.append(
+                        {
+                            "word": word.word.strip(),
+                            "normalized": normalized,
+                            "start": float(word.start),
+                            "end": float(word.end),
+                            "probability": round(float(word.probability), 4),
+                        }
+                    )
+        model_label = args.model_label or args.model
+
+    manuscript_words = [
+        word
+        for beat in manuscript
+        for paragraph in beat["paragraphs"]
+        for word in paragraph.split()
+    ]
+    normalized_target = [normalize(word) for word in manuscript_words]
+    mapping = align_manuscript(normalized_target, heard_words)
+    cues = interpolate_missing(
+        manuscript_words,
+        mapping,
+        heard_words,
+        0.0,
+        audio_duration,
     )
-    heard_words: list[dict] = []
-    for segment in segments:
-        for word in segment.words or []:
-            normalized = normalize(word.word)
-            if normalized:
-                heard_words.append(
-                    {
-                        "word": word.word.strip(),
-                        "normalized": normalized,
-                        "start": float(word.start),
-                        "end": float(word.end),
-                        "probability": round(float(word.probability), 4),
-                    }
-                )
 
     result = {
-        "version": 1,
-        "audioDuration": round(float(info.duration), 3),
-        "model": args.model,
+        "version": 3,
+        "audioDuration": round(audio_duration, 3),
+        "model": model_label,
+        "chapterStarts": chapter_starts,
         "beats": [],
     }
     totals = {"words": 0, "exact": 0, "fuzzy": 0, "interpolated": 0}
+    timing_rows: list[dict] = []
+    cursor = 0
 
     for beat in manuscript:
-        timing = timing_by_number[beat["number"]]
-        start, end = float(timing["start"]), float(timing["end"])
-        heard = [
-            word for word in heard_words
-            if word["end"] >= start - 0.38 and word["start"] <= end + 1.15
-        ]
         paragraph_words = [paragraph.split() for paragraph in beat["paragraphs"]]
         display_words = [word for paragraph in paragraph_words for word in paragraph]
-        normalized_target = [normalize(word) for word in display_words]
-        mapping = align_tokens(normalized_target, heard)
-        cues = interpolate_missing(display_words, mapping, heard, start, end)
+        beat_mapping = mapping[cursor:cursor + len(display_words)]
+        beat_cues = cues[cursor:cursor + len(display_words)]
         for word_index, cue in WORD_CUE_OVERRIDES.get(beat["number"], {}).items():
-            cues[word_index] = cue
+            beat_cues[word_index] = cue
 
         exact = fuzzy = interpolated = 0
-        for index, heard_index in enumerate(mapping):
+        for index, heard_index in enumerate(beat_mapping):
             if heard_index is None:
                 interpolated += 1
-            elif normalized_target[index] == heard[heard_index]["normalized"]:
+            elif normalize(display_words[index]) == heard_words[heard_index]["normalized"]:
                 exact += 1
             else:
                 fuzzy += 1
 
         paragraphs = []
-        cursor = 0
+        paragraph_cursor = 0
         for paragraph_index, words in enumerate(paragraph_words):
-            paragraph_cues = cues[cursor:cursor + len(words)]
+            paragraph_cues = beat_cues[paragraph_cursor:paragraph_cursor + len(words)]
             speakers = preserved_speakers.get((beat["number"], paragraph_index), [])
             if len(speakers) == len(paragraph_cues):
                 paragraph_cues = [
@@ -266,13 +394,29 @@ def main() -> None:
                 "paragraph": paragraph_index,
                 "words": paragraph_cues,
             })
-            cursor += len(words)
+            paragraph_cursor += len(words)
+
+        beat_start = beat_cues[0]["start"]
+        beat_end = beat_cues[-1]["end"]
+        timing_row = {
+            "number": beat["number"],
+            "start": beat_start,
+            "end": beat_end,
+            "words": len(display_words),
+            "exact": exact,
+            "confidence": round(exact / max(1, len(display_words)), 3),
+        }
+        if beat["number"] == next(
+            item["number"] for item in manuscript if item["chapter"] == beat["chapter"]
+        ) and chapter_starts:
+            timing_row["chapterStart"] = chapter_starts[beat["chapter"] - 1]
+        timing_rows.append(timing_row)
 
         result["beats"].append({
             "number": beat["number"],
-            "start": cues[0]["start"],
-            "end": cues[-1]["end"],
-            "sourceWindow": {"start": start, "end": end},
+            "start": beat_start,
+            "end": beat_end,
+            "sourceWindow": {"start": beat_start, "end": beat_end},
             "quality": {
                 "words": len(display_words),
                 "exact": exact,
@@ -285,6 +429,7 @@ def main() -> None:
         totals["exact"] += exact
         totals["fuzzy"] += fuzzy
         totals["interpolated"] += interpolated
+        cursor += len(display_words)
         print(
             f"beat {beat['number']:02}: {len(display_words):3} words | "
             f"{exact:3} exact | {fuzzy:2} fuzzy | {interpolated:2} interpolated"
@@ -292,7 +437,9 @@ def main() -> None:
 
     result["quality"] = totals
     args.output.write_text(json.dumps(result, indent=2) + "\n")
+    args.timing_output.write_text(json.dumps(timing_rows, indent=2) + "\n")
     print(f"wrote {args.output}")
+    print(f"wrote {args.timing_output}")
     print(json.dumps(totals, indent=2))
 
 

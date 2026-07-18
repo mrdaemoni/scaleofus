@@ -1713,7 +1713,11 @@ img {
 }
 
 .beat-copy [data-narration-word]::before {
-  inset: 9% -0.34em -4% -0.38em;
+  inset:
+    var(--wind-before-top, 9%)
+    var(--wind-before-right, -1.2em)
+    var(--wind-before-bottom, -10%)
+    var(--wind-before-left, -0.7em);
   border-radius: 64% 39% 58% 43% / 53% 68% 42% 61%;
   background:
     radial-gradient(ellipse 74% 66% at 45% 55%, var(--word-wind-core), transparent 72%),
@@ -1724,10 +1728,10 @@ img {
 }
 
 .beat-copy [data-narration-word]::after {
-  top: 57%;
-  right: -0.38em;
-  left: -0.72em;
-  height: 0.13em;
+  top: var(--wind-tail-top, 57%);
+  right: var(--wind-tail-right, -1.7em);
+  left: var(--wind-tail-left, -0.92em);
+  height: var(--wind-tail-height, 0.13em);
   border-radius: 50%;
   background: linear-gradient(90deg, transparent 2%, var(--word-wind-wisp) 38%, transparent 100%);
   filter: blur(1.4px);
@@ -1797,32 +1801,32 @@ img {
 .beat-copy [data-narration-word].is-current-word {
   --word-weight: 500;
   color: #514347;
-  background-size: 118% 116%, 142% 64%;
+  background-size: 142% 124%, 174% 68%;
   text-shadow:
     -0.22em 0.04em 0.3em var(--word-wind-shadow),
     0 0 0.34em rgba(255, 246, 247, 0.72),
     0 1px 0 rgba(255, 246, 247, 0.48);
-  animation: wordWindWash 720ms cubic-bezier(0.16, 0.72, 0.24, 1) both;
+  animation: wordWindWash var(--wind-arrival-duration, 780ms) cubic-bezier(0.16, 0.72, 0.24, 1) both;
 }
 
 .beat-copy [data-narration-word].is-current-word::before {
-  animation: wordWindBloom 720ms cubic-bezier(0.16, 0.72, 0.24, 1) both;
+  animation: wordWindBloom var(--wind-arrival-duration, 780ms) cubic-bezier(0.16, 0.72, 0.24, 1) both;
 }
 
 .beat-copy [data-narration-word].is-current-word::after {
-  animation: wordWindTrail 760ms cubic-bezier(0.14, 0.68, 0.22, 1) both;
+  animation: wordWindTrail var(--wind-arrival-duration, 820ms) cubic-bezier(0.14, 0.68, 0.22, 1) both;
 }
 
 .beat-copy [data-narration-word].is-wind-trail {
-  animation: wordWindRelease 880ms cubic-bezier(0.18, 0.68, 0.2, 1) both;
+  animation: wordWindRelease var(--wind-release-duration, 1540ms) cubic-bezier(0.18, 0.68, 0.2, 1) both;
 }
 
 .beat-copy [data-narration-word].is-wind-trail::before {
-  animation: wordWindAfterglow 880ms cubic-bezier(0.18, 0.68, 0.2, 1) both;
+  animation: wordWindAfterglow var(--wind-release-duration, 1540ms) cubic-bezier(0.18, 0.68, 0.2, 1) both;
 }
 
 .beat-copy [data-narration-word].is-wind-trail::after {
-  animation: wordWindWispAway 880ms cubic-bezier(0.16, 0.7, 0.2, 1) both;
+  animation: wordWindWispAway var(--wind-release-duration, 1540ms) cubic-bezier(0.16, 0.7, 0.2, 1) both;
 }
 
 .beat-copy [data-narration-word][data-speaker="boy"].is-current-word,
@@ -2536,26 +2540,26 @@ img {
   }
   48% {
     background-position: -0.1em 53%, -0.04em 70%;
-    background-size: 126% 116%, 152% 64%;
+    background-size: 154% 126%, 188% 70%;
   }
   100% {
     background-position: 0.08em 55%, 0.13em 72%;
-    background-size: 112% 110%, 136% 60%;
+    background-size: 136% 118%, 166% 66%;
   }
 }
 
 @keyframes wordWindBloom {
   0% {
     opacity: 0;
-    transform: translate3d(-0.58em, 0.08em, 0) skewX(-11deg) scale(0.42, 0.68);
+    transform: translate3d(-0.72em, var(--wind-entry-y, 0.08em), 0) skewX(var(--wind-skew, -11deg)) scale(0.34, 0.62);
   }
   48% {
-    opacity: 0.7;
-    transform: translate3d(-0.05em, -0.02em, 0) skewX(-6deg) scale(1.08, 0.92);
+    opacity: var(--wind-bloom-opacity, 0.66);
+    transform: translate3d(-0.08em, var(--wind-lift, -0.02em), 0) skewX(var(--wind-skew, -6deg)) scale(1.12, 0.96);
   }
   100% {
     opacity: 0.48;
-    transform: translate3d(0.09em, 0, 0) skewX(-3deg) scale(1, 0.84);
+    transform: translate3d(var(--wind-settle-x, 0.14em), var(--wind-lift, 0), 0) skewX(-3deg) scale(1, 0.86);
   }
 }
 
@@ -2569,21 +2573,21 @@ img {
   }
   100% {
     opacity: 0.22;
-    transform: translateX(0.16em) rotate(1deg) scaleX(1);
+    transform: translateX(var(--wind-settle-x, 0.18em)) rotate(var(--wind-rotate, 1deg)) scaleX(var(--wind-tail-scale, 1.35));
   }
 }
 
 @keyframes wordWindRelease {
   0% {
     background-position: 0.08em 55%, 0.13em 72%;
-    background-size: 112% 110%, 136% 60%;
+    background-size: 136% 118%, 166% 66%;
     text-shadow:
       -0.18em 0.04em 0.26em var(--word-wind-shadow),
       0 0 0.26em rgba(255, 246, 247, 0.58);
   }
   52% {
-    background-position: 0.3em 55%, 0.42em 72%;
-    background-size: 72% 94%, 92% 48%;
+    background-position: 0.42em 55%, 0.58em 72%;
+    background-size: 82% 96%, 108% 52%;
     text-shadow: -0.08em 0.03em 0.2em color-mix(in srgb, var(--word-wind-shadow) 65%, transparent);
   }
   100% {
@@ -2596,22 +2600,22 @@ img {
 @keyframes wordWindAfterglow {
   0% {
     opacity: 0.4;
-    transform: translate3d(0.08em, 0, 0) skewX(-3deg) scale(0.96, 0.8);
+    transform: translate3d(var(--wind-settle-x, 0.08em), var(--wind-lift, 0), 0) skewX(-3deg) scale(1.04, 0.84);
   }
   100% {
     opacity: 0;
-    transform: translate3d(0.82em, -0.04em, 0) skewX(5deg) scale(0.42, 0.48);
+    transform: translate3d(var(--wind-release-x, 1.55em), var(--wind-release-y, -0.04em), 0) skewX(var(--wind-release-skew, 4deg)) scale(0.48, 0.42);
   }
 }
 
 @keyframes wordWindWispAway {
   0% {
     opacity: 0.2;
-    transform: translateX(0.12em) rotate(1deg) scaleX(1);
+    transform: translateX(var(--wind-settle-x, 0.12em)) rotate(var(--wind-rotate, 1deg)) scaleX(var(--wind-tail-scale, 1.35));
   }
   100% {
     opacity: 0;
-    transform: translateX(1.05em) rotate(3deg) scaleX(0.35);
+    transform: translateX(var(--wind-release-x, 1.7em)) rotate(var(--wind-release-rotate, 3deg)) scaleX(0.42);
   }
 }
 

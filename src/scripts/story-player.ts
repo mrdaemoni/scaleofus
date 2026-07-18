@@ -29,6 +29,12 @@ const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
 const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
 const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
+const beatChapterByNumber = new Map(beats.map((beat) => [beat.number, beat.chapter]));
+const firstParagraphByChapter = chapters.map((chapter) =>
+  paragraphs.findIndex((paragraph) =>
+    beatChapterByNumber.get(Number(paragraph.dataset.beatNumber)) === chapter.number,
+  ),
+);
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-story-art]")];
 const readerHome = document.querySelector<HTMLAnchorElement>("[data-reader-home]");
@@ -53,6 +59,40 @@ let fitTimer = 0;
 const windTrailTimers = new Map<HTMLElement, number>();
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
+
+const shapeWindWake = (word: HTMLElement) => {
+  const arrivalDuration = Math.round(randomBetween(640, 980));
+  const releaseDuration = Math.round(randomBetween(1280, 1940));
+  const lift = randomBetween(-0.18, 0.13);
+  const rotation = randomBetween(-4.2, 4.2);
+  const skew = randomBetween(-14, 5);
+
+  word.dataset.windRelease = String(releaseDuration);
+  word.style.setProperty("--wind-arrival-duration", `${arrivalDuration}ms`);
+  word.style.setProperty("--wind-release-duration", `${releaseDuration}ms`);
+  word.style.setProperty("--wind-before-top", `${randomBetween(-5, 12).toFixed(1)}%`);
+  word.style.setProperty("--wind-before-right", `${-randomBetween(1.0, 2.85).toFixed(2)}em`);
+  word.style.setProperty("--wind-before-bottom", `${-randomBetween(8, 31).toFixed(1)}%`);
+  word.style.setProperty("--wind-before-left", `${-randomBetween(0.55, 1.45).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-top", `${randomBetween(45, 72).toFixed(1)}%`);
+  word.style.setProperty("--wind-tail-right", `${-randomBetween(1.2, 3.4).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-left", `${-randomBetween(0.82, 1.85).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-height", `${randomBetween(0.1, 0.22).toFixed(2)}em`);
+  word.style.setProperty("--wind-entry-y", `${randomBetween(-0.08, 0.16).toFixed(2)}em`);
+  word.style.setProperty("--wind-lift", `${lift.toFixed(2)}em`);
+  word.style.setProperty("--wind-skew", `${skew.toFixed(1)}deg`);
+  word.style.setProperty("--wind-rotate", `${rotation.toFixed(1)}deg`);
+  word.style.setProperty("--wind-release-skew", `${(-skew * 0.5).toFixed(1)}deg`);
+  word.style.setProperty("--wind-release-rotate", `${(rotation * 1.6).toFixed(1)}deg`);
+  word.style.setProperty("--wind-settle-x", `${randomBetween(0.08, 0.42).toFixed(2)}em`);
+  word.style.setProperty("--wind-release-x", `${randomBetween(1.15, 2.65).toFixed(2)}em`);
+  word.style.setProperty("--wind-release-y", `${(lift + randomBetween(-0.08, 0.12)).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-scale", randomBetween(1.05, 1.85).toFixed(2));
+  word.style.setProperty("--wind-bloom-opacity", randomBetween(0.42, 0.74).toFixed(2));
+
+  return releaseDuration;
+};
 
 const format = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -67,6 +107,12 @@ const paragraphForTime = (seconds: number) => {
   paragraphs.forEach((paragraph, paragraphIndex) => {
     if (seconds >= Number(paragraph.dataset.start ?? 0)) index = paragraphIndex;
   });
+  let chapterIndex = 0;
+  chapters.forEach((chapter, candidateIndex) => {
+    if (seconds >= chapter.start) chapterIndex = candidateIndex;
+  });
+  const firstInChapter = firstParagraphByChapter[chapterIndex];
+  if (firstInChapter >= 0 && index < firstInChapter) return firstInChapter;
   return index;
 };
 
@@ -96,10 +142,11 @@ const setWord = (index: number) => {
     previousWord.classList.add("is-wind-trail");
     const existingTimer = windTrailTimers.get(previousWord);
     if (existingTimer) window.clearTimeout(existingTimer);
+    const releaseDuration = Number(previousWord.dataset.windRelease) || 1540;
     const timer = window.setTimeout(() => {
       previousWord.classList.remove("is-wind-trail");
       windTrailTimers.delete(previousWord);
-    }, 880);
+    }, releaseDuration);
     windTrailTimers.set(previousWord, timer);
   }
   if (index < 0 || !narrationWords[index]) {
@@ -111,6 +158,7 @@ const setWord = (index: number) => {
   if (existingTimer) window.clearTimeout(existingTimer);
   windTrailTimers.delete(nextWord);
   nextWord.classList.remove("is-wind-trail");
+  shapeWindWake(nextWord);
   nextWord.classList.add("is-current-word");
   document.body.dataset.activeSpeaker = nextWord.dataset.speaker ?? "narrator";
   activeWord = index;
@@ -310,11 +358,19 @@ const togglePlayback = async () => {
   if (!audio) return;
   if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
+    const paragraphIndex = paragraphForTime(audio.currentTime);
+    if (audio.currentTime < paragraphStart(0) && scrollY < innerHeight * 0.72) {
+      manualScrollActive = false;
+      autoScrollActive = false;
+      lastCenteredParagraph = -1;
+      setParagraph(paragraphIndex, "restore");
+      centerParagraph(paragraphIndex, "auto");
+    }
     try {
       await audio.play();
       updateStoryProgress(audio.currentTime);
-      setParagraph(paragraphForTime(audio.currentTime), "audio");
-      centerParagraph(paragraphForTime(audio.currentTime));
+      setParagraph(paragraphIndex, "audio");
+      centerParagraph(paragraphIndex);
     } catch {
       return;
     }

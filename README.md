@@ -8,7 +8,7 @@ The current experience is an immersive reading and listening edition of
 *The Boy Who Tried to Catch the Wind*. The nine-chapter climb holds 59
 image-and-paragraph story beats: 11 original reMarkable sketches, 27 rose-gray
 studies, and 21 intentional drawing placeholders. Scroll-responsive cinematic
-layers, the original 14:45 narration, two-way story/audio progress, and a
+layers, the 14:37 image-edition narration, two-way story/audio progress, and a
 separate grown-ups room carry the story through a shell-pink reading ground and
 clouded mountain rail.
 
