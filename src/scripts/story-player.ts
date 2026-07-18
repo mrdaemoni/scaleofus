@@ -27,12 +27,15 @@ const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-cha
 const dockChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-dock-chapter-link]")];
 const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
+const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
+const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
 let activeChapter = -1;
 let activeBeat = -1;
 let activeParagraph = -1;
+let activeWord = -1;
 let followNarration = true;
 let dockPinnedOpen = false;
 let autoScrollActive = false;
@@ -42,6 +45,7 @@ let lastCenteredParagraph = -1;
 let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let cinematicFrame = 0;
+let narrationFrame = 0;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -59,6 +63,57 @@ const paragraphForTime = (seconds: number) => {
     if (seconds >= Number(paragraph.dataset.start ?? 0)) index = paragraphIndex;
   });
   return index;
+};
+
+const wordForTime = (seconds: number) => {
+  let low = 0;
+  let high = narrationWordStarts.length - 1;
+  let match = -1;
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    if (narrationWordStarts[middle] <= seconds) {
+      match = middle;
+      low = middle + 1;
+    } else {
+      high = middle - 1;
+    }
+  }
+  if (match < 0) return -1;
+  const wordEnd = Number(narrationWords[match]?.dataset.end ?? narrationWordStarts[match]);
+  return seconds <= wordEnd + 0.09 ? match : -1;
+};
+
+const setWord = (index: number) => {
+  if (activeWord === index) return;
+  narrationWords[activeWord]?.classList.remove("is-current-word");
+  if (index < 0 || !narrationWords[index]) {
+    activeWord = -1;
+    return;
+  }
+  narrationWords[index].classList.add("is-current-word");
+  activeWord = index;
+};
+
+const syncNarrationWord = () => {
+  if (!audio || !narrationWords.length) return;
+  setWord(wordForTime(audio.currentTime));
+};
+
+const runNarrationLoop = () => {
+  narrationFrame = 0;
+  if (!audio || audio.paused) return;
+  syncNarrationWord();
+  narrationFrame = requestAnimationFrame(runNarrationLoop);
+};
+
+const startNarrationLoop = () => {
+  if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
+};
+
+const stopNarrationLoop = () => {
+  if (narrationFrame) cancelAnimationFrame(narrationFrame);
+  narrationFrame = 0;
+  syncNarrationWord();
 };
 
 const beatForNumber = (number: number) => beats.findIndex((beat) => beat.number === number);
@@ -255,12 +310,22 @@ const requestCinematicMotion = () => {
 };
 
 playButtons.forEach((button) => button.addEventListener("click", togglePlayback));
-audio?.addEventListener("play", updatePlayState);
-audio?.addEventListener("pause", updatePlayState);
-audio?.addEventListener("ended", updatePlayState);
+audio?.addEventListener("play", () => {
+  updatePlayState();
+  startNarrationLoop();
+});
+audio?.addEventListener("pause", () => {
+  updatePlayState();
+  stopNarrationLoop();
+});
+audio?.addEventListener("ended", () => {
+  updatePlayState();
+  stopNarrationLoop();
+});
 audio?.addEventListener("timeupdate", () => {
   updateStoryProgress(audio.currentTime);
   setParagraph(paragraphForTime(audio.currentTime), "audio");
+  syncNarrationWord();
   try {
     localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
   } catch {}
@@ -271,6 +336,7 @@ seek?.addEventListener("input", () => {
   audio.currentTime = Number(seek.value);
   updateStoryProgress(audio.currentTime);
   setParagraph(paragraphForTime(audio.currentTime), "scroll");
+  syncNarrationWord();
 });
 seek?.addEventListener("change", () => {
   if (audio) centerParagraph(paragraphForTime(audio.currentTime));
@@ -374,6 +440,7 @@ const restorePosition = () => {
   audio.currentTime = restored;
   updateStoryProgress(restored);
   setParagraph(paragraphForTime(restored), "restore");
+  syncNarrationWord();
 };
 
 restorePosition();
