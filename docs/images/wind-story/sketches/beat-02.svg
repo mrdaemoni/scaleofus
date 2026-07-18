@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-600 1710 1300 760" overflow="hidden" role="img" aria-labelledby="title">
+  <title id="title">The boy, his school card, and a pointing hand</title>
+  <defs><clipPath id="crop"><rect x="-600" y="1710" width="1300" height="760" /></clipPath></defs>
+  <rect x="-600" y="1710" width="1300" height="760" fill="#f1dadd" />
+  <image href="scale-1-source.svg" x="-810" y="0" width="1620" height="11348" clip-path="url(#crop)" style="mix-blend-mode:multiply;opacity:.78" />
+</svg>

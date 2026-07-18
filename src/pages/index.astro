@@ -16,6 +16,10 @@ const motionByBeat = [
   "garden", "sprout", "flower", "path", "windows", "mirrors", "card", "still", "wind", "sky",
   "fragments", "gifts", "breath", "map", "windows", "breath", "page", "wind",
 ];
+const firstSketchBeat = 11;
+const artForBeat = (number: number) => number <= firstSketchBeat
+  ? `/images/wind-story/sketches/beat-${String(number).padStart(2, "0")}.svg`
+  : `/images/wind-story/beats/beat-${String(number).padStart(2, "0")}.jpg`;
 ---
 
 <Base
@@ -39,7 +43,7 @@ const motionByBeat = [
   <main data-story-app data-chapters={JSON.stringify(chapterData)} data-beats={JSON.stringify(beatData)}>
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <img src="/images/wind-story/beats/beat-01.jpg" alt="" fetchpriority="high" />
+        <img class="is-hand-sketch" src={artForBeat(1)} alt="" fetchpriority="high" />
       </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
@@ -59,7 +63,7 @@ const motionByBeat = [
         </div>
       </div>
 
-      <p class="cover-note">38 rose-gray ink studies · final art to come</p>
+      <p class="cover-note">11 original reMarkable sketches · 27 rose-gray studies · final art to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
     </section>
 
@@ -120,9 +124,14 @@ const motionByBeat = [
                     data-end={beat.end}
                   >
                     <figure class="beat-visual">
-                      <div class="beat-art-frame" data-cinematic-art data-motion={motion}>
+                      <div
+                        class={`beat-art-frame ${beat.number <= firstSketchBeat ? "is-original-sketch" : ""}`}
+                        data-cinematic-art
+                        data-motion={motion}
+                      >
                         <img
-                          src={`/images/wind-story/beats/beat-${String(beat.number).padStart(2, "0")}.jpg`}
+                          class={beat.number <= firstSketchBeat ? "is-hand-sketch" : undefined}
+                          src={artForBeat(beat.number)}
                           alt={`Drawing ${beat.number}: ${beat.prompt}`}
                           loading={beat.number === 1 ? "eager" : "lazy"}
                         />
@@ -132,7 +141,7 @@ const motionByBeat = [
                       </div>
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span>rose-gray ink study</span>
+                        <span>{beat.number <= firstSketchBeat ? "original reMarkable sketch" : "rose-gray ink study"}</span>
                       </figcaption>
                     </figure>
 

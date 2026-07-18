@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-700 8180 1350 680" overflow="hidden" role="img" aria-labelledby="title">
+  <title id="title">A stone named stream sits beside moving water</title>
+  <defs><clipPath id="crop"><rect x="-700" y="8180" width="1350" height="680" /></clipPath></defs>
+  <rect x="-700" y="8180" width="1350" height="680" fill="#f1dadd" />
+  <image href="scale-1-source.svg" x="-810" y="0" width="1620" height="11348" clip-path="url(#crop)" style="mix-blend-mode:multiply;opacity:.78" />
+</svg>

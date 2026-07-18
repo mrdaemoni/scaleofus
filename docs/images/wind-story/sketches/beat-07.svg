@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-700 7230 1350 760" overflow="hidden" role="img" aria-labelledby="title">
+  <title id="title">The stonecutter taps at a standing stone</title>
+  <defs><clipPath id="crop"><rect x="-700" y="7230" width="1350" height="760" /></clipPath></defs>
+  <rect x="-700" y="7230" width="1350" height="760" fill="#f1dadd" />
+  <image href="scale-1-source.svg" x="-810" y="0" width="1620" height="11348" clip-path="url(#crop)" style="mix-blend-mode:multiply;opacity:.78" />
+</svg>

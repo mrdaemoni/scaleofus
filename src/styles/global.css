@@ -196,6 +196,11 @@ img {
   filter: saturate(0.42) sepia(0.08) hue-rotate(308deg) brightness(1.025);
 }
 
+.cover-art img.is-hand-sketch {
+  object-position: 58% 42%;
+  filter: saturate(0.32) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.045);
+}
+
 .cover-vignette {
   z-index: -2;
   background:
@@ -891,6 +896,11 @@ img {
   transition: box-shadow 700ms ease;
 }
 
+.beat-art-frame.is-original-sketch {
+  background: #f1dadd;
+  border-color: rgba(92, 75, 80, 0.2);
+}
+
 .beat-art-frame > img {
   width: 100%;
   height: 100%;
@@ -898,6 +908,31 @@ img {
   filter: saturate(0.4) sepia(0.08) hue-rotate(306deg) contrast(0.89) brightness(1.035);
   transform: translate3d(0, var(--image-shift), 0) scale(1.026);
   transition: transform 180ms linear;
+}
+
+.beat-art-frame > img.is-hand-sketch {
+  filter: saturate(0.3) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.04);
+  transform: translate3d(0, var(--image-shift), 0) scale(1.012);
+}
+
+[data-beat="5"] .motion-glow .motion-mark {
+  top: 42%;
+  left: 37%;
+}
+
+[data-beat="8"] .motion-stream .motion-mark {
+  left: 58%;
+  bottom: 31%;
+}
+
+[data-beat="9"] .motion-pebble .motion-mark {
+  top: 50%;
+  left: 46%;
+}
+
+[data-beat="11"] .motion-flame .motion-mark {
+  top: 62%;
+  left: 66%;
 }
 
 .beat-art-frame::after {
