@@ -30,6 +30,7 @@ const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-p
 const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
 const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
+const readerHome = document.querySelector<HTMLAnchorElement>("[data-reader-home]");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
 
@@ -264,7 +265,15 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   });
   const beatNumber = Number(paragraphs[index].dataset.beatNumber);
   setBeat(beatForNumber(beatNumber));
-  if (source === "audio" && followNarration && !manualScrollActive && changed && lastCenteredParagraph !== index) {
+  if (
+    source === "audio"
+    && audio
+    && !audio.paused
+    && followNarration
+    && !manualScrollActive
+    && changed
+    && lastCenteredParagraph !== index
+  ) {
     centerParagraph(index);
   }
 };
@@ -418,6 +427,28 @@ chapterLinks.forEach((link) => {
     centerParagraph(paragraphIndex);
     setChapter(index);
   });
+});
+
+readerHome?.addEventListener("click", (event) => {
+  event.preventDefault();
+  audio?.pause();
+  if (audio) audio.currentTime = 0;
+  manualScrollActive = false;
+  autoScrollActive = true;
+  lastCenteredParagraph = -1;
+  updateStoryProgress(0);
+  setParagraph(0, "restore");
+  setWord(-1);
+  setChapter(0);
+  history.replaceState(null, "", "#top");
+  try {
+    localStorage.setItem("scaleofus-wind-progress", "0");
+  } catch {}
+  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
+  autoScrollTimer = window.setTimeout(() => {
+    autoScrollActive = false;
+  }, reducedMotion.matches ? 50 : 1400);
+  scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
 });
 
 follow?.addEventListener("click", () => {

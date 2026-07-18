@@ -16,18 +16,6 @@ const beatData = chapters.flatMap((chapter) =>
 );
 const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.number, beat]));
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
-const wordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
-const paragraphTimings = (beat: { start: number; end: number; paragraphs: string[] }) => {
-  const counts = beat.paragraphs.map(wordCount);
-  const total = Math.max(1, counts.reduce((sum, count) => sum + count, 0));
-  let elapsed = 0;
-  return counts.map((count) => {
-    const start = beat.start + ((beat.end - beat.start) * elapsed) / total;
-    elapsed += count;
-    const end = beat.start + ((beat.end - beat.start) * elapsed) / total;
-    return { start, end };
-  });
-};
 ---
 
 <Base
@@ -100,7 +88,9 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
           <span class="mountain-path path-three"></span>
           <span class="mountain-summit"></span>
         </div>
-        <p>The climb</p>
+        <a class="rail-home" href="#top" data-reader-home>
+          The Boy Who Tried to Catch the Wind
+        </a>
         <ol>
           {chapters.map((chapter) => (
             <li>
@@ -138,8 +128,12 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
                 const motion = windStoryReader.motions[beat.number - 1] ?? "drift";
-                const timings = paragraphTimings(beat);
                 const alignedBeat = wordTimingByBeat.get(beat.number);
+                const passages = windStoryReader.voices.filter((passage) => passage.beat === beat.number);
+                const words = beat.paragraphs.flatMap((paragraph) => voiceWords(paragraph, passages));
+                const alignedWords = alignedBeat?.paragraphs.flatMap((paragraph) => paragraph.words) ?? [];
+                const paragraphStart = alignedWords[0]?.start ?? beat.start;
+                const paragraphEnd = alignedWords.at(-1)?.end ?? beat.end;
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -172,41 +166,30 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
 
                     <div class="beat-copy">
                       <p class="beat-number" aria-hidden="true">{String(beat.number).padStart(2, "0")}</p>
-                      {beat.paragraphs.map((paragraph, paragraphIndex) => {
-                        const words = voiceWords(
-                          paragraph,
-                          windStoryReader.voices.filter((passage) => passage.beat === beat.number),
-                        );
-                        const alignedWords = alignedBeat?.paragraphs[paragraphIndex]?.words ?? [];
-                        const paragraphStart = alignedWords[0]?.start ?? timings[paragraphIndex].start;
-                        const paragraphEnd = alignedWords.at(-1)?.end ?? timings[paragraphIndex].end;
-                        return (
-                          <p
-                            class={beatIndex === 0 && paragraphIndex === 0 ? "opening-line" : undefined}
-                            data-narration-paragraph
-                            data-beat-number={beat.number}
-                            data-start={paragraphStart}
-                            data-end={paragraphEnd}
-                          >
-                            {words.map((word, wordIndex) => {
-                              const cue = alignedWords[wordIndex];
-                              return (
-                                <>
-                                  {wordIndex > 0 && " "}
-                                  <span
-                                    data-narration-word
-                                    data-speaker={word.speaker}
-                                    data-start={cue?.start ?? paragraphStart}
-                                    data-end={cue?.end ?? paragraphEnd}
-                                  >
-                                    {word.text}
-                                  </span>
-                                </>
-                              );
-                            })}
-                          </p>
-                        );
-                      })}
+                      <p
+                        class={beatIndex === 0 ? "opening-line" : undefined}
+                        data-narration-paragraph
+                        data-beat-number={beat.number}
+                        data-start={paragraphStart}
+                        data-end={paragraphEnd}
+                      >
+                        {words.map((word, wordIndex) => {
+                          const cue = alignedWords[wordIndex];
+                          return (
+                            <>
+                              {wordIndex > 0 && " "}
+                              <span
+                                data-narration-word
+                                data-speaker={word.speaker}
+                                data-start={cue?.start ?? paragraphStart}
+                                data-end={cue?.end ?? paragraphEnd}
+                              >
+                                {word.text}
+                              </span>
+                            </>
+                          );
+                        })}
+                      </p>
                     </div>
                   </article>
                 );
