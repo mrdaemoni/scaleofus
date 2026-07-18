@@ -18,7 +18,7 @@ Every reading unit also renders an integrated drawing placeholder beneath its ar
 
 - `src/lib/story-reader.ts` validates voice passages, assigns a speaker to each rendered word, and resolves artwork paths.
 - `src/scripts/story-player.ts` synchronizes words, reading units, chapters, audio progress, manual seeking, and viewport-aware illustration fitting.
-- `src/styles/global.css` defines the reusable narrator, child, human character, machine, house, and wind treatments, including the soft wind-wake behind the currently spoken word. The current word keeps its wake when narration pauses so the reader never loses their place.
+- `src/styles/global.css` defines the reusable narrator, child, human character, machine, house, and wind treatments. The current word keeps its soft wind-wake when narration pauses; as speech advances, earlier words retain a brief fading trail so the emphasis moves like one continuous current instead of blinking between isolated words.
 
 ## Voice annotation rule
 

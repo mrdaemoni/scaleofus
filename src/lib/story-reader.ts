@@ -20,6 +20,10 @@ export type StoryReaderConfig = {
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;
+    sources?: Record<number, {
+      src: string;
+      kind: "original" | "study";
+    }>;
   };
   motions: string[];
   voices: VoicePassage[];
@@ -75,9 +79,15 @@ export function voiceWords(paragraph: string, passages: VoicePassage[]): VoicedW
 }
 
 export function storyArt(config: StoryReaderConfig, number: number) {
+  if (config.artwork.sources) return config.artwork.sources[number]?.src ?? null;
   const root = number <= config.artwork.originalThrough
     ? config.artwork.originalRoot
     : config.artwork.studyRoot;
   const extension = number <= config.artwork.originalThrough ? "png" : "jpg";
   return `${root}/beat-${String(number).padStart(2, "0")}.${extension}`;
+}
+
+export function storyArtKind(config: StoryReaderConfig, number: number) {
+  if (config.artwork.sources) return config.artwork.sources[number]?.kind ?? null;
+  return number <= config.artwork.originalThrough ? "original" : "study";
 }

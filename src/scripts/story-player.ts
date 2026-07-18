@@ -50,6 +50,7 @@ let autoScrollTimer = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let fitTimer = 0;
+const windTrailTimers = new Map<HTMLElement, number>();
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -89,13 +90,29 @@ const wordForTime = (seconds: number) => {
 
 const setWord = (index: number) => {
   if (activeWord === index) return;
-  narrationWords[activeWord]?.classList.remove("is-current-word");
+  const previousWord = narrationWords[activeWord];
+  if (previousWord) {
+    previousWord.classList.remove("is-current-word");
+    previousWord.classList.add("is-wind-trail");
+    const existingTimer = windTrailTimers.get(previousWord);
+    if (existingTimer) window.clearTimeout(existingTimer);
+    const timer = window.setTimeout(() => {
+      previousWord.classList.remove("is-wind-trail");
+      windTrailTimers.delete(previousWord);
+    }, 880);
+    windTrailTimers.set(previousWord, timer);
+  }
   if (index < 0 || !narrationWords[index]) {
     activeWord = -1;
     return;
   }
-  narrationWords[index].classList.add("is-current-word");
-  document.body.dataset.activeSpeaker = narrationWords[index].dataset.speaker ?? "narrator";
+  const nextWord = narrationWords[index];
+  const existingTimer = windTrailTimers.get(nextWord);
+  if (existingTimer) window.clearTimeout(existingTimer);
+  windTrailTimers.delete(nextWord);
+  nextWord.classList.remove("is-wind-trail");
+  nextWord.classList.add("is-current-word");
+  document.body.dataset.activeSpeaker = nextWord.dataset.speaker ?? "narrator";
   activeWord = index;
 };
 

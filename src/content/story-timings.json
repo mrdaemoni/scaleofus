@@ -1,306 +1,474 @@
 [
   {
     "number": 1,
-    "start": 8.01,
+    "start": 8.74,
     "end": 17.66,
-    "words": 27,
-    "exact": 27,
-    "confidence": 1
+    "words": 28,
+    "exact": 26,
+    "confidence": 0.929
   },
   {
     "number": 2,
-    "start": 17.75,
+    "start": 18.1,
     "end": 34.42,
-    "words": 41,
-    "exact": 41,
-    "confidence": 1
+    "words": 38,
+    "exact": 34,
+    "confidence": 0.895
   },
   {
     "number": 3,
-    "start": 34.47,
-    "end": 82.54,
-    "words": 142,
-    "exact": 141,
-    "confidence": 0.993
+    "start": 34.9,
+    "end": 54.4,
+    "words": 65,
+    "exact": 57,
+    "confidence": 0.877
   },
   {
     "number": 4,
-    "start": 82.99,
-    "end": 94.04,
-    "words": 28,
-    "exact": 28,
-    "confidence": 1
+    "start": 54.66,
+    "end": 73.48,
+    "words": 58,
+    "exact": 54,
+    "confidence": 0.931
   },
   {
     "number": 5,
-    "start": 93.99,
-    "end": 113.62,
-    "words": 55,
-    "exact": 52,
-    "confidence": 0.945
+    "start": 75.44,
+    "end": 82.54,
+    "words": 24,
+    "exact": 24,
+    "confidence": 1.0
   },
   {
     "number": 6,
-    "start": 114.51,
-    "end": 144.56,
-    "words": 68,
-    "exact": 68,
-    "confidence": 1
+    "start": 83.44,
+    "end": 94.04,
+    "words": 32,
+    "exact": 28,
+    "confidence": 0.875
   },
   {
     "number": 7,
-    "start": 145.17,
-    "end": 181.16,
-    "words": 88,
-    "exact": 84,
-    "confidence": 0.955
+    "start": 94.36,
+    "end": 100.72,
+    "words": 24,
+    "exact": 22,
+    "confidence": 0.917
   },
   {
     "number": 8,
-    "start": 181.87,
-    "end": 197.1,
-    "words": 41,
-    "exact": 39,
-    "confidence": 0.951
+    "start": 101.06,
+    "end": 113.62,
+    "words": 33,
+    "exact": 33,
+    "confidence": 1.0
   },
   {
     "number": 9,
-    "start": 197.6,
-    "end": 215.5,
-    "words": 51,
-    "exact": 51,
-    "confidence": 1
+    "start": 114.94,
+    "end": 132.16,
+    "words": 41,
+    "exact": 41,
+    "confidence": 1.0
   },
   {
     "number": 10,
-    "start": 216.89,
-    "end": 227.5,
-    "words": 26,
-    "exact": 25,
-    "confidence": 0.962
+    "start": 133.12,
+    "end": 144.54,
+    "words": 29,
+    "exact": 26,
+    "confidence": 0.897
   },
   {
     "number": 11,
-    "start": 228.19,
-    "end": 251.96,
-    "words": 54,
-    "exact": 53,
-    "confidence": 0.981
+    "start": 145.64,
+    "end": 165.02,
+    "words": 48,
+    "exact": 45,
+    "confidence": 0.938
   },
   {
     "number": 12,
-    "start": 252.25,
-    "end": 278.36,
-    "words": 69,
-    "exact": 68,
-    "confidence": 0.986
+    "start": 166.04,
+    "end": 181.16,
+    "words": 44,
+    "exact": 32,
+    "confidence": 0.727
   },
   {
     "number": 13,
-    "start": 279.67,
-    "end": 293.74,
-    "words": 40,
-    "exact": 38,
-    "confidence": 0.95
+    "start": 182.26,
+    "end": 197.7,
+    "words": 41,
+    "exact": 28,
+    "confidence": 0.683
   },
   {
     "number": 14,
-    "start": 294.01,
-    "end": 311.26,
-    "words": 49,
-    "exact": 49,
-    "confidence": 1
+    "start": 197.7,
+    "end": 215.5,
+    "words": 51,
+    "exact": 45,
+    "confidence": 0.882
   },
   {
     "number": 15,
-    "start": 311.61,
-    "end": 318.48,
-    "words": 20,
-    "exact": 20,
-    "confidence": 1
+    "start": 217.3,
+    "end": 227.5,
+    "words": 32,
+    "exact": 25,
+    "confidence": 0.781
   },
   {
     "number": 16,
-    "start": 318.91,
-    "end": 345.96,
-    "words": 76,
-    "exact": 76,
-    "confidence": 1
+    "start": 228.56,
+    "end": 251.96,
+    "words": 59,
+    "exact": 46,
+    "confidence": 0.78
   },
   {
     "number": 17,
-    "start": 347.89,
-    "end": 373.76,
-    "words": 52,
-    "exact": 51,
-    "confidence": 0.981
+    "start": 252.62,
+    "end": 270.4,
+    "words": 53,
+    "exact": 34,
+    "confidence": 0.642
   },
   {
     "number": 18,
-    "start": 374.23,
-    "end": 420.12,
-    "words": 109,
-    "exact": 108,
-    "confidence": 0.991
+    "start": 271.1,
+    "end": 278.36,
+    "words": 22,
+    "exact": 22,
+    "confidence": 1.0
   },
   {
     "number": 19,
-    "start": 420.55,
-    "end": 430.26,
-    "words": 26,
-    "exact": 26,
-    "confidence": 1
+    "start": 280.04,
+    "end": 293.74,
+    "words": 38,
+    "exact": 32,
+    "confidence": 0.842
   },
   {
     "number": 20,
-    "start": 430.59,
-    "end": 452.44,
-    "words": 51,
-    "exact": 51,
-    "confidence": 1
+    "start": 294.54,
+    "end": 311.26,
+    "words": 53,
+    "exact": 47,
+    "confidence": 0.887
   },
   {
     "number": 21,
-    "start": 453.79,
-    "end": 462.48,
-    "words": 23,
-    "exact": 22,
-    "confidence": 0.957
+    "start": 311.96,
+    "end": 318.48,
+    "words": 18,
+    "exact": 17,
+    "confidence": 0.944
   },
   {
     "number": 22,
-    "start": 462.69,
-    "end": 484.08,
-    "words": 60,
-    "exact": 59,
-    "confidence": 0.983
+    "start": 319.16,
+    "end": 330.4,
+    "words": 34,
+    "exact": 28,
+    "confidence": 0.824
   },
   {
     "number": 23,
-    "start": 484.47,
-    "end": 510.2,
-    "words": 70,
-    "exact": 69,
-    "confidence": 0.986
+    "start": 330.92,
+    "end": 345.96,
+    "words": 48,
+    "exact": 41,
+    "confidence": 0.854
   },
   {
     "number": 24,
-    "start": 511.05,
-    "end": 525.1,
-    "words": 37,
-    "exact": 37,
-    "confidence": 1
+    "start": 347.89,
+    "end": 360.6,
+    "words": 28,
+    "exact": 22,
+    "confidence": 0.786
   },
   {
     "number": 25,
-    "start": 527.37,
-    "end": 545.38,
-    "words": 41,
-    "exact": 41,
-    "confidence": 1
+    "start": 361.7,
+    "end": 373.76,
+    "words": 24,
+    "exact": 24,
+    "confidence": 1.0
   },
   {
     "number": 26,
-    "start": 546.67,
-    "end": 574.96,
-    "words": 61,
-    "exact": 57,
-    "confidence": 0.934
+    "start": 374.8,
+    "end": 382.94,
+    "words": 18,
+    "exact": 18,
+    "confidence": 1.0
   },
   {
     "number": 27,
-    "start": 576.39,
-    "end": 611.8,
-    "words": 86,
-    "exact": 86,
-    "confidence": 1
+    "start": 383.64,
+    "end": 410.82,
+    "words": 68,
+    "exact": 58,
+    "confidence": 0.853
   },
   {
     "number": 28,
-    "start": 612.85,
-    "end": 638.34,
-    "words": 72,
-    "exact": 71,
-    "confidence": 0.986
+    "start": 411.56,
+    "end": 420.12,
+    "words": 27,
+    "exact": 27,
+    "confidence": 1.0
   },
   {
     "number": 29,
-    "start": 638.69,
-    "end": 661.82,
-    "words": 73,
-    "exact": 73,
-    "confidence": 1
+    "start": 421.22,
+    "end": 430.22,
+    "words": 26,
+    "exact": 26,
+    "confidence": 1.0
   },
   {
     "number": 30,
-    "start": 662.95,
-    "end": 684.42,
-    "words": 47,
-    "exact": 46,
-    "confidence": 0.979
+    "start": 431.08,
+    "end": 452.3,
+    "words": 45,
+    "exact": 40,
+    "confidence": 0.889
   },
   {
     "number": 31,
-    "start": 684.89,
-    "end": 699.42,
-    "words": 36,
-    "exact": 36,
-    "confidence": 1
+    "start": 454.36,
+    "end": 462.48,
+    "words": 22,
+    "exact": 17,
+    "confidence": 0.773
   },
   {
     "number": 32,
-    "start": 699.85,
-    "end": 729.44,
-    "words": 64,
-    "exact": 64,
-    "confidence": 1
+    "start": 463.08,
+    "end": 477.18,
+    "words": 41,
+    "exact": 41,
+    "confidence": 1.0
   },
   {
     "number": 33,
-    "start": 730.01,
-    "end": 759.52,
-    "words": 88,
-    "exact": 88,
-    "confidence": 1
+    "start": 478.02,
+    "end": 484.08,
+    "words": 19,
+    "exact": 19,
+    "confidence": 1.0
   },
   {
     "number": 34,
-    "start": 759.99,
-    "end": 781.76,
-    "words": 50,
-    "exact": 50,
-    "confidence": 1
+    "start": 484.88,
+    "end": 511.42,
+    "words": 75,
+    "exact": 58,
+    "confidence": 0.773
   },
   {
     "number": 35,
-    "start": 783.83,
-    "end": 798.28,
-    "words": 34,
-    "exact": 34,
-    "confidence": 1
+    "start": 511.44,
+    "end": 516.3,
+    "words": 14,
+    "exact": 14,
+    "confidence": 1.0
   },
   {
     "number": 36,
-    "start": 798.45,
-    "end": 839.46,
-    "words": 108,
-    "exact": 108,
-    "confidence": 1
+    "start": 516.9,
+    "end": 525.1,
+    "words": 26,
+    "exact": 20,
+    "confidence": 0.769
   },
   {
     "number": 37,
-    "start": 839.53,
-    "end": 860.54,
-    "words": 49,
-    "exact": 49,
-    "confidence": 1
+    "start": 527.9,
+    "end": 547.06,
+    "words": 41,
+    "exact": 33,
+    "confidence": 0.805
   },
   {
     "number": 38,
-    "start": 860.69,
+    "start": 547.06,
+    "end": 563.68,
+    "words": 43,
+    "exact": 28,
+    "confidence": 0.651
+  },
+  {
+    "number": 39,
+    "start": 566.72,
+    "end": 574.96,
+    "words": 20,
+    "exact": 20,
+    "confidence": 1.0
+  },
+  {
+    "number": 40,
+    "start": 576.5,
+    "end": 587.26,
+    "words": 27,
+    "exact": 27,
+    "confidence": 1.0
+  },
+  {
+    "number": 41,
+    "start": 588.86,
+    "end": 603.66,
+    "words": 42,
+    "exact": 39,
+    "confidence": 0.929
+  },
+  {
+    "number": 42,
+    "start": 604.38,
+    "end": 611.8,
+    "words": 18,
+    "exact": 18,
+    "confidence": 1.0
+  },
+  {
+    "number": 43,
+    "start": 613.38,
+    "end": 631.46,
+    "words": 60,
+    "exact": 38,
+    "confidence": 0.633
+  },
+  {
+    "number": 44,
+    "start": 634.48,
+    "end": 638.34,
+    "words": 12,
+    "exact": 12,
+    "confidence": 1.0
+  },
+  {
+    "number": 45,
+    "start": 639.02,
+    "end": 648.78,
+    "words": 35,
+    "exact": 32,
+    "confidence": 0.914
+  },
+  {
+    "number": 46,
+    "start": 649.4,
+    "end": 661.82,
+    "words": 38,
+    "exact": 35,
+    "confidence": 0.921
+  },
+  {
+    "number": 47,
+    "start": 663.34,
+    "end": 671.16,
+    "words": 19,
+    "exact": 19,
+    "confidence": 1.0
+  },
+  {
+    "number": 48,
+    "start": 672.06,
+    "end": 684.42,
+    "words": 30,
+    "exact": 17,
+    "confidence": 0.567
+  },
+  {
+    "number": 49,
+    "start": 685.4,
+    "end": 699.42,
+    "words": 33,
+    "exact": 30,
+    "confidence": 0.909
+  },
+  {
+    "number": 50,
+    "start": 700.14,
+    "end": 729.44,
+    "words": 72,
+    "exact": 55,
+    "confidence": 0.764
+  },
+  {
+    "number": 51,
+    "start": 730.4,
+    "end": 744.8,
+    "words": 44,
+    "exact": 38,
+    "confidence": 0.864
+  },
+  {
+    "number": 52,
+    "start": 745.66,
+    "end": 759.52,
+    "words": 44,
+    "exact": 38,
+    "confidence": 0.864
+  },
+  {
+    "number": 53,
+    "start": 760.76,
+    "end": 781.7,
+    "words": 53,
+    "exact": 50,
+    "confidence": 0.943
+  },
+  {
+    "number": 54,
+    "start": 784.56,
+    "end": 798.28,
+    "words": 37,
+    "exact": 31,
+    "confidence": 0.838
+  },
+  {
+    "number": 55,
+    "start": 798.74,
+    "end": 813.704,
+    "words": 48,
+    "exact": 37,
+    "confidence": 0.771
+  },
+  {
+    "number": 56,
+    "start": 816.42,
+    "end": 839.46,
+    "words": 63,
+    "exact": 54,
+    "confidence": 0.857
+  },
+  {
+    "number": 57,
+    "start": 839.84,
+    "end": 860.54,
+    "words": 51,
+    "exact": 50,
+    "confidence": 0.98
+  },
+  {
+    "number": 58,
+    "start": 861.06,
+    "end": 866.24,
+    "words": 17,
+    "exact": 17,
+    "confidence": 1.0
+  },
+  {
+    "number": 59,
+    "start": 866.56,
     "end": 882.22,
-    "words": 45,
-    "exact": 44,
-    "confidence": 0.978
+    "words": 28,
+    "exact": 28,
+    "confidence": 1.0
   }
 ]

@@ -5,7 +5,7 @@ import storyTimings from "../content/story-timings.json";
 import storyWordTimings from "../content/story-word-timings.json";
 import { windStoryReader } from "../content/wind-story-reader";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
-import { storyArt, validateVoicePassages, voiceWords } from "../lib/story-reader";
+import { storyArt, storyArtKind, validateVoicePassages, voiceWords } from "../lib/story-reader";
 
 const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
@@ -16,6 +16,8 @@ const beatData = chapters.flatMap((chapter) =>
 );
 const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.number, beat]));
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
+const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
+const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
 ---
 
 <Base
@@ -44,7 +46,7 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <img class="is-hand-sketch" src={artForBeat(1)} alt="" fetchpriority="high" />
+        <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
       </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
@@ -69,7 +71,7 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
         </div>
       </div>
 
-      <p class="cover-note">11 original reMarkable sketches · 27 rose-gray studies · final art to come</p>
+      <p class="cover-note">11 original reMarkable sketches · 27 rose-gray studies · 21 drawings to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
     </section>
 
@@ -134,6 +136,9 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                 const alignedWords = alignedBeat?.paragraphs.flatMap((paragraph) => paragraph.words) ?? [];
                 const paragraphStart = alignedWords[0]?.start ?? beat.start;
                 const paragraphEnd = alignedWords.at(-1)?.end ?? beat.end;
+                const artworkSrc = artForBeat(beat.number);
+                const artworkKind = artKindForBeat(beat.number);
+                const isOriginalArtwork = artworkKind === "original";
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -144,7 +149,7 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                   >
                     <figure class="beat-visual">
                       <div
-                        class={`beat-art-frame ${beat.number <= windStoryReader.artwork.originalThrough ? "is-original-sketch" : ""}`}
+                        class={`beat-art-frame ${isOriginalArtwork ? "is-original-sketch" : ""} ${artworkSrc ? "" : "is-missing-art"}`}
                         data-cinematic-art
                         data-motion={motion}
                       >
@@ -154,20 +159,28 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                           <strong>Drawing to come</strong>
                           <small>{beat.prompt}</small>
                         </div>
-                        <img
-                          class={beat.number <= windStoryReader.artwork.originalThrough ? "is-hand-sketch" : undefined}
-                          src={artForBeat(beat.number)}
-                          alt={`Drawing ${beat.number}: ${beat.prompt}`}
-                          data-story-art
-                          loading={beat.number === 1 ? "eager" : "lazy"}
-                        />
+                        {artworkSrc && (
+                          <img
+                            class={isOriginalArtwork ? "is-hand-sketch" : undefined}
+                            src={artworkSrc}
+                            alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                            data-story-art
+                            loading={beat.number === 1 ? "eager" : "lazy"}
+                          />
+                        )}
                         <div class={`cinematic-layer motion-${motion}`} aria-hidden="true">
                           {[1, 2, 3, 4, 5].map((mark) => <i class={`motion-mark mark-${mark}`}></i>)}
                         </div>
                       </div>
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span data-art-status>{beat.number <= windStoryReader.artwork.originalThrough ? "original reMarkable sketch" : "rose-gray ink study"}</span>
+                        <span data-art-status>
+                          {artworkKind === "original"
+                            ? "original reMarkable sketch"
+                            : artworkKind === "study"
+                              ? "rose-gray ink study"
+                              : "drawing placeholder"}
+                        </span>
                       </figcaption>
                     </figure>
 
@@ -187,7 +200,7 @@ const artForBeat = (number: number) => storyArt(windStoryReader, number);
                               {wordIndex > 0 && " "}
                               <span
                                 data-narration-word
-                                data-speaker={word.speaker}
+                                data-speaker={word.speaker !== "narrator" ? word.speaker : cue?.speaker ?? word.speaker}
                                 data-start={cue?.start ?? paragraphStart}
                                 data-end={cue?.end ?? paragraphEnd}
                               >

@@ -28,13 +28,7 @@ DEFAULT_AUDIO = Path(
 
 # Exact spot checks for boundary words that the full-recording Whisper pass
 # merges into a neighboring segment. Indices are zero-based manuscript words.
-WORD_CUE_OVERRIDES = {
-    23: {
-        74: {"start": 510.04, "end": 510.22},   # the
-        75: {"start": 510.22, "end": 510.44},   # rest
-        76: {"start": 510.44, "end": 511.42},   # room
-    },
-}
+WORD_CUE_OVERRIDES: dict[int, dict[int, dict[str, float]]] = {}
 
 
 def manuscript_beats(markdown: str) -> list[dict]:
@@ -42,7 +36,10 @@ def manuscript_beats(markdown: str) -> list[dict]:
     current: dict | None = None
     for raw_line in markdown.splitlines():
         line = raw_line.strip()
-        drawing = re.match(r"^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$", line)
+        drawing = (
+            re.match(r"^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$", line)
+            or re.match(r"^\*\(drawing (\d+):\s*(.+)\)\*$", line, re.IGNORECASE)
+        )
         if drawing:
             current = {"number": int(drawing.group(1)), "paragraphs": []}
             beats.append(current)
@@ -178,6 +175,17 @@ def main() -> None:
     parser.add_argument("--model", default="small.en")
     args = parser.parse_args()
 
+    preserved_speakers: dict[tuple[int, int], list[str]] = {}
+    if args.output.exists():
+        try:
+            existing = json.loads(args.output.read_text())
+            for beat in existing.get("beats", []):
+                for paragraph in beat.get("paragraphs", []):
+                    speakers = [word.get("speaker", "narrator") for word in paragraph.get("words", [])]
+                    preserved_speakers[(beat["number"], paragraph["paragraph"])] = speakers
+        except (json.JSONDecodeError, KeyError, TypeError):
+            preserved_speakers = {}
+
     try:
         from faster_whisper import WhisperModel
     except ImportError as error:
@@ -247,9 +255,16 @@ def main() -> None:
         paragraphs = []
         cursor = 0
         for paragraph_index, words in enumerate(paragraph_words):
+            paragraph_cues = cues[cursor:cursor + len(words)]
+            speakers = preserved_speakers.get((beat["number"], paragraph_index), [])
+            if len(speakers) == len(paragraph_cues):
+                paragraph_cues = [
+                    {**cue, "speaker": speakers[index]}
+                    for index, cue in enumerate(paragraph_cues)
+                ]
             paragraphs.append({
                 "paragraph": paragraph_index,
-                "words": cues[cursor:cursor + len(words)],
+                "words": paragraph_cues,
             })
             cursor += len(words)
 

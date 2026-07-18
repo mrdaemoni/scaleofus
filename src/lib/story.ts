@@ -46,7 +46,7 @@ export function parseStoryMarkdown(
 
   for (const rawLine of raw.split("\n")) {
     const line = rawLine.trim();
-    const chapterMatch = line.match(/^## Chapter ([A-Za-z]+) — (.+)$/);
+    const chapterMatch = line.match(/^## Chapter ([A-Za-z]+)\s*(?:—|:)\s*(.+)$/);
     if (chapterMatch) {
       const number = words.indexOf(chapterMatch[1]) + 1;
       chapter = {
@@ -63,7 +63,8 @@ export function parseStoryMarkdown(
       continue;
     }
 
-    const drawingMatch = line.match(/^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$/);
+    const drawingMatch = line.match(/^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$/)
+      ?? line.match(/^\*\(drawing (\d+):\s*(.+)\)\*$/i);
     if (drawingMatch && chapter) {
       beat = {
         number: Number(drawingMatch[1]),
