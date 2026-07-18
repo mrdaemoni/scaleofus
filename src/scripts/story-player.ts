@@ -99,9 +99,11 @@ const setWord = (index: number) => {
   activeWord = index;
 };
 
-const syncNarrationWord = () => {
+const syncNarrationWord = (preserveCurrentOnGap = false) => {
   if (!audio || !narrationWords.length) return;
-  setWord(wordForTime(audio.currentTime));
+  const nextWord = wordForTime(audio.currentTime);
+  if (nextWord < 0 && preserveCurrentOnGap && activeWord >= 0) return;
+  setWord(nextWord);
 };
 
 const runNarrationLoop = () => {
@@ -118,7 +120,7 @@ const startNarrationLoop = () => {
 const stopNarrationLoop = () => {
   if (narrationFrame) cancelAnimationFrame(narrationFrame);
   narrationFrame = 0;
-  syncNarrationWord();
+  syncNarrationWord(true);
 };
 
 const beatForNumber = (number: number) => beats.findIndex((beat) => beat.number === number);
