@@ -28,6 +28,7 @@ export const windStoryReader: StoryReaderConfig = {
       3: original(3),
       6: original(4),
       7: original(5),
+      8: { src: "/images/wind-story/sketches/beat-08-leaving-town-v2.png", kind: "original" },
       9: original(6),
       11: original(7),
       13: original(8),

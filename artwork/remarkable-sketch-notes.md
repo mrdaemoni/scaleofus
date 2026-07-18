@@ -2,6 +2,8 @@
 
 Source: `incoming/Scale 1 - page 1.svg`, downloaded from the Gmail message “Document from my reMarkable: Scale 1” on July 17, 2026.
 
+Chapter 1 V2 addition: `incoming/chapter-01-v2-page-09.svg`, downloaded from the Gmail message “Document from my reMarkable: Remarkable-The Boy Who Tried to Catch the Wind (reMarkable sketchbook)” on July 18, 2026. It is used for the leaving-town beat with the boy, backpack, and curling wind.
+
 ## What already works
 
 - The line is immediate and alive. It fits the story better than polished realism would.

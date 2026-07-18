@@ -4,6 +4,7 @@ import sharp from "sharp";
 
 const root = process.cwd();
 const sourcePath = path.join(root, "artwork/incoming/Scale 1 - page 1.svg");
+const chapterOneV2Path = path.join(root, "artwork/incoming/chapter-01-v2-page-09.svg");
 const outputDir = path.join(root, "public/images/wind-story/sketches");
 const source = await readFile(sourcePath, "utf8");
 const drawingOnly = source.replace(/<image\b[^>]*?\/>/s, "");
@@ -73,4 +74,52 @@ for (const scene of scenes) {
     .toFile(path.join(outputDir, file));
 }
 
-console.log(`Rendered ${scenes.length} self-contained story sketches.`);
+const chapterOneV2Source = await readFile(chapterOneV2Path, "utf8");
+const chapterOneV2Drawing = chapterOneV2Source.replace(/<image\b[^>]*?\/>/s, "");
+const chapterOneV2Rendered = await sharp(Buffer.from(chapterOneV2Drawing), { limitInputPixels: false })
+  .png()
+  .toBuffer();
+const chapterOneV2Trimmed = await sharp(chapterOneV2Rendered)
+  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+  .png()
+  .toBuffer();
+const chapterOneV2Metadata = await sharp(chapterOneV2Trimmed).metadata();
+const chapterOneV2Mask = await sharp(chapterOneV2Trimmed)
+  .extractChannel("alpha")
+  .linear(0.76)
+  .png()
+  .toBuffer();
+const chapterOneV2Ink = await sharp({
+  create: {
+    width: chapterOneV2Metadata.width,
+    height: chapterOneV2Metadata.height,
+    channels: 3,
+    background: "#5f5358",
+  },
+})
+  .joinChannel(chapterOneV2Mask)
+  .png()
+  .toBuffer();
+const chapterOneV2Fitted = await sharp(chapterOneV2Ink)
+  .resize({
+    width: 1120,
+    height: 720,
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toBuffer();
+
+await sharp({
+  create: {
+    width: 1200,
+    height: 800,
+    channels: 4,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  },
+})
+  .composite([{ input: chapterOneV2Fitted, gravity: "center" }])
+  .png({ compressionLevel: 9, palette: true, quality: 94 })
+  .toFile(path.join(outputDir, "beat-08-leaving-town-v2.png"));
+
+console.log(`Rendered ${scenes.length} storyboard sketches and the chapter-one V2 leaving-town drawing.`);
