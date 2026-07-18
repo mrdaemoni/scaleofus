@@ -3,25 +3,19 @@ import Base from "../layouts/Base.astro";
 import storyMarkdown from "../content/the-boy-who-tried-to-catch-the-wind.md?raw";
 import storyTimings from "../content/story-timings.json";
 import storyWordTimings from "../content/story-word-timings.json";
+import { windStoryReader } from "../content/wind-story-reader";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
+import { storyArt, validateVoicePassages, voiceWords } from "../lib/story-reader";
 
-const duration = 885.54;
+const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
+validateVoicePassages(chapters, windStoryReader.voices);
 const chapterData = chapters.map(({ number, title, id, start }) => ({ number, title, id, start }));
 const beatData = chapters.flatMap((chapter) =>
   chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
 );
 const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.number, beat]));
-const motionByBeat = [
-  "wind", "card", "glow", "path", "glow", "trail", "tap", "stream", "pebble", "smoke",
-  "flame", "glow", "wheel", "question", "clay", "sun", "pond", "ripple", "rain", "leaf",
-  "garden", "sprout", "flower", "path", "windows", "mirrors", "card", "still", "wind", "sky",
-  "fragments", "gifts", "breath", "map", "windows", "breath", "page", "wind",
-];
-const firstSketchBeat = 11;
-const artForBeat = (number: number) => number <= firstSketchBeat
-  ? `/images/wind-story/sketches/beat-${String(number).padStart(2, "0")}.png`
-  : `/images/wind-story/beats/beat-${String(number).padStart(2, "0")}.jpg`;
+const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const wordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 const paragraphTimings = (beat: { start: number; end: number; paragraphs: string[] }) => {
   const counts = beat.paragraphs.map(wordCount);
@@ -37,8 +31,8 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
 ---
 
 <Base
-  title="The Boy Who Tried to Catch the Wind — Scale of Us"
-  description="An immersive reading and listening experience about a boy, a machine, and the part of us no answer can hold."
+  title={`${windStoryReader.title} — Scale of Us`}
+  description={`An immersive reading and listening experience. ${windStoryReader.intro}`}
   bodyClass="story-page"
 >
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
@@ -54,7 +48,12 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
     </nav>
   </header>
 
-  <main data-story-app data-chapters={JSON.stringify(chapterData)} data-beats={JSON.stringify(beatData)}>
+  <main
+    data-story-app
+    data-reader-id={windStoryReader.id}
+    data-chapters={JSON.stringify(chapterData)}
+    data-beats={JSON.stringify(beatData)}
+  >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
         <img class="is-hand-sketch" src={artForBeat(1)} alt="" fetchpriority="high" />
@@ -65,15 +64,20 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
       </div>
 
       <div class="cover-copy">
-        <p class="eyebrow">A Scale of Us story</p>
-        <h1 id="story-title">The Boy Who Tried to Catch the Wind</h1>
-        <p class="cover-intro">A story about a boy, a machine, and the part of us no answer can hold.</p>
-        <div class="cover-actions">
-          <a class="primary-action" href="#story">Enter the story <span aria-hidden="true">↓</span></a>
-          <button class="listen-action" type="button" data-hero-play>
-            <span class="round-play" aria-hidden="true">▶</span>
-            <span><strong>Listen from the beginning</strong><small>{formatTime(duration)} · read aloud</small></span>
-          </button>
+        <h1 id="story-title">{windStoryReader.title}</h1>
+        <p class="cover-intro">{windStoryReader.intro}</p>
+        <div class="cover-story-entry" role="group" aria-label="Enter the story">
+          <span class="entry-label">Enter the story</span>
+          <div class="entry-options">
+            <a class="entry-read" href="#story">
+              <strong>Read</strong>
+              <small>At your pace</small>
+            </a>
+            <button class="entry-listen" type="button" data-hero-play>
+              <span class="round-play" aria-hidden="true">▶</span>
+              <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -133,7 +137,7 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
 
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
-                const motion = motionByBeat[beat.number - 1] ?? "drift";
+                const motion = windStoryReader.motions[beat.number - 1] ?? "drift";
                 const timings = paragraphTimings(beat);
                 const alignedBeat = wordTimingByBeat.get(beat.number);
                 return (
@@ -146,12 +150,12 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
                   >
                     <figure class="beat-visual">
                       <div
-                        class={`beat-art-frame ${beat.number <= firstSketchBeat ? "is-original-sketch" : ""}`}
+                        class={`beat-art-frame ${beat.number <= windStoryReader.artwork.originalThrough ? "is-original-sketch" : ""}`}
                         data-cinematic-art
                         data-motion={motion}
                       >
                         <img
-                          class={beat.number <= firstSketchBeat ? "is-hand-sketch" : undefined}
+                          class={beat.number <= windStoryReader.artwork.originalThrough ? "is-hand-sketch" : undefined}
                           src={artForBeat(beat.number)}
                           alt={`Drawing ${beat.number}: ${beat.prompt}`}
                           loading={beat.number === 1 ? "eager" : "lazy"}
@@ -162,14 +166,17 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
                       </div>
                       <figcaption>
                         <span>Drawing {String(beat.number).padStart(2, "0")}</span>
-                        <span>{beat.number <= firstSketchBeat ? "original reMarkable sketch" : "rose-gray ink study"}</span>
+                        <span>{beat.number <= windStoryReader.artwork.originalThrough ? "original reMarkable sketch" : "rose-gray ink study"}</span>
                       </figcaption>
                     </figure>
 
                     <div class="beat-copy">
                       <p class="beat-number" aria-hidden="true">{String(beat.number).padStart(2, "0")}</p>
                       {beat.paragraphs.map((paragraph, paragraphIndex) => {
-                        const words = paragraph.split(/\s+/).filter(Boolean);
+                        const words = voiceWords(
+                          paragraph,
+                          windStoryReader.voices.filter((passage) => passage.beat === beat.number),
+                        );
                         const alignedWords = alignedBeat?.paragraphs[paragraphIndex]?.words ?? [];
                         const paragraphStart = alignedWords[0]?.start ?? timings[paragraphIndex].start;
                         const paragraphEnd = alignedWords.at(-1)?.end ?? timings[paragraphIndex].end;
@@ -188,10 +195,11 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
                                   {wordIndex > 0 && " "}
                                   <span
                                     data-narration-word
+                                    data-speaker={word.speaker}
                                     data-start={cue?.start ?? paragraphStart}
                                     data-end={cue?.end ?? paragraphEnd}
                                   >
-                                    {word}
+                                    {word.text}
                                   </span>
                                 </>
                               );
@@ -221,7 +229,7 @@ const paragraphTimings = (beat: { start: number; end: number; paragraphs: string
   <div class="audio-dock" data-audio-dock>
     <audio
       data-audio
-      src="/audio/the-boy-who-tried-to-catch-the-wind.mp3"
+      src={windStoryReader.audio.src}
       preload="metadata"
     ></audio>
     <nav class="dock-chapters" aria-label="Story chapters">

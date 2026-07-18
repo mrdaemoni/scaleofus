@@ -31,6 +31,7 @@ const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narrati
 const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const desktopReader = matchMedia("(min-width: 761px)");
 
 let activeChapter = -1;
 let activeBeat = -1;
@@ -46,6 +47,7 @@ let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
+let fitTimer = 0;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -91,6 +93,7 @@ const setWord = (index: number) => {
     return;
   }
   narrationWords[index].classList.add("is-current-word");
+  document.body.dataset.activeSpeaker = narrationWords[index].dataset.speaker ?? "narrator";
   activeWord = index;
 };
 
@@ -164,6 +167,11 @@ const updateStoryProgress = (seconds: number) => {
 
 const setBeat = (index: number) => {
   if (index < 0 || !beats[index]) return;
+  if (activeBeat !== index && beatElements[activeBeat]) {
+    beatElements[activeBeat].style.removeProperty("--reader-beat-gap");
+    beatElements[activeBeat].querySelector<HTMLElement>("[data-cinematic-art]")
+      ?.style.removeProperty("--fitted-art-height");
+  }
   activeBeat = index;
   beatElements.forEach((element, elementIndex) => {
     const isCurrent = elementIndex === index;
@@ -173,17 +181,57 @@ const setBeat = (index: number) => {
   setChapter(Number(beats[index].chapter) - 1);
 };
 
-const readingCenter = () => {
+const readingBounds = () => {
+  const top = clamp(innerHeight * 0.025, 14, 30);
   const dockTop = dock?.getBoundingClientRect().top ?? innerHeight;
-  const visibleBottom = Math.min(innerHeight, dockTop - 14);
-  return Math.max(90, visibleBottom / 2);
+  const bottom = Math.max(top + 320, Math.min(innerHeight - 12, dockTop - 16));
+  return { top, bottom, height: bottom - top };
+};
+
+const readingFocus = () => {
+  const bounds = readingBounds();
+  return bounds.top + bounds.height * (desktopReader.matches ? 0.76 : 0.5);
+};
+
+const fitBeatToViewport = (index: number) => {
+  const paragraph = paragraphs[index];
+  const beat = paragraph?.closest<HTMLElement>("[data-beat]");
+  const frame = beat?.querySelector<HTMLElement>("[data-cinematic-art]");
+  if (!paragraph || !beat || !frame) return null;
+
+  frame.style.removeProperty("--fitted-art-height");
+  beat.style.removeProperty("--reader-beat-gap");
+  if (!desktopReader.matches) return frame;
+
+  const bounds = readingBounds();
+  const frameRect = frame.getBoundingClientRect();
+  const paragraphRect = paragraph.getBoundingClientRect();
+  const fixedHeight = Math.max(0, paragraphRect.bottom - frameRect.top - frameRect.height);
+  const naturalHeight = frame.clientWidth * 2 / 3;
+  const minHeight = Math.min(300, bounds.height * 0.36);
+  const maxHeight = Math.min(naturalHeight, bounds.height * 0.72);
+  const fittedHeight = clamp(bounds.height - fixedHeight, minHeight, maxHeight);
+  frame.style.setProperty("--fitted-art-height", `${Math.round(fittedHeight)}px`);
+
+  const fittedFrame = frame.getBoundingClientRect();
+  const fittedParagraph = paragraph.getBoundingClientRect();
+  const slack = bounds.height - (fittedParagraph.bottom - fittedFrame.top);
+  if (slack > 7) {
+    const currentGap = Number.parseFloat(getComputedStyle(beat).rowGap) || 34;
+    beat.style.setProperty("--reader-beat-gap", `${Math.round(clamp(currentGap + slack, 30, 82))}px`);
+  }
+  return frame;
 };
 
 const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => {
   const paragraph = paragraphs[index];
   if (!paragraph || !followNarration || manualScrollActive) return;
+  const frame = fitBeatToViewport(index);
+  const bounds = readingBounds();
   const rect = paragraph.getBoundingClientRect();
-  const desiredTop = scrollY + rect.top + rect.height / 2 - readingCenter();
+  const desiredTop = desktopReader.matches && frame
+    ? scrollY + frame.getBoundingClientRect().top - bounds.top
+    : scrollY + rect.top + rect.height / 2 - readingFocus();
   const distance = Math.abs(desiredTop - scrollY);
   if (distance < 12) return;
   autoScrollActive = true;
@@ -193,6 +241,16 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
     autoScrollActive = false;
   }, reducedMotion.matches ? 50 : 1400);
   scrollTo({ top: Math.max(0, desiredTop), behavior: reducedMotion.matches ? "auto" : behavior });
+};
+
+const queueViewportFit = (delay = 380) => {
+  if (fitTimer) window.clearTimeout(fitTimer);
+  fitTimer = window.setTimeout(() => {
+    fitTimer = 0;
+    if (activeParagraph >= 0 && followNarration && audio && !audio.paused && !manualScrollActive) {
+      centerParagraph(activeParagraph, "auto");
+    }
+  }, delay);
 };
 
 const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "audio") => {
@@ -238,10 +296,12 @@ const togglePlayback = async () => {
 };
 
 const setDockCompact = (compact: boolean) => {
+  if ((dock?.classList.contains("is-compact") ?? false) === compact) return;
   dock?.classList.toggle("is-compact", compact);
   collapse?.setAttribute("aria-expanded", String(!compact));
   collapse?.setAttribute("aria-label", compact ? "Expand story controls" : "Minimize story controls");
   if (collapse) collapse.textContent = compact ? "⌃" : "⌄";
+  queueViewportFit();
 };
 
 const syncDockFootprint = () => {
@@ -250,7 +310,7 @@ const syncDockFootprint = () => {
 };
 
 const closestParagraphToReadingCenter = () => {
-  const center = readingCenter();
+  const center = readingFocus();
   let closest = -1;
   let distance = Number.POSITIVE_INFINITY;
   paragraphs.forEach((paragraph, index) => {
@@ -417,6 +477,13 @@ addEventListener("scrollend", () => {
 addEventListener("resize", () => {
   syncDockFootprint();
   requestCinematicMotion();
+  if (!desktopReader.matches) {
+    beatElements.forEach((beat) => {
+      beat.style.removeProperty("--reader-beat-gap");
+      beat.querySelector<HTMLElement>("[data-cinematic-art]")?.style.removeProperty("--fitted-art-height");
+    });
+  }
+  queueViewportFit(160);
 }, { passive: true });
 
 addEventListener("pointermove", (event) => {
