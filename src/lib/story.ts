@@ -24,7 +24,6 @@ export type ReadingChapter = {
   paragraphs: string[];
 };
 
-const numerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"];
 const words = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
 
 const slugify = (value: string) =>
@@ -52,7 +51,7 @@ export function parseStoryMarkdown(
       const number = words.indexOf(chapterMatch[1]) + 1;
       chapter = {
         number,
-        numeral: numerals[number - 1],
+        numeral: String(number),
         title: chapterMatch[2],
         shortTitle: chapterMatch[2].replace(/^The /, ""),
         id: `chapter-${number}-${slugify(chapterMatch[2])}`,
@@ -124,7 +123,7 @@ export function parseReadingMarkdown(raw: string) {
       const number = words.indexOf(chapterMatch[1]) + 1;
       chapter = {
         number,
-        numeral: numerals[number - 1],
+        numeral: String(number),
         title: chapterMatch[2],
         id: `chapter-${number}-${slugify(chapterMatch[2])}`,
         paragraphs: [],

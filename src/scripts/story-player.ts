@@ -35,10 +35,12 @@ let activeBeat = -1;
 let activeParagraph = -1;
 let followNarration = true;
 let dockPinnedOpen = false;
-let programmaticScrollUntil = 0;
-let lastUserScrollIntent = 0;
+let autoScrollActive = false;
+let manualScrollActive = false;
+let touchActive = false;
 let lastCenteredParagraph = -1;
-let scrollSyncTimer = 0;
+let manualScrollTimer = 0;
+let autoScrollTimer = 0;
 let cinematicFrame = 0;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -70,8 +72,7 @@ const setChapter = (index: number) => {
     link.toggleAttribute("aria-current", isCurrent);
   });
   if (currentChapter) {
-    const numeral = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"][index];
-    currentChapter.textContent = `Chapter ${numeral} · ${chapters[index].title}`;
+    currentChapter.textContent = `Chapter ${index + 1} · ${chapters[index].title}`;
   }
   if (changed && dockChapterNav) {
     const activeLink = dockChapterLinks.find((link) => Number(link.dataset.chapterIndex) === index);
@@ -125,14 +126,17 @@ const readingCenter = () => {
 
 const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => {
   const paragraph = paragraphs[index];
-  if (!paragraph || !followNarration) return;
-  if (performance.now() - lastUserScrollIntent < 420) return;
+  if (!paragraph || !followNarration || manualScrollActive) return;
   const rect = paragraph.getBoundingClientRect();
   const desiredTop = scrollY + rect.top + rect.height / 2 - readingCenter();
   const distance = Math.abs(desiredTop - scrollY);
   if (distance < 12) return;
-  programmaticScrollUntil = performance.now() + Math.min(1400, Math.max(700, distance * 0.85));
+  autoScrollActive = true;
   lastCenteredParagraph = index;
+  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
+  autoScrollTimer = window.setTimeout(() => {
+    autoScrollActive = false;
+  }, reducedMotion.matches ? 50 : 1400);
   scrollTo({ top: Math.max(0, desiredTop), behavior: reducedMotion.matches ? "auto" : behavior });
 };
 
@@ -147,7 +151,7 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   });
   const beatNumber = Number(paragraphs[index].dataset.beatNumber);
   setBeat(beatForNumber(beatNumber));
-  if (source === "audio" && followNarration && changed && lastCenteredParagraph !== index) {
+  if (source === "audio" && followNarration && !manualScrollActive && changed && lastCenteredParagraph !== index) {
     centerParagraph(index);
   }
 };
@@ -156,12 +160,13 @@ const updatePlayState = () => {
   if (!audio) return;
   const playing = !audio.paused;
   document.body.classList.toggle("is-listening", playing);
-  if (playIcon) playIcon.textContent = playing ? "Ⅱ" : "▶";
+  if (playIcon) playIcon.textContent = playing ? "❚❚" : "▶";
   dockPlay?.setAttribute("aria-label", playing ? "Pause narration" : "Play narration");
 };
 
 const togglePlayback = async () => {
   if (!audio) return;
+  if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
     try {
       await audio.play();
@@ -189,44 +194,45 @@ const syncDockFootprint = () => {
   setDockCompact(scrollY > Math.min(innerHeight * 0.28, 280));
 };
 
-const syncAudioFromViewport = () => {
-  scrollSyncTimer = 0;
-  if (!audio || performance.now() < programmaticScrollUntil) return;
-  if (performance.now() - lastUserScrollIntent > 1700) return;
+const closestParagraphToReadingCenter = () => {
   const center = readingCenter();
   let closest = -1;
   let distance = Number.POSITIVE_INFINITY;
   paragraphs.forEach((paragraph, index) => {
     const rect = paragraph.getBoundingClientRect();
-    const paragraphCenter = rect.top + Math.min(rect.height / 2, center * 0.6);
+    const paragraphCenter = rect.top + rect.height / 2;
     const candidate = Math.abs(paragraphCenter - center);
     if (candidate < distance) {
       distance = candidate;
       closest = index;
     }
   });
+  return closest;
+};
+
+const syncAudioFromViewport = () => {
+  manualScrollTimer = 0;
+  if (!audio || !manualScrollActive || touchActive || autoScrollActive) return;
+  const closest = closestParagraphToReadingCenter();
   if (closest < 0) return;
+  manualScrollActive = false;
   const nextTime = paragraphStart(closest) + 0.02;
   if (Math.abs(audio.currentTime - nextTime) > 0.45) audio.currentTime = nextTime;
   updateStoryProgress(audio.currentTime);
   setParagraph(closest, "scroll");
-  if (followNarration) {
-    setTimeout(() => {
-      if (activeParagraph === closest) centerParagraph(closest);
-    }, 460);
-  }
 };
 
-const queueViewportSync = () => {
-  if (scrollSyncTimer) window.clearTimeout(scrollSyncTimer);
-  scrollSyncTimer = window.setTimeout(syncAudioFromViewport, 180);
+const queueViewportSync = (delay = 220) => {
+  if (manualScrollTimer) window.clearTimeout(manualScrollTimer);
+  manualScrollTimer = window.setTimeout(syncAudioFromViewport, delay);
 };
 
-const markUserScrollIntent = (event: Event) => {
+const beginManualScroll = (event: Event) => {
   const target = event.target as Element | null;
   if (target?.closest("[data-audio-dock]")) return;
-  lastUserScrollIntent = performance.now();
-  programmaticScrollUntil = 0;
+  manualScrollActive = true;
+  autoScrollActive = false;
+  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   lastCenteredParagraph = -1;
 };
 
@@ -264,7 +270,7 @@ seek?.addEventListener("input", () => {
   if (!audio) return;
   audio.currentTime = Number(seek.value);
   updateStoryProgress(audio.currentTime);
-  setParagraph(paragraphForTime(audio.currentTime), "audio");
+  setParagraph(paragraphForTime(audio.currentTime), "scroll");
 });
 seek?.addEventListener("change", () => {
   if (audio) centerParagraph(paragraphForTime(audio.currentTime));
@@ -280,7 +286,8 @@ chapterLinks.forEach((link) => {
     const paragraphIndex = paragraphForTime(audio.currentTime);
     setParagraph(paragraphIndex, "scroll");
     history.replaceState(null, "", link.hash);
-    lastUserScrollIntent = 0;
+    manualScrollActive = false;
+    autoScrollActive = false;
     lastCenteredParagraph = -1;
     centerParagraph(paragraphIndex);
     setChapter(index);
@@ -311,19 +318,36 @@ const beatObserver = new IntersectionObserver(
 );
 beatElements.forEach((beat) => beatObserver.observe(beat));
 
-addEventListener("wheel", markUserScrollIntent, { passive: true });
-addEventListener("touchstart", markUserScrollIntent, { passive: true });
+addEventListener("wheel", beginManualScroll, { passive: true });
+addEventListener("touchstart", (event) => {
+  touchActive = true;
+  beginManualScroll(event);
+}, { passive: true });
+addEventListener("touchend", () => {
+  touchActive = false;
+  if (manualScrollActive) queueViewportSync(240);
+}, { passive: true });
+addEventListener("touchcancel", () => {
+  touchActive = false;
+  if (manualScrollActive) queueViewportSync(240);
+}, { passive: true });
 addEventListener("keydown", (event) => {
   if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
-    markUserScrollIntent(event);
+    beginManualScroll(event);
   }
 });
 addEventListener("scroll", () => {
   syncDockFootprint();
-  queueViewportSync();
+  if (manualScrollActive && !autoScrollActive) queueViewportSync();
   requestCinematicMotion();
 }, { passive: true });
-addEventListener("scrollend", syncAudioFromViewport, { passive: true });
+addEventListener("scrollend", () => {
+  if (autoScrollActive) {
+    autoScrollActive = false;
+    return;
+  }
+  if (manualScrollActive && !touchActive) queueViewportSync(80);
+}, { passive: true });
 addEventListener("resize", () => {
   syncDockFootprint();
   requestCinematicMotion();

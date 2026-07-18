@@ -65,7 +65,7 @@ for (const scene of scenes) {
       width: 1200,
       height: 800,
       channels: 4,
-      background: "#f1dadd",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
     },
   })
     .composite([{ input: fitted, gravity: "center" }])
