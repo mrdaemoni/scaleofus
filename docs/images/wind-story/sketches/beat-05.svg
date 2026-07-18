@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-650 4920 1300 720" overflow="hidden" role="img" aria-labelledby="title">
-  <title id="title">The boy and machine face one another</title>
-  <defs><clipPath id="crop"><rect x="-650" y="4920" width="1300" height="720" /></clipPath></defs>
-  <rect x="-650" y="4920" width="1300" height="720" fill="#f1dadd" />
-  <image href="scale-1-source.svg" x="-810" y="0" width="1620" height="11348" clip-path="url(#crop)" style="mix-blend-mode:multiply;opacity:.78" />
-</svg>
