@@ -28,6 +28,7 @@ const beats = JSON.parse(app?.dataset.beats ?? "[]") as Array<{
 }>;
 const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-chapter-link], [data-dock-chapter-link]")];
 const dockChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-dock-chapter-link]")];
+const railChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>(".chapter-rail [data-chapter-link]")];
 const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
 const coverHeading = document.querySelector<HTMLElement>("[data-cover-heading]");
@@ -37,6 +38,9 @@ const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.sta
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-story-art]")];
 const readerHome = document.querySelector<HTMLAnchorElement>("[data-reader-home]");
+const mountainArt = document.querySelector<HTMLElement>("[data-mountain-art]");
+const mountainClimber = document.querySelector<HTMLElement>("[data-mountain-climber]");
+const mountainPaths = [...document.querySelectorAll<HTMLElement>("[data-mountain-path]")];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
 
@@ -55,9 +59,11 @@ let lastCenteredParagraph = -1;
 let lastCenteredHeading = -1;
 let manualScrollTimer = 0;
 let autoScrollTimer = 0;
+let autoScrollTarget = -1;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let fitTimer = 0;
+let mountainAnchors: Array<{ x: number; y: number }> = [];
 const windTrailTimers = new Map<HTMLElement, number>();
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
@@ -187,6 +193,7 @@ const runNarrationLoop = () => {
   if (!audio || audio.paused) return;
   syncReadingStage(audio.currentTime, "audio");
   syncNarrationWord();
+  updateMountainJourney(audio.currentTime);
   narrationFrame = requestAnimationFrame(runNarrationLoop);
 };
 
@@ -233,6 +240,62 @@ const updateChapterProgress = (seconds: number) => {
   });
 };
 
+const measureMountainJourney = () => {
+  if (!mountainArt || !railChapterLinks.length) return;
+  const artRect = mountainArt.getBoundingClientRect();
+  if (artRect.width < 1 || artRect.height < 1) {
+    mountainAnchors = [];
+    return;
+  }
+  mountainAnchors = railChapterLinks.map((link) => {
+    const anchorRect = (link.parentElement ?? link).getBoundingClientRect();
+    return {
+      x: anchorRect.left + anchorRect.width / 2 - artRect.left,
+      y: anchorRect.top - artRect.top - 2,
+    };
+  });
+};
+
+const updateMountainJourney = (seconds: number) => {
+  if (!mountainArt || !mountainClimber || chapters.length < 2) return;
+  if (mountainAnchors.length !== chapters.length) measureMountainJourney();
+  if (mountainAnchors.length !== chapters.length) return;
+
+  const journeyTimes = chapters.map((chapter, index) => index === 0 ? 0 : chapter.transitionStart);
+  let segment = 0;
+  while (segment < journeyTimes.length - 1 && seconds >= journeyTimes[segment + 1]) segment += 1;
+  const nextSegment = Math.min(segment + 1, mountainAnchors.length - 1);
+  const segmentStart = journeyTimes[segment] ?? 0;
+  const segmentEnd = journeyTimes[nextSegment] ?? segmentStart + 1;
+  const localProgress = segment === nextSegment
+    ? 0
+    : clamp((seconds - segmentStart) / Math.max(0.01, segmentEnd - segmentStart));
+  const easedProgress = localProgress * localProgress * (3 - 2 * localProgress);
+  const from = mountainAnchors[segment];
+  const to = mountainAnchors[nextSegment];
+  const arcDirection = segment % 2 === 0 ? 1 : -1;
+  const arc = Math.sin(easedProgress * Math.PI) * 17 * arcDirection;
+  const breeze = Math.sin(easedProgress * Math.PI * 2 + segment * 0.7) * 1.8;
+  const x = from.x + (to.x - from.x) * easedProgress + arc;
+  const y = from.y + (to.y - from.y) * easedProgress + breeze;
+  const journeyProgress = clamp((segment + easedProgress) / Math.max(1, chapters.length - 1));
+
+  mountainArt.style.setProperty("--climber-x", `${x.toFixed(2)}px`);
+  mountainArt.style.setProperty("--climber-y", `${y.toFixed(2)}px`);
+  mountainArt.style.setProperty("--climber-turn", `${(arcDirection * Math.sin(easedProgress * Math.PI) * 4).toFixed(2)}deg`);
+  mountainArt.style.setProperty("--mountain-progress", journeyProgress.toFixed(4));
+
+  mountainPaths.forEach((path, pathIndex) => {
+    const overlap = 0.045;
+    const pathStart = Math.max(0, pathIndex / mountainPaths.length - overlap);
+    const pathEnd = Math.min(1, (pathIndex + 1) / mountainPaths.length + overlap);
+    const reveal = clamp((journeyProgress - pathStart) / Math.max(0.01, pathEnd - pathStart));
+    path.style.setProperty("--path-clip", `${((1 - reveal) * 100).toFixed(2)}%`);
+    path.style.setProperty("--path-wake", reveal.toFixed(3));
+    path.classList.toggle("is-being-travelled", reveal > 0.02 && reveal < 0.98);
+  });
+};
+
 const updateStoryProgress = (seconds: number) => {
   if (!seek || !currentTime) return;
   const duration = Number(seek.max) || audio?.duration || 1;
@@ -244,6 +307,7 @@ const updateStoryProgress = (seconds: number) => {
   document.documentElement.style.setProperty("--nav-cloud-lift", `${ratio * -62}px`);
   document.documentElement.style.setProperty("--nav-cloud-drift", `${Math.sin(ratio * Math.PI * 5) * 11}px`);
   updateChapterProgress(seconds);
+  updateMountainJourney(seconds);
 };
 
 const setBeat = (index: number) => {
@@ -288,14 +352,25 @@ const readingFocus = () => {
 };
 
 const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smooth") => {
-  const distance = Math.abs(desiredTop - scrollY);
-  if (distance < 12) return;
+  const maximumTop = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const targetTop = clamp(desiredTop, 0, maximumTop);
+  const distance = Math.abs(targetTop - scrollY);
+  if (distance < 12) {
+    autoScrollActive = false;
+    autoScrollTarget = -1;
+    return;
+  }
   autoScrollActive = true;
+  autoScrollTarget = targetTop;
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   autoScrollTimer = window.setTimeout(() => {
+    if (!manualScrollActive && autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5) {
+      scrollTo({ top: autoScrollTarget, behavior: "auto" });
+    }
     autoScrollActive = false;
-  }, reducedMotion.matches ? 50 : 1400);
-  scrollTo({ top: Math.max(0, desiredTop), behavior: reducedMotion.matches ? "auto" : behavior });
+    autoScrollTarget = -1;
+  }, reducedMotion.matches ? 50 : clamp(760 + distance * 0.28, 980, 2200));
+  scrollTo({ top: targetTop, behavior: reducedMotion.matches ? "auto" : behavior });
 };
 
 const fitBeatToViewport = (index: number) => {
@@ -500,11 +575,24 @@ const updatePlayState = () => {
   dockPlay?.setAttribute("aria-label", playing ? "Pause narration" : "Play narration");
 };
 
-const togglePlayback = async () => {
+const togglePlayback = async (event?: Event) => {
   if (!audio) return;
+  const trigger = event?.currentTarget as HTMLElement | null;
+  if (audio.paused && trigger?.hasAttribute("data-hero-play")) {
+    audio.currentTime = 0;
+    manualScrollActive = false;
+    autoScrollActive = false;
+    autoScrollTarget = -1;
+    lastCenteredParagraph = -1;
+    lastCenteredHeading = -1;
+    updateStoryProgress(0);
+    setCover("restore");
+    setWord(-1);
+  }
   if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
     syncReadingStage(audio.currentTime, "restore");
+    centerReadingStage(audio.currentTime);
     try {
       await audio.play();
       updateStoryProgress(audio.currentTime);
@@ -571,6 +659,7 @@ const beginManualScroll = (event: Event) => {
   if (target?.closest("[data-audio-dock]")) return;
   manualScrollActive = true;
   autoScrollActive = false;
+  autoScrollTarget = -1;
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   lastCenteredParagraph = -1;
 };
@@ -668,7 +757,8 @@ readerHome?.addEventListener("click", (event) => {
   audio?.pause();
   if (audio) audio.currentTime = 0;
   manualScrollActive = false;
-  autoScrollActive = true;
+  autoScrollActive = false;
+  autoScrollTarget = -1;
   lastCenteredParagraph = -1;
   lastCenteredHeading = -1;
   updateStoryProgress(0);
@@ -678,11 +768,7 @@ readerHome?.addEventListener("click", (event) => {
   try {
     localStorage.setItem("scaleofus-wind-progress", "0");
   } catch {}
-  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
-  autoScrollTimer = window.setTimeout(() => {
-    autoScrollActive = false;
-  }, reducedMotion.matches ? 50 : 1400);
-  scrollTo({ top: 0, behavior: reducedMotion.matches ? "auto" : "smooth" });
+  scrollForNarration(0);
 });
 
 follow?.addEventListener("click", () => {
@@ -735,7 +821,11 @@ addEventListener("scroll", () => {
 }, { passive: true });
 addEventListener("scrollend", () => {
   if (autoScrollActive) {
+    if (autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5 && !manualScrollActive) {
+      scrollTo({ top: autoScrollTarget, behavior: "auto" });
+    }
     autoScrollActive = false;
+    autoScrollTarget = -1;
     return;
   }
   if (manualScrollActive && !touchActive) queueViewportSync(80);
@@ -749,6 +839,10 @@ addEventListener("resize", () => {
       beat.querySelector<HTMLElement>("[data-cinematic-art]")?.style.removeProperty("--fitted-art-height");
     });
   }
+  requestAnimationFrame(() => {
+    measureMountainJourney();
+    if (audio) updateMountainJourney(audio.currentTime);
+  });
   queueViewportFit(160);
 }, { passive: true });
 

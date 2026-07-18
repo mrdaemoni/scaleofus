@@ -130,18 +130,27 @@ const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
 
     <div class="reader-shell" id="story">
       <aside class="chapter-rail" aria-label="Chapters">
-        <div class="mountain-nav-art" aria-hidden="true">
+        <div class="mountain-nav-art" data-mountain-art aria-hidden="true">
           <span class="nav-cloud cloud-one"></span>
           <span class="nav-cloud cloud-two"></span>
           <span class="nav-cloud cloud-three"></span>
+          <span class="nav-cloud cloud-four"></span>
+          <span class="nav-cloud cloud-five"></span>
+          <span class="nav-cloud cloud-six"></span>
           <span class="mountain-face"></span>
           <span class="mountain-snow"></span>
           <span class="mountain-ridge ridge-one"></span>
           <span class="mountain-ridge ridge-two"></span>
-          <span class="mountain-path path-one"></span>
-          <span class="mountain-path path-two"></span>
-          <span class="mountain-path path-three"></span>
+          <span class="mountain-path path-one" data-mountain-path></span>
+          <span class="mountain-path path-two path-reverse" data-mountain-path></span>
+          <span class="mountain-path path-three" data-mountain-path></span>
+          <span class="mountain-path path-four path-reverse" data-mountain-path></span>
+          <span class="mountain-path path-five" data-mountain-path></span>
+          <span class="mountain-path path-six path-reverse" data-mountain-path></span>
           <span class="mountain-summit"></span>
+          <span class="mountain-climber" data-mountain-climber>
+            <i></i>
+          </span>
         </div>
         <a class="rail-home" href="#top" data-reader-home>
           The Boy Who Tried to Catch the Wind
