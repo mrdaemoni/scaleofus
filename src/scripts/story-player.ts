@@ -16,6 +16,9 @@ const chapters = JSON.parse(app?.dataset.chapters ?? "[]") as Array<{
   title: string;
   id: string;
   start: number;
+  transitionStart: number;
+  headingEnd: number;
+  firstWordStart: number;
 }>;
 const beats = JSON.parse(app?.dataset.beats ?? "[]") as Array<{
   number: number;
@@ -27,14 +30,10 @@ const chapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-cha
 const dockChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data-dock-chapter-link]")];
 const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
+const coverHeading = document.querySelector<HTMLElement>("[data-cover-heading]");
+const chapterHeadings = [...document.querySelectorAll<HTMLElement>("[data-chapter-heading]")];
 const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
 const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.start ?? 0));
-const beatChapterByNumber = new Map(beats.map((beat) => [beat.number, beat.chapter]));
-const firstParagraphByChapter = chapters.map((chapter) =>
-  paragraphs.findIndex((paragraph) =>
-    beatChapterByNumber.get(Number(paragraph.dataset.beatNumber)) === chapter.number,
-  ),
-);
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-story-art]")];
 const readerHome = document.querySelector<HTMLAnchorElement>("[data-reader-home]");
@@ -44,6 +43,8 @@ const desktopReader = matchMedia("(min-width: 761px)");
 let activeChapter = -1;
 let activeBeat = -1;
 let activeParagraph = -1;
+let activeHeading = -1;
+let coverIsActive = false;
 let activeWord = -1;
 let followNarration = true;
 let dockPinnedOpen = false;
@@ -51,6 +52,7 @@ let autoScrollActive = false;
 let manualScrollActive = false;
 let touchActive = false;
 let lastCenteredParagraph = -1;
+let lastCenteredHeading = -1;
 let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let cinematicFrame = 0;
@@ -62,34 +64,39 @@ const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, v
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
 
 const shapeWindWake = (word: HTMLElement) => {
-  const arrivalDuration = Math.round(randomBetween(640, 980));
-  const releaseDuration = Math.round(randomBetween(1280, 1940));
-  const lift = randomBetween(-0.18, 0.13);
-  const rotation = randomBetween(-4.2, 4.2);
-  const skew = randomBetween(-14, 5);
+  const arrivalDuration = Math.round(randomBetween(760, 1180));
+  const releaseDuration = Math.round(randomBetween(1520, 2480));
+  const lift = randomBetween(-0.32, 0.24);
+  const rotation = randomBetween(-6.5, 6.5);
+  const skew = randomBetween(-17, 8);
 
   word.dataset.windRelease = String(releaseDuration);
   word.style.setProperty("--wind-arrival-duration", `${arrivalDuration}ms`);
   word.style.setProperty("--wind-release-duration", `${releaseDuration}ms`);
-  word.style.setProperty("--wind-before-top", `${randomBetween(-5, 12).toFixed(1)}%`);
-  word.style.setProperty("--wind-before-right", `${-randomBetween(1.0, 2.85).toFixed(2)}em`);
-  word.style.setProperty("--wind-before-bottom", `${-randomBetween(8, 31).toFixed(1)}%`);
-  word.style.setProperty("--wind-before-left", `${-randomBetween(0.55, 1.45).toFixed(2)}em`);
-  word.style.setProperty("--wind-tail-top", `${randomBetween(45, 72).toFixed(1)}%`);
-  word.style.setProperty("--wind-tail-right", `${-randomBetween(1.2, 3.4).toFixed(2)}em`);
-  word.style.setProperty("--wind-tail-left", `${-randomBetween(0.82, 1.85).toFixed(2)}em`);
-  word.style.setProperty("--wind-tail-height", `${randomBetween(0.1, 0.22).toFixed(2)}em`);
-  word.style.setProperty("--wind-entry-y", `${randomBetween(-0.08, 0.16).toFixed(2)}em`);
+  word.style.setProperty("--wind-before-top", `${randomBetween(-24, 14).toFixed(1)}%`);
+  word.style.setProperty("--wind-before-right", `${-randomBetween(2.4, 6.8).toFixed(2)}em`);
+  word.style.setProperty("--wind-before-bottom", `${-randomBetween(22, 68).toFixed(1)}%`);
+  word.style.setProperty("--wind-before-left", `${-randomBetween(1.2, 3.6).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-top", `${randomBetween(34, 74).toFixed(1)}%`);
+  word.style.setProperty("--wind-tail-right", `${-randomBetween(3.8, 10).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-left", `${-randomBetween(1.4, 4.2).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-height", `${randomBetween(0.28, 0.9).toFixed(2)}em`);
+  word.style.setProperty("--wind-entry-y", `${randomBetween(-0.2, 0.24).toFixed(2)}em`);
   word.style.setProperty("--wind-lift", `${lift.toFixed(2)}em`);
   word.style.setProperty("--wind-skew", `${skew.toFixed(1)}deg`);
   word.style.setProperty("--wind-rotate", `${rotation.toFixed(1)}deg`);
   word.style.setProperty("--wind-release-skew", `${(-skew * 0.5).toFixed(1)}deg`);
   word.style.setProperty("--wind-release-rotate", `${(rotation * 1.6).toFixed(1)}deg`);
-  word.style.setProperty("--wind-settle-x", `${randomBetween(0.08, 0.42).toFixed(2)}em`);
-  word.style.setProperty("--wind-release-x", `${randomBetween(1.15, 2.65).toFixed(2)}em`);
-  word.style.setProperty("--wind-release-y", `${(lift + randomBetween(-0.08, 0.12)).toFixed(2)}em`);
-  word.style.setProperty("--wind-tail-scale", randomBetween(1.05, 1.85).toFixed(2));
-  word.style.setProperty("--wind-bloom-opacity", randomBetween(0.42, 0.74).toFixed(2));
+  word.style.setProperty("--wind-settle-x", `${randomBetween(0.16, 0.78).toFixed(2)}em`);
+  word.style.setProperty("--wind-release-x", `${randomBetween(2.4, 7.2).toFixed(2)}em`);
+  word.style.setProperty("--wind-release-y", `${(lift + randomBetween(-0.18, 0.22)).toFixed(2)}em`);
+  word.style.setProperty("--wind-tail-scale", randomBetween(1.4, 3.4).toFixed(2));
+  word.style.setProperty("--wind-bloom-opacity", randomBetween(0.28, 0.54).toFixed(2));
+  const windBlur = randomBetween(3.2, 7.8);
+  word.style.setProperty("--wind-blur", `${windBlur.toFixed(1)}px`);
+  word.style.setProperty("--wind-tail-blur", `${(windBlur * 0.72).toFixed(1)}px`);
+  word.style.setProperty("--wind-feather-y", `${randomBetween(16, 76).toFixed(1)}%`);
+  word.style.setProperty("--wind-feather-rotate", `${randomBetween(-8, 8).toFixed(1)}deg`);
 
   return releaseDuration;
 };
@@ -107,14 +114,18 @@ const paragraphForTime = (seconds: number) => {
   paragraphs.forEach((paragraph, paragraphIndex) => {
     if (seconds >= Number(paragraph.dataset.start ?? 0)) index = paragraphIndex;
   });
-  let chapterIndex = 0;
-  chapters.forEach((chapter, candidateIndex) => {
-    if (seconds >= chapter.start) chapterIndex = candidateIndex;
-  });
-  const firstInChapter = firstParagraphByChapter[chapterIndex];
-  if (firstInChapter >= 0 && index < firstInChapter) return firstInChapter;
   return index;
 };
+
+const headingForTime = (seconds: number) => {
+  let index = -1;
+  chapters.forEach((chapter, candidateIndex) => {
+    if (seconds >= chapter.transitionStart && seconds < chapter.firstWordStart) index = candidateIndex;
+  });
+  return index;
+};
+
+const isCoverTime = (seconds: number) => seconds < Number(chapters[0]?.transitionStart ?? 0);
 
 const wordForTime = (seconds: number) => {
   let low = 0;
@@ -142,7 +153,7 @@ const setWord = (index: number) => {
     previousWord.classList.add("is-wind-trail");
     const existingTimer = windTrailTimers.get(previousWord);
     if (existingTimer) window.clearTimeout(existingTimer);
-    const releaseDuration = Number(previousWord.dataset.windRelease) || 1540;
+    const releaseDuration = Number(previousWord.dataset.windRelease) || 1920;
     const timer = window.setTimeout(() => {
       previousWord.classList.remove("is-wind-trail");
       windTrailTimers.delete(previousWord);
@@ -174,6 +185,7 @@ const syncNarrationWord = (preserveCurrentOnGap = false) => {
 const runNarrationLoop = () => {
   narrationFrame = 0;
   if (!audio || audio.paused) return;
+  syncReadingStage(audio.currentTime, "audio");
   syncNarrationWord();
   narrationFrame = requestAnimationFrame(runNarrationLoop);
 };
@@ -250,6 +262,19 @@ const setBeat = (index: number) => {
   setChapter(Number(beats[index].chapter) - 1);
 };
 
+const clearBeat = () => {
+  if (beatElements[activeBeat]) {
+    beatElements[activeBeat].style.removeProperty("--reader-beat-gap");
+    beatElements[activeBeat].querySelector<HTMLElement>("[data-cinematic-art]")
+      ?.style.removeProperty("--fitted-art-height");
+  }
+  activeBeat = -1;
+  beatElements.forEach((element) => {
+    element.classList.remove("is-current-beat");
+    element.removeAttribute("aria-current");
+  });
+};
+
 const readingBounds = () => {
   const top = clamp(innerHeight * 0.025, 14, 30);
   const dockTop = dock?.getBoundingClientRect().top ?? innerHeight;
@@ -260,6 +285,17 @@ const readingBounds = () => {
 const readingFocus = () => {
   const bounds = readingBounds();
   return bounds.top + bounds.height * (desktopReader.matches ? 0.76 : 0.5);
+};
+
+const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smooth") => {
+  const distance = Math.abs(desiredTop - scrollY);
+  if (distance < 12) return;
+  autoScrollActive = true;
+  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
+  autoScrollTimer = window.setTimeout(() => {
+    autoScrollActive = false;
+  }, reducedMotion.matches ? 50 : 1400);
+  scrollTo({ top: Math.max(0, desiredTop), behavior: reducedMotion.matches ? "auto" : behavior });
 };
 
 const fitBeatToViewport = (index: number) => {
@@ -301,15 +337,24 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
   const desiredTop = desktopReader.matches && frame
     ? scrollY + frame.getBoundingClientRect().top - bounds.top
     : scrollY + rect.top + rect.height / 2 - readingFocus();
-  const distance = Math.abs(desiredTop - scrollY);
-  if (distance < 12) return;
-  autoScrollActive = true;
   lastCenteredParagraph = index;
-  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
-  autoScrollTimer = window.setTimeout(() => {
-    autoScrollActive = false;
-  }, reducedMotion.matches ? 50 : 1400);
-  scrollTo({ top: Math.max(0, desiredTop), behavior: reducedMotion.matches ? "auto" : behavior });
+  scrollForNarration(desiredTop, behavior);
+};
+
+const centerHeading = (index: number, behavior: ScrollBehavior = "smooth") => {
+  const heading = chapterHeadings[index];
+  if (!heading || !followNarration || manualScrollActive) return;
+  const bounds = readingBounds();
+  const rect = heading.getBoundingClientRect();
+  const viewportCenter = bounds.top + bounds.height / 2;
+  lastCenteredHeading = index;
+  scrollForNarration(scrollY + rect.top + rect.height / 2 - viewportCenter, behavior);
+};
+
+const centerCover = (behavior: ScrollBehavior = "smooth") => {
+  if (!followNarration || manualScrollActive) return;
+  lastCenteredHeading = -2;
+  scrollForNarration(0, behavior);
 };
 
 const queueViewportFit = (delay = 380) => {
@@ -322,10 +367,82 @@ const queueViewportFit = (delay = 380) => {
   }, delay);
 };
 
+const clearParagraphState = () => {
+  activeParagraph = -1;
+  paragraphs.forEach((paragraph) => {
+    paragraph.classList.remove("is-current-paragraph");
+    paragraph.removeAttribute("aria-current");
+  });
+};
+
+const setHeading = (index: number, source: "audio" | "scroll" | "restore" = "audio") => {
+  if (index < 0 || !chapterHeadings[index]) return;
+  if (activeHeading === index && !coverIsActive) return;
+  const changed = activeHeading !== index || coverIsActive;
+  activeHeading = index;
+  coverIsActive = false;
+  clearParagraphState();
+  clearBeat();
+  coverHeading?.classList.remove("is-current-heading");
+  chapterHeadings.forEach((heading, headingIndex) => {
+    const isCurrent = headingIndex === index;
+    heading.classList.toggle("is-current-heading", isCurrent);
+    heading.toggleAttribute("aria-current", isCurrent);
+  });
+  document.body.dataset.readingStage = "heading";
+  setChapter(index);
+  if (
+    source === "audio"
+    && audio
+    && !audio.paused
+    && followNarration
+    && !manualScrollActive
+    && changed
+    && lastCenteredHeading !== index
+  ) {
+    centerHeading(index);
+  }
+};
+
+const setCover = (source: "audio" | "scroll" | "restore" = "audio") => {
+  if (coverIsActive) return;
+  const changed = !coverIsActive;
+  coverIsActive = true;
+  activeHeading = -1;
+  clearParagraphState();
+  clearBeat();
+  chapterHeadings.forEach((heading) => {
+    heading.classList.remove("is-current-heading");
+    heading.removeAttribute("aria-current");
+  });
+  coverHeading?.classList.add("is-current-heading");
+  document.body.dataset.readingStage = "cover";
+  setChapter(0);
+  if (
+    source === "audio"
+    && audio
+    && !audio.paused
+    && followNarration
+    && !manualScrollActive
+    && changed
+  ) {
+    centerCover();
+  }
+};
+
 const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "audio") => {
   if (index < 0 || !paragraphs[index]) return;
-  const changed = activeParagraph !== index;
+  if (activeParagraph === index && activeHeading < 0 && !coverIsActive) return;
+  const changed = activeParagraph !== index || activeHeading >= 0 || coverIsActive;
+  activeHeading = -1;
+  coverIsActive = false;
   activeParagraph = index;
+  chapterHeadings.forEach((heading) => {
+    heading.classList.remove("is-current-heading");
+    heading.removeAttribute("aria-current");
+  });
+  coverHeading?.classList.remove("is-current-heading");
+  document.body.dataset.readingStage = "paragraph";
   paragraphs.forEach((paragraph, paragraphIndex) => {
     const isCurrent = paragraphIndex === index;
     paragraph.classList.toggle("is-current-paragraph", isCurrent);
@@ -346,6 +463,35 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   }
 };
 
+const syncReadingStage = (
+  seconds: number,
+  source: "audio" | "scroll" | "restore" = "audio",
+) => {
+  if (isCoverTime(seconds)) {
+    setCover(source);
+    return;
+  }
+  const headingIndex = headingForTime(seconds);
+  if (headingIndex >= 0) {
+    setHeading(headingIndex, source);
+    return;
+  }
+  setParagraph(paragraphForTime(seconds), source);
+};
+
+const centerReadingStage = (seconds: number, behavior: ScrollBehavior = "smooth") => {
+  if (isCoverTime(seconds)) {
+    centerCover(behavior);
+    return;
+  }
+  const headingIndex = headingForTime(seconds);
+  if (headingIndex >= 0) {
+    centerHeading(headingIndex, behavior);
+    return;
+  }
+  centerParagraph(paragraphForTime(seconds), behavior);
+};
+
 const updatePlayState = () => {
   if (!audio) return;
   const playing = !audio.paused;
@@ -358,19 +504,12 @@ const togglePlayback = async () => {
   if (!audio) return;
   if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
-    const paragraphIndex = paragraphForTime(audio.currentTime);
-    if (audio.currentTime < paragraphStart(0) && scrollY < innerHeight * 0.72) {
-      manualScrollActive = false;
-      autoScrollActive = false;
-      lastCenteredParagraph = -1;
-      setParagraph(paragraphIndex, "restore");
-      centerParagraph(paragraphIndex, "auto");
-    }
+    syncReadingStage(audio.currentTime, "restore");
     try {
       await audio.play();
       updateStoryProgress(audio.currentTime);
-      setParagraph(paragraphIndex, "audio");
-      centerParagraph(paragraphIndex);
+      syncReadingStage(audio.currentTime, "audio");
+      centerReadingStage(audio.currentTime);
     } catch {
       return;
     }
@@ -488,7 +627,7 @@ audio?.addEventListener("ended", () => {
 });
 audio?.addEventListener("timeupdate", () => {
   updateStoryProgress(audio.currentTime);
-  setParagraph(paragraphForTime(audio.currentTime), "audio");
+  syncReadingStage(audio.currentTime, "audio");
   syncNarrationWord();
   try {
     localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
@@ -499,11 +638,11 @@ seek?.addEventListener("input", () => {
   if (!audio) return;
   audio.currentTime = Number(seek.value);
   updateStoryProgress(audio.currentTime);
-  setParagraph(paragraphForTime(audio.currentTime), "scroll");
+  syncReadingStage(audio.currentTime, "scroll");
   syncNarrationWord();
 });
 seek?.addEventListener("change", () => {
-  if (audio) centerParagraph(paragraphForTime(audio.currentTime));
+  if (audio) centerReadingStage(audio.currentTime);
 });
 
 chapterLinks.forEach((link) => {
@@ -513,14 +652,14 @@ chapterLinks.forEach((link) => {
     const index = Number(link.dataset.chapterIndex);
     audio.currentTime = Number(link.dataset.start ?? 0);
     updateStoryProgress(audio.currentTime);
-    const paragraphIndex = paragraphForTime(audio.currentTime);
-    setParagraph(paragraphIndex, "scroll");
     history.replaceState(null, "", link.hash);
     manualScrollActive = false;
     autoScrollActive = false;
     lastCenteredParagraph = -1;
-    centerParagraph(paragraphIndex);
-    setChapter(index);
+    lastCenteredHeading = -1;
+    setHeading(index, "scroll");
+    centerHeading(index);
+    syncNarrationWord();
   });
 });
 
@@ -531,10 +670,10 @@ readerHome?.addEventListener("click", (event) => {
   manualScrollActive = false;
   autoScrollActive = true;
   lastCenteredParagraph = -1;
+  lastCenteredHeading = -1;
   updateStoryProgress(0);
-  setParagraph(0, "restore");
+  setCover("restore");
   setWord(-1);
-  setChapter(0);
   history.replaceState(null, "", "#top");
   try {
     localStorage.setItem("scaleofus-wind-progress", "0");
@@ -550,7 +689,8 @@ follow?.addEventListener("click", () => {
   followNarration = !followNarration;
   follow.setAttribute("aria-pressed", String(followNarration));
   lastCenteredParagraph = -1;
-  if (followNarration && audio) centerParagraph(paragraphForTime(audio.currentTime));
+  lastCenteredHeading = -1;
+  if (followNarration && audio) centerReadingStage(audio.currentTime);
 });
 
 collapse?.addEventListener("click", () => {
@@ -632,7 +772,7 @@ const restorePosition = () => {
   }
   audio.currentTime = restored;
   updateStoryProgress(restored);
-  setParagraph(paragraphForTime(restored), "restore");
+  syncReadingStage(restored, "restore");
   syncNarrationWord();
 };
 

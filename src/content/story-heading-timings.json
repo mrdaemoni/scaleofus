@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "cover": {
+    "start": 3.587,
+    "end": 6.247,
+    "words": [
+      { "start": 3.587, "end": 3.947 },
+      { "start": 3.947, "end": 4.347 },
+      { "start": 4.347, "end": 4.687 },
+      { "start": 4.687, "end": 5.067 },
+      { "start": 5.067, "end": 5.367 },
+      { "start": 5.367, "end": 5.727 },
+      { "start": 5.727, "end": 5.967 },
+      { "start": 5.967, "end": 6.247 }
+    ]
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "transitionStart": 6.255,
+      "start": 8.82,
+      "end": 12.1,
+      "labelWords": [
+        { "start": 8.82, "end": 9.38 },
+        { "start": 9.38, "end": 9.94 }
+      ],
+      "titleWords": [
+        { "start": 9.96, "end": 10.18 },
+        { "start": 10.18, "end": 10.56 },
+        { "start": 10.56, "end": 10.86 },
+        { "start": 10.86, "end": 11.18 },
+        { "start": 11.18, "end": 11.44 },
+        { "start": 11.44, "end": 11.66 },
+        { "start": 11.66, "end": 11.94 },
+        { "start": 11.94, "end": 12.1 }
+      ]
+    },
+    {
+      "number": 2,
+      "transitionStart": 113.016,
+      "start": 117.28,
+      "end": 119.86,
+      "labelWords": [
+        { "start": 117.28, "end": 117.88 },
+        { "start": 117.88, "end": 118.38 }
+      ],
+      "titleWords": [
+        { "start": 118.38, "end": 119.06 },
+        { "start": 119.06, "end": 119.86 }
+      ]
+    },
+    {
+      "number": 3,
+      "transitionStart": 221.446,
+      "start": 225.68,
+      "end": 228.2,
+      "labelWords": [
+        { "start": 225.68, "end": 226.2 },
+        { "start": 226.2, "end": 226.44 }
+      ],
+      "titleWords": [
+        { "start": 227.04, "end": 227.1 },
+        { "start": 227.1, "end": 227.54 },
+        { "start": 227.54, "end": 227.76 },
+        { "start": 227.76, "end": 227.9 },
+        { "start": 227.9, "end": 228.2 }
+      ]
+    },
+    {
+      "number": 4,
+      "transitionStart": 289.818,
+      "start": 293.74,
+      "end": 295.82,
+      "labelWords": [
+        { "start": 293.74, "end": 294.26 },
+        { "start": 294.26, "end": 294.72 }
+      ],
+      "titleWords": [
+        { "start": 295.28, "end": 295.56 },
+        { "start": 295.56, "end": 295.82 }
+      ]
+    },
+    {
+      "number": 5,
+      "transitionStart": 362.379,
+      "start": 366.34,
+      "end": 369.04,
+      "labelWords": [
+        { "start": 366.34, "end": 366.94 },
+        { "start": 366.94, "end": 367.16 }
+      ],
+      "titleWords": [
+        { "start": 367.74, "end": 367.96 },
+        { "start": 367.96, "end": 368.24 },
+        { "start": 368.24, "end": 368.62 },
+        { "start": 368.62, "end": 368.76 },
+        { "start": 368.76, "end": 369.04 }
+      ]
+    },
+    {
+      "number": 6,
+      "transitionStart": 454.16,
+      "start": 458.22,
+      "end": 460.32,
+      "labelWords": [
+        { "start": 458.22, "end": 458.74 },
+        { "start": 458.74, "end": 459.26 }
+      ],
+      "titleWords": [
+        { "start": 459.76, "end": 459.86 },
+        { "start": 459.86, "end": 460.32 }
+      ]
+    },
+    {
+      "number": 7,
+      "transitionStart": 525.682,
+      "start": 529.62,
+      "end": 532.9,
+      "labelWords": [
+        { "start": 529.62, "end": 530.26 },
+        { "start": 530.26, "end": 530.9 }
+      ],
+      "titleWords": [
+        { "start": 530.9, "end": 531.56 },
+        { "start": 531.56, "end": 531.88 },
+        { "start": 531.88, "end": 532.3 },
+        { "start": 532.3, "end": 532.9 }
+      ]
+    },
+    {
+      "number": 8,
+      "transitionStart": 663.305,
+      "start": 667.36,
+      "end": 670.04,
+      "labelWords": [
+        { "start": 667.36, "end": 667.96 },
+        { "start": 667.96, "end": 668.42 }
+      ],
+      "titleWords": [
+        { "start": 669.0, "end": 669.08 },
+        { "start": 669.08, "end": 669.34 },
+        { "start": 669.34, "end": 669.58 },
+        { "start": 669.58, "end": 669.68 },
+        { "start": 669.68, "end": 670.04 }
+      ]
+    },
+    {
+      "number": 9,
+      "transitionStart": 787.665,
+      "start": 791.82,
+      "end": 794.6,
+      "labelWords": [
+        { "start": 791.82, "end": 792.5 },
+        { "start": 792.5, "end": 792.96 }
+      ],
+      "titleWords": [
+        { "start": 793.52, "end": 793.74 },
+        { "start": 793.74, "end": 794.08 },
+        { "start": 794.08, "end": 794.6 }
+      ]
+    }
+  ]
+}

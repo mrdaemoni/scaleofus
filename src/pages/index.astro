@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import storyMarkdown from "../content/the-boy-who-tried-to-catch-the-wind.md?raw";
+import storyHeadingTimings from "../content/story-heading-timings.json";
 import storyTimings from "../content/story-timings.json";
 import storyWordTimings from "../content/story-word-timings.json";
 import { windStoryReader } from "../content/wind-story-reader";
@@ -10,7 +11,40 @@ import { storyArt, storyArtKind, validateVoicePassages, voiceWords } from "../li
 const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
 validateVoicePassages(chapters, windStoryReader.voices);
-const chapterData = chapters.map(({ number, title, id, start }) => ({ number, title, id, start }));
+const headingTimingByChapter = new Map(storyHeadingTimings.chapters.map((heading) => [heading.number, heading]));
+const timedTokens = (
+  text: string,
+  cues: ReadonlyArray<{ start: number; end: number }>,
+  context: string,
+) => {
+  const tokens = text.trim().split(/\s+/);
+  if (tokens.length !== cues.length) {
+    throw new Error(`${context} has ${tokens.length} displayed words but ${cues.length} timing cues.`);
+  }
+  return tokens.map((token, index) => ({ text: token, ...cues[index] }));
+};
+const coverHeadingWords = timedTokens(windStoryReader.title, storyHeadingTimings.cover.words, "Cover title");
+const chapterHeadingWords = new Map(chapters.map((chapter) => {
+  const timing = headingTimingByChapter.get(chapter.number);
+  if (!timing) throw new Error(`Chapter ${chapter.number} has no heading timing.`);
+  return [chapter.number, {
+    label: timedTokens(`Chapter ${chapter.numeral}`, timing.labelWords, `Chapter ${chapter.number} label`),
+    title: timedTokens(chapter.title, timing.titleWords, `Chapter ${chapter.number} title`),
+  }];
+}));
+const chapterData = chapters.map(({ number, title, id, beats }) => {
+  const heading = headingTimingByChapter.get(number);
+  if (!heading) throw new Error(`Chapter ${number} has no heading timing.`);
+  return {
+    number,
+    title,
+    id,
+    start: heading.start,
+    transitionStart: heading.transitionStart,
+    headingEnd: heading.end,
+    firstWordStart: beats[0]?.start ?? heading.end,
+  };
+});
 const beatData = chapters.flatMap((chapter) =>
   chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
 );
@@ -54,7 +88,26 @@ const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
       </div>
 
       <div class="cover-copy">
-        <h1 id="story-title">{windStoryReader.title}</h1>
+        <h1
+          id="story-title"
+          class="spoken-heading"
+          data-cover-heading
+          data-heading-start={storyHeadingTimings.cover.start}
+          data-heading-end={storyHeadingTimings.cover.end}
+        >
+          {coverHeadingWords.map((word, index) => (
+            <>
+              {index > 0 && " "}
+              <span
+                data-narration-word
+                data-heading-word
+                data-speaker="narrator"
+                data-start={word.start}
+                data-end={word.end}
+              >{word.text}</span>
+            </>
+          ))}
+        </h1>
         <p class="cover-intro">{windStoryReader.intro}</p>
         <div class="cover-story-entry" role="group" aria-label="Enter the story">
           <span class="entry-label">Enter the story</span>
@@ -100,7 +153,7 @@ const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
                 href={`#${chapter.id}`}
                 data-chapter-link
                 data-chapter-index={chapter.number - 1}
-                data-start={chapter.start}
+                data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
               >
                 <span>{chapter.numeral}</span>
                 <em>{chapter.shortTitle}</em>
@@ -116,12 +169,45 @@ const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
             class={`story-chapter chapter-${chapter.number}`}
             id={chapter.id}
             data-chapter={chapter.number}
-            data-start={chapter.start}
+            data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
             aria-labelledby={`${chapter.id}-title`}
           >
-            <header class="chapter-heading">
-              <p>Chapter {chapter.numeral}</p>
-              <h2 id={`${chapter.id}-title`}>{chapter.title}</h2>
+            <header
+              class="chapter-heading"
+              data-chapter-heading
+              data-heading-index={chapter.number - 1}
+              data-transition-start={headingTimingByChapter.get(chapter.number)!.transitionStart}
+              data-heading-start={headingTimingByChapter.get(chapter.number)!.start}
+              data-heading-end={headingTimingByChapter.get(chapter.number)!.end}
+            >
+              <p class="spoken-heading">
+                {chapterHeadingWords.get(chapter.number)!.label.map((word, index) => (
+                  <>
+                    {index > 0 && " "}
+                    <span
+                      data-narration-word
+                      data-heading-word
+                      data-speaker="narrator"
+                      data-start={word.start}
+                      data-end={word.end}
+                    >{word.text}</span>
+                  </>
+                ))}
+              </p>
+              <h2 id={`${chapter.id}-title`} class="spoken-heading">
+                {chapterHeadingWords.get(chapter.number)!.title.map((word, index) => (
+                  <>
+                    {index > 0 && " "}
+                    <span
+                      data-narration-word
+                      data-heading-word
+                      data-speaker="narrator"
+                      data-start={word.start}
+                      data-end={word.end}
+                    >{word.text}</span>
+                  </>
+                ))}
+              </h2>
               <div class={`chapter-mark mark-${chapter.number}`} aria-hidden="true">
                 <i></i><i></i><i></i>
               </div>
@@ -243,7 +329,7 @@ const coverArt = artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
               href={`#${chapter.id}`}
               data-dock-chapter-link
               data-chapter-index={chapter.number - 1}
-              data-start={chapter.start}
+              data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
               aria-label={`Chapter ${chapter.numeral}: ${chapter.title}`}
             >
               <span class="dock-chapter-progress" aria-hidden="true"></span>

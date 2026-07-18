@@ -8,7 +8,8 @@ The reader is split into content, story-specific configuration, generated timing
 2. One audio file for the full narration. Separate chapter files are not required. A deliberate pause of about four seconds between chapters gives the shared timing pipeline a reliable chapter-title anchor.
 3. Sequential artwork files named `beat-01`, `beat-02`, and so on.
 4. A reader configuration like `src/content/wind-story-reader.ts` containing the title, introduction, audio path, artwork paths, motion names, and exact character-voice passages.
-5. Beat and word timing JSON. Generate both files with `scripts/generate-story-word-timings.py`; the manuscript remains the canonical text even when transcription differs. The generator aligns the entire manuscript to the recording, derives every reading-unit boundary from the spoken words, and uses the long pauses to time the chapter navigation independently from the first paragraph.
+5. Beat and word timing JSON. Generate both files with `scripts/generate-story-word-timings.py`; the manuscript remains the canonical text even when transcription differs. The generator aligns the entire manuscript to the recording and derives every reading-unit boundary from the spoken words.
+6. A compact heading-timing file like `src/content/story-heading-timings.json`. It holds the spoken cover title, each spoken chapter label and title, and the beginning of the quiet transition before each chapter.
 
 The generator can transcribe through `faster-whisper`, or consume an existing OpenAI Whisper word-timestamp JSON file through `--transcript-json`. Keeping that transcript outside the site is fine; only the compact generated timing JSON ships to readers.
 
@@ -19,7 +20,7 @@ Every reading unit also renders an integrated drawing placeholder beneath its ar
 ## Shared behavior
 
 - `src/lib/story-reader.ts` validates voice passages, assigns a speaker to each rendered word, and resolves artwork paths.
-- `src/scripts/story-player.ts` synchronizes words, reading units, chapters, audio progress, manual seeking, and viewport-aware illustration fitting.
+- `src/scripts/story-player.ts` synchronizes words, reading units, chapters, audio progress, manual seeking, and viewport-aware illustration fitting. Listening follows a reusable three-scene rhythm: the cover title stays on the cover, the quiet gap carries the reader to the chapter title, and the first spoken sentence carries the reader to its illustration and paragraph.
 - `src/styles/global.css` defines the reusable narrator, child, human character, machine, house, and wind treatments. Every spoken word receives a newly varied wake—different reach, lift, angle, thickness, and release time—while earlier words remain in a broader fading current. The effect stays continuous without repeating one mechanical shape.
 
 ## Voice annotation rule
