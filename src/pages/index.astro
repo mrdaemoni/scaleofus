@@ -6,12 +6,23 @@ import storyTimings from "../content/story-timings.json";
 import storyWordTimings from "../content/story-word-timings.json";
 import { windStoryReader } from "../content/wind-story-reader";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
-import { storyArt, storyArtKind, validateVoicePassages, voiceWords } from "../lib/story-reader";
+import {
+  storyArt,
+  storyArtKind,
+  validateStoryWordTimings,
+  validateVoicePassages,
+  voiceWords,
+} from "../lib/story-reader";
 
 const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
 validateVoicePassages(chapters, windStoryReader.voices);
+validateStoryWordTimings(chapters, storyWordTimings.beats, duration);
 const headingTimingByChapter = new Map(storyHeadingTimings.chapters.map((heading) => [heading.number, heading]));
+if (
+  headingTimingByChapter.size !== storyHeadingTimings.chapters.length
+  || headingTimingByChapter.size !== chapters.length
+) throw new Error("Chapter heading timings must contain each story chapter exactly once.");
 const timedTokens = (
   text: string,
   cues: ReadonlyArray<{ start: number; end: number }>,
@@ -21,6 +32,17 @@ const timedTokens = (
   if (tokens.length !== cues.length) {
     throw new Error(`${context} has ${tokens.length} displayed words but ${cues.length} timing cues.`);
   }
+  let previousEnd = 0;
+  cues.forEach((cue, index) => {
+    if (
+      !Number.isFinite(cue.start)
+      || !Number.isFinite(cue.end)
+      || cue.start < previousEnd
+      || cue.end < cue.start
+      || cue.end > duration
+    ) throw new Error(`${context}, cue ${index + 1} is invalid or out of order.`);
+    previousEnd = cue.end;
+  });
   return tokens.map((token, index) => ({ text: token, ...cues[index] }));
 };
 const coverHeadingWords = timedTokens(windStoryReader.title, storyHeadingTimings.cover.words, "Cover title");
@@ -276,6 +298,10 @@ const resolvedSpeaker = (
                             alt={`Drawing ${beat.number}: ${beat.prompt}`}
                             data-story-art
                             loading={beat.number === 1 ? "eager" : "lazy"}
+                            decoding="async"
+                            fetchpriority={beat.number === 1 ? "high" : "low"}
+                            width="1200"
+                            height="800"
                           />
                         )}
                       </div>

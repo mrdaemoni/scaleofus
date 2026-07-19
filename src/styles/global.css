@@ -1040,8 +1040,13 @@ body.is-listening .mountain-climber {
   filter: blur(18px);
   opacity: 0.72;
   transform: translate3d(0, 0, 0) scale(1.02);
-  animation: watercolorAmbient 24s ease-in-out infinite alternate;
+  animation: none;
   mix-blend-mode: multiply;
+  will-change: auto;
+}
+
+.story-chapter.is-current-chapter::after {
+  animation: watercolorAmbient 24s ease-in-out infinite alternate;
   will-change: transform, background-position, filter;
 }
 

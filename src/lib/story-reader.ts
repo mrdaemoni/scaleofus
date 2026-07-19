@@ -47,6 +47,19 @@ export type VoicedWord = {
   speaker: StorySpeaker;
 };
 
+export type StoryWordTimingBeat = {
+  number: number;
+  start: number;
+  end: number;
+  paragraphs: ReadonlyArray<{
+    words: ReadonlyArray<{
+      start: number;
+      end: number;
+      speaker?: string;
+    }>;
+  }>;
+};
+
 const occurrences = (value: string, fragment: string) => {
   let count = 0;
   let cursor = 0;
@@ -68,6 +81,63 @@ export function validateVoicePassages(chapters: StoryChapter[], passages: VoiceP
         `Voice passage for beat ${passage.beat} must match exactly once; found ${count}: ${passage.text}`,
       );
     }
+  });
+}
+
+export function validateStoryWordTimings(
+  chapters: StoryChapter[],
+  timings: ReadonlyArray<StoryWordTimingBeat>,
+  duration: number,
+) {
+  const expectedBeats = chapters.flatMap((chapter) => chapter.beats);
+  const timingByNumber = new Map(timings.map((timing) => [timing.number, timing]));
+  if (timingByNumber.size !== timings.length) throw new Error("Story word timings contain duplicate beat numbers.");
+  if (timings.length !== expectedBeats.length) {
+    throw new Error(`Story has ${expectedBeats.length} beats but ${timings.length} aligned timing entries.`);
+  }
+
+  const validSpeakers = new Set<StorySpeaker>([
+    "narrator", "boy", "character", "machine", "stonecutter", "keeper", "potter",
+    "girl", "gardener", "house", "wind",
+  ]);
+  let previousCueEnd = 0;
+
+  expectedBeats.forEach((beat) => {
+    const timing = timingByNumber.get(beat.number);
+    if (!timing) throw new Error(`Drawing ${beat.number} has no word timing entry.`);
+    if (Math.abs(timing.start - beat.start) > 0.02 || Math.abs(timing.end - beat.end) > 0.02) {
+      throw new Error(`Drawing ${beat.number} beat and word timing boundaries do not match.`);
+    }
+    if (timing.paragraphs.length !== beat.paragraphs.length) {
+      throw new Error(
+        `Drawing ${beat.number} has ${beat.paragraphs.length} paragraphs but ${timing.paragraphs.length} timed paragraphs.`,
+      );
+    }
+
+    beat.paragraphs.forEach((paragraph, paragraphIndex) => {
+      const displayedWordCount = [...paragraph.matchAll(/\S+/g)].length;
+      const cues = timing.paragraphs[paragraphIndex]?.words ?? [];
+      if (displayedWordCount !== cues.length) {
+        throw new Error(
+          `Drawing ${beat.number}, paragraph ${paragraphIndex + 1} has ${displayedWordCount} words but ${cues.length} cues.`,
+        );
+      }
+      cues.forEach((cue, wordIndex) => {
+        if (
+          !Number.isFinite(cue.start)
+          || !Number.isFinite(cue.end)
+          || cue.start < previousCueEnd
+          || cue.end < cue.start
+          || cue.end > duration
+        ) {
+          throw new Error(`Drawing ${beat.number}, word ${wordIndex + 1} has an invalid or out-of-order cue.`);
+        }
+        if (cue.speaker && !validSpeakers.has(cue.speaker as StorySpeaker)) {
+          throw new Error(`Drawing ${beat.number}, word ${wordIndex + 1} has unknown speaker “${cue.speaker}”.`);
+        }
+        previousCueEnd = cue.end;
+      });
+    });
   });
 }
 

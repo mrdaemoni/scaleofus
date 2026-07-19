@@ -19,7 +19,7 @@ Every reading unit also renders an integrated drawing placeholder beneath its ar
 
 ## Shared behavior
 
-- `src/lib/story-reader.ts` validates voice passages, assigns a speaker to each rendered word, and resolves artwork paths.
+- `src/lib/story-reader.ts` validates voice passages and the complete beat-to-word timing contract, assigns a speaker to each rendered word, and resolves artwork paths. Missing beats, word-count drift, out-of-order cues, and unknown speakers stop the build instead of failing in the browser.
 - `src/scripts/story-player.ts` synchronizes words, reading units, chapters, audio progress, manual seeking, and viewport-aware illustration fitting. Listening follows a reusable three-scene rhythm: the cover title stays on the cover, the quiet gap carries the reader to the chapter title, and the first spoken sentence carries the reader to its illustration and paragraph.
 - `src/styles/global.css` defines the reusable narrator, child, human character, machine, house, and wind treatments. Every spoken word receives a newly varied wake—different reach, lift, angle, thickness, and release time—while earlier words remain in a broader fading current. The effect stays continuous without repeating one mechanical shape.
 

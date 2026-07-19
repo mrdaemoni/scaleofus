@@ -33,6 +33,8 @@ const dockChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data
 const railChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>(".chapter-rail [data-chapter-link]")];
 const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
+const paragraphStarts = paragraphs.map((paragraph) => Number(paragraph.dataset.start ?? 0));
+const storyChapters = [...document.querySelectorAll<HTMLElement>(".story-chapter")];
 const storyCover = document.querySelector<HTMLElement>(".story-cover");
 const coverHeading = document.querySelector<HTMLElement>("[data-cover-heading]");
 const chapterHeadings = [...document.querySelectorAll<HTMLElement>("[data-chapter-heading]")];
@@ -75,7 +77,11 @@ let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let ignoreTouchClickUntil = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
+let pointerFrame = 0;
 let fitTimer = 0;
+let lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+let lastMountainFrame = Number.NEGATIVE_INFINITY;
+let lastSavedProgressSecond = -1;
 let mountainAnchors: Array<{ x: number; y: number }> = [];
 const windTrailTimers = new Map<HTMLElement, number>();
 
@@ -126,14 +132,32 @@ const format = (seconds: number) => {
   return `${minutes}:${String(remainder).padStart(2, "0")}`;
 };
 
+const saveProgress = (force = false) => {
+  if (!audio) return;
+  const progressSecond = Math.floor(audio.currentTime);
+  if (!force && progressSecond === lastSavedProgressSecond) return;
+  lastSavedProgressSecond = progressSecond;
+  try {
+    localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
+  } catch {}
+};
+
 const paragraphStart = (index: number) => Number(paragraphs[index]?.dataset.start ?? 0);
 
 const paragraphForTime = (seconds: number) => {
-  let index = 0;
-  paragraphs.forEach((paragraph, paragraphIndex) => {
-    if (seconds >= Number(paragraph.dataset.start ?? 0)) index = paragraphIndex;
-  });
-  return index;
+  let low = 0;
+  let high = paragraphStarts.length - 1;
+  let match = 0;
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    if (paragraphStarts[middle] <= seconds) {
+      match = middle;
+      low = middle + 1;
+    } else {
+      high = middle - 1;
+    }
+  }
+  return match;
 };
 
 const headingForTime = (seconds: number) => {
@@ -201,23 +225,33 @@ const syncNarrationWord = (preserveCurrentOnGap = false) => {
   setWord(nextWord);
 };
 
-const runNarrationLoop = () => {
+const runNarrationLoop = (timestamp: number) => {
   narrationFrame = 0;
   if (!audio || audio.paused) return;
-  syncReadingStage(audio.currentTime, "audio");
-  auditPlaybackFollow();
+  if (timestamp - lastNarrationStageFrame >= 80) {
+    syncReadingStage(audio.currentTime, "audio");
+    auditPlaybackFollow();
+    lastNarrationStageFrame = timestamp;
+  }
   syncNarrationWord();
-  updateMountainJourney(audio.currentTime);
+  if (timestamp - lastMountainFrame >= 40) {
+    updateMountainJourney(audio.currentTime);
+    lastMountainFrame = timestamp;
+  }
   narrationFrame = requestAnimationFrame(runNarrationLoop);
 };
 
 const startNarrationLoop = () => {
+  lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+  lastMountainFrame = Number.NEGATIVE_INFINITY;
   if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
 };
 
 const stopNarrationLoop = () => {
   if (narrationFrame) cancelAnimationFrame(narrationFrame);
   narrationFrame = 0;
+  lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+  lastMountainFrame = Number.NEGATIVE_INFINITY;
   syncNarrationWord(true);
 };
 
@@ -230,6 +264,9 @@ const setChapter = (index: number) => {
   chapterLinks.forEach((link) => {
     const isCurrent = Number(link.dataset.chapterIndex) === index;
     link.toggleAttribute("aria-current", isCurrent);
+  });
+  storyChapters.forEach((chapter, chapterIndex) => {
+    chapter.classList.toggle("is-current-chapter", chapterIndex === index);
   });
   if (currentChapter) {
     currentChapter.textContent = `Chapter ${index + 1} · ${chapters[index].title}`;
@@ -487,9 +524,9 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
   if (!desktopReader.matches && !paragraphIsRevealed) queueMobileParagraphReveal(index);
 };
 
-const centerHeading = (index: number, behavior: ScrollBehavior = "smooth") => {
+const centerHeading = (index: number, behavior: ScrollBehavior = "smooth", force = false) => {
   const heading = chapterHeadings[index];
-  if (!heading || !followNarration || manualScrollActive) return;
+  if (!heading || (!followNarration && !force) || manualScrollActive) return;
   const bounds = readingBounds();
   const rect = heading.getBoundingClientRect();
   const viewportCenter = bounds.top + bounds.height / 2;
@@ -686,6 +723,7 @@ const releaseScrollToNarration = () => {
   lastCenteredParagraph = -1;
   lastCenteredHeading = -1;
   lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
+  clearMobileParagraphReveal();
 };
 
 const followPlaybackPosition = (behavior: ScrollBehavior = "smooth") => {
@@ -864,6 +902,8 @@ const beginManualScroll = (event: Event) => {
   autoScrollTarget = -1;
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   lastCenteredParagraph = -1;
+  lastCenteredHeading = -1;
+  queueViewportSync(240);
 };
 
 const updateCinematicMotion = () => {
@@ -920,6 +960,7 @@ audio?.addEventListener("play", () => {
 });
 audio?.addEventListener("pause", () => {
   clearMobileParagraphReveal();
+  saveProgress(true);
   updatePlayState();
   stopNarrationLoop();
   if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
@@ -968,9 +1009,7 @@ audio?.addEventListener("timeupdate", () => {
   syncReadingStage(audio.currentTime, "audio");
   auditPlaybackFollow();
   syncNarrationWord();
-  try {
-    localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
-  } catch {}
+  saveProgress();
 });
 
 seek?.addEventListener("input", () => {
@@ -981,7 +1020,9 @@ seek?.addEventListener("input", () => {
   syncNarrationWord();
 });
 seek?.addEventListener("change", () => {
-  if (audio) centerReadingStage(audio.currentTime);
+  if (!audio) return;
+  saveProgress(true);
+  centerReadingStage(audio.currentTime);
 });
 
 chapterLinks.forEach((link) => {
@@ -997,8 +1038,9 @@ chapterLinks.forEach((link) => {
     lastCenteredParagraph = -1;
     lastCenteredHeading = -1;
     setHeading(index, "scroll");
-    centerHeading(index);
+    centerHeading(index, "smooth", true);
     syncNarrationWord();
+    saveProgress(true);
   });
 });
 
@@ -1081,6 +1123,8 @@ document.addEventListener("visibilitychange", () => {
   ) audio.play().catch(() => {});
 });
 addEventListener("keydown", (event) => {
+  const target = event.target as Element | null;
+  if (target?.closest("button, a, input, select, textarea, [contenteditable='true']")) return;
   if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
     beginManualScroll(event);
   }
@@ -1117,10 +1161,18 @@ addEventListener("resize", () => {
   queueViewportFit(160);
 }, { passive: true });
 
-addEventListener("pointermove", (event) => {
-  document.documentElement.style.setProperty("--pointer-x", `${event.clientX / innerWidth - 0.5}`);
-  document.documentElement.style.setProperty("--pointer-y", `${event.clientY / innerHeight - 0.5}`);
-}, { passive: true });
+if (matchMedia("(pointer: fine)").matches) {
+  addEventListener("pointermove", (event) => {
+    if (pointerFrame) return;
+    const x = event.clientX;
+    const y = event.clientY;
+    pointerFrame = requestAnimationFrame(() => {
+      pointerFrame = 0;
+      document.documentElement.style.setProperty("--pointer-x", `${x / innerWidth - 0.5}`);
+      document.documentElement.style.setProperty("--pointer-y", `${y / innerHeight - 0.5}`);
+    });
+  }, { passive: true });
+}
 
 const restorePosition = () => {
   if (!audio || !seek) return;
