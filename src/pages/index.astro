@@ -318,7 +318,8 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
     <audio
       data-audio
       src={windStoryReader.audio.src}
-      preload="metadata"
+      preload="auto"
+      playsinline
     ></audio>
     <nav class="dock-chapters" aria-label="Story chapters">
       <ol>

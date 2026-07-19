@@ -52,14 +52,21 @@ let coverIsActive = false;
 let activeWord = -1;
 let followNarration = true;
 let dockPinnedOpen = false;
+let playbackRequested = false;
+let mediaIsBuffering = false;
 let autoScrollActive = false;
 let manualScrollActive = false;
 let touchActive = false;
+let touchMoved = false;
+let touchStartY = 0;
 let lastCenteredParagraph = -1;
 let lastCenteredHeading = -1;
 let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let autoScrollTarget = -1;
+let mobileRevealTimer = 0;
+let playbackRecoveryTimer = 0;
+let bufferingRecoveryTimer = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let fitTimer = 0;
@@ -373,6 +380,58 @@ const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smoo
   scrollTo({ top: targetTop, behavior: reducedMotion.matches ? "auto" : behavior });
 };
 
+const clearMobileParagraphReveal = () => {
+  if (mobileRevealTimer) window.clearTimeout(mobileRevealTimer);
+  mobileRevealTimer = 0;
+};
+
+const mobileRevealAt = (index: number) => {
+  const start = Number(paragraphs[index]?.dataset.start ?? 0);
+  const end = Number(paragraphs[index]?.dataset.end ?? start + 8);
+  return start + clamp((end - start) * 0.24, 1.8, 3.2);
+};
+
+const mobileParagraphTarget = (index: number, revealText: boolean) => {
+  const paragraph = paragraphs[index];
+  const frame = paragraph?.closest<HTMLElement>("[data-beat]")
+    ?.querySelector<HTMLElement>("[data-cinematic-art]");
+  if (!paragraph || !frame) return null;
+  const bounds = readingBounds();
+  const frameRect = frame.getBoundingClientRect();
+  const frameFirstTop = scrollY + frameRect.top - bounds.top;
+  if (!revealText) return frameFirstTop;
+  const gentleLift = Math.min(frameRect.height * 0.18, bounds.height * 0.07, 54);
+  return frameFirstTop + gentleLift;
+};
+
+const revealMobileParagraph = (index: number) => {
+  mobileRevealTimer = 0;
+  if (
+    desktopReader.matches
+    || activeParagraph !== index
+    || !followNarration
+    || manualScrollActive
+    || !audio
+    || audio.paused
+  ) return;
+  const target = mobileParagraphTarget(index, true);
+  if (target !== null) scrollForNarration(target);
+};
+
+const queueMobileParagraphReveal = (index: number) => {
+  clearMobileParagraphReveal();
+  if (desktopReader.matches || !audio || audio.paused) return;
+  const remaining = mobileRevealAt(index) - audio.currentTime;
+  if (remaining <= 0.08) {
+    revealMobileParagraph(index);
+    return;
+  }
+  mobileRevealTimer = window.setTimeout(
+    () => queueMobileParagraphReveal(index),
+    clamp(remaining * 1000, 180, 800),
+  );
+};
+
 const fitBeatToViewport = (index: number) => {
   const paragraph = paragraphs[index];
   const beat = paragraph?.closest<HTMLElement>("[data-beat]");
@@ -409,11 +468,16 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
   const frame = fitBeatToViewport(index);
   const bounds = readingBounds();
   const rect = paragraph.getBoundingClientRect();
+  const paragraphIsRevealed = !desktopReader.matches && Boolean(audio && audio.currentTime >= mobileRevealAt(index));
+  const mobileTarget = !desktopReader.matches && frame
+    ? mobileParagraphTarget(index, paragraphIsRevealed)
+    : null;
   const desiredTop = desktopReader.matches && frame
     ? scrollY + frame.getBoundingClientRect().top - bounds.top
-    : scrollY + rect.top + rect.height / 2 - readingFocus();
+    : mobileTarget ?? scrollY + rect.top + rect.height / 2 - readingFocus();
   lastCenteredParagraph = index;
   scrollForNarration(desiredTop, behavior);
+  if (!desktopReader.matches && !paragraphIsRevealed) queueMobileParagraphReveal(index);
 };
 
 const centerHeading = (index: number, behavior: ScrollBehavior = "smooth") => {
@@ -443,6 +507,7 @@ const queueViewportFit = (delay = 380) => {
 };
 
 const clearParagraphState = () => {
+  clearMobileParagraphReveal();
   activeParagraph = -1;
   paragraphs.forEach((paragraph) => {
     paragraph.classList.remove("is-current-paragraph");
@@ -571,13 +636,25 @@ const updatePlayState = () => {
   if (!audio) return;
   const playing = !audio.paused;
   document.body.classList.toggle("is-listening", playing);
-  if (playIcon) playIcon.textContent = playing ? "❚❚" : "▶";
-  dockPlay?.setAttribute("aria-label", playing ? "Pause narration" : "Play narration");
+  document.body.classList.toggle("is-buffering", mediaIsBuffering);
+  if (playIcon) playIcon.textContent = mediaIsBuffering ? "↻" : playing ? "❚❚" : "▶";
+  dockPlay?.setAttribute(
+    "aria-label",
+    mediaIsBuffering ? "Resume narration" : playing ? "Pause narration" : "Play narration",
+  );
 };
 
 const togglePlayback = async (event?: Event) => {
   if (!audio) return;
   const trigger = event?.currentTarget as HTMLElement | null;
+  if (!audio.paused && mediaIsBuffering) {
+    playbackRequested = true;
+    audio.currentTime = Math.min(audio.currentTime + 0.02, Math.max(0, audio.duration - 0.1));
+    try {
+      await audio.play();
+    } catch {}
+    return;
+  }
   if (audio.paused && trigger?.hasAttribute("data-hero-play")) {
     audio.currentTime = 0;
     manualScrollActive = false;
@@ -591,6 +668,7 @@ const togglePlayback = async (event?: Event) => {
   }
   if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
+    playbackRequested = true;
     syncReadingStage(audio.currentTime, "restore");
     centerReadingStage(audio.currentTime);
     try {
@@ -599,9 +677,11 @@ const togglePlayback = async (event?: Event) => {
       syncReadingStage(audio.currentTime, "audio");
       centerReadingStage(audio.currentTime);
     } catch {
+      playbackRequested = false;
       return;
     }
   } else {
+    playbackRequested = false;
     audio.pause();
   }
   updatePlayState();
@@ -699,18 +779,56 @@ storyArtImages.forEach((image) => {
 
 playButtons.forEach((button) => button.addEventListener("click", togglePlayback));
 audio?.addEventListener("play", () => {
+  playbackRequested = true;
   updatePlayState();
   startNarrationLoop();
 });
 audio?.addEventListener("pause", () => {
+  clearMobileParagraphReveal();
   updatePlayState();
   stopNarrationLoop();
+  if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
+  if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
+    playbackRecoveryTimer = window.setTimeout(() => {
+      playbackRecoveryTimer = 0;
+      if (playbackRequested && audio.paused && !audio.ended) audio.play().catch(() => {});
+    }, 280);
+  }
 });
 audio?.addEventListener("ended", () => {
+  playbackRequested = false;
+  mediaIsBuffering = false;
   updatePlayState();
   stopNarrationLoop();
 });
+const setMediaBuffering = (buffering: boolean) => {
+  mediaIsBuffering = buffering && playbackRequested && Boolean(audio && !audio.ended);
+  if (bufferingRecoveryTimer) {
+    window.clearTimeout(bufferingRecoveryTimer);
+    bufferingRecoveryTimer = 0;
+  }
+  if (mediaIsBuffering && audio) {
+    bufferingRecoveryTimer = window.setTimeout(() => {
+      bufferingRecoveryTimer = 0;
+      if (
+        !audio
+        || !playbackRequested
+        || audio.ended
+        || document.visibilityState !== "visible"
+        || audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA
+      ) return;
+      audio.currentTime = Math.min(audio.currentTime + 0.02, Math.max(0, audio.duration - 0.1));
+      audio.play().catch(() => {});
+    }, 4500);
+  }
+  updatePlayState();
+};
+audio?.addEventListener("waiting", () => setMediaBuffering(true));
+audio?.addEventListener("stalled", () => setMediaBuffering(true));
+audio?.addEventListener("playing", () => setMediaBuffering(false));
+audio?.addEventListener("canplay", () => setMediaBuffering(false));
 audio?.addEventListener("timeupdate", () => {
+  if (mediaIsBuffering) setMediaBuffering(false);
   updateStoryProgress(audio.currentTime);
   syncReadingStage(audio.currentTime, "audio");
   syncNarrationWord();
@@ -750,6 +868,7 @@ chapterLinks.forEach((link) => {
 
 readerHome?.addEventListener("click", (event) => {
   event.preventDefault();
+  playbackRequested = false;
   audio?.pause();
   if (audio) audio.currentTime = 0;
   manualScrollActive = false;
@@ -794,17 +913,37 @@ beatElements.forEach((beat) => beatObserver.observe(beat));
 
 addEventListener("wheel", beginManualScroll, { passive: true });
 addEventListener("touchstart", (event) => {
+  const target = event.target as Element | null;
+  if (target?.closest("[data-audio-dock]")) return;
   touchActive = true;
+  touchMoved = false;
+  touchStartY = event.touches[0]?.clientY ?? 0;
+}, { passive: true });
+addEventListener("touchmove", (event) => {
+  if (!touchActive || touchMoved) return;
+  const currentY = event.touches[0]?.clientY ?? touchStartY;
+  if (Math.abs(currentY - touchStartY) < 8) return;
+  touchMoved = true;
   beginManualScroll(event);
 }, { passive: true });
 addEventListener("touchend", () => {
   touchActive = false;
-  if (manualScrollActive) queueViewportSync(240);
+  if (touchMoved && manualScrollActive) queueViewportSync(240);
+  touchMoved = false;
 }, { passive: true });
 addEventListener("touchcancel", () => {
   touchActive = false;
-  if (manualScrollActive) queueViewportSync(240);
+  if (touchMoved && manualScrollActive) queueViewportSync(240);
+  touchMoved = false;
 }, { passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (
+    document.visibilityState === "visible"
+    && playbackRequested
+    && audio?.paused
+    && !audio.ended
+  ) audio.play().catch(() => {});
+});
 addEventListener("keydown", (event) => {
   if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
     beginManualScroll(event);
