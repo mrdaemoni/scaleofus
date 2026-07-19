@@ -34,8 +34,6 @@ Will you know where I am? asked the boy. Nope, said the machine. The boy looked 
 
 So the boy packed bread, a rope, and the card. You bring what's true, even when it isn't enough. At the edge of town, the wind pushed him from behind. Finally, it said.
 
-## Chapter Two: The Stonecutter
-
 *(drawing 9: a wide road narrowing into a single thin line between grass strokes, the boy at the joint, looking back over his shoulder at emptiness)*
 
 The road grew narrower and narrower, until it ended. A path continued, just wide enough for feet. The boy turned to ask how far was left. The machine wasn't there. For the first time, he had to choose without an answer.
@@ -43,6 +41,8 @@ The road grew narrower and narrower, until it ended. A path continued, just wide
 *(drawing 10: the boy's two feet on the first foot-width of path, the wide empty road behind them)*
 
 He looked back down the road. Home was that way. The square. The warm eye. The answers. He stood there for a long time. Then he chose the path.
+
+## Chapter Two: The Stonecutter
 
 *(drawing 11: three tall standing stones, one small bent figure with a chisel, three tap marks in the air)*
 

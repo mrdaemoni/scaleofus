@@ -25,7 +25,11 @@ DEFAULT_AUDIO = ROOT / "public/audio/the-boy-who-tried-to-catch-the-wind.mp3"
 
 # Exact spot checks for boundary words that the full-recording Whisper pass
 # merges into a neighboring segment. Indices are zero-based manuscript words.
-WORD_CUE_OVERRIDES: dict[int, dict[int, dict[str, float]]] = {}
+WORD_CUE_OVERRIDES: dict[int, dict[int, dict[str, float]]] = {
+    # Whisper hears "Higher" as the final word of the preceding pond scene.
+    # Anchor it to the Gardener chapter's actual opening instead.
+    31: {0: {"start": 538.3, "end": 538.56}},
+}
 
 
 def manuscript_beats(markdown: str) -> list[dict]:

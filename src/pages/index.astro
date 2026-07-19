@@ -52,6 +52,15 @@ const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.numb
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+const resolvedSpeaker = (
+  chapterNumber: number,
+  authoredSpeaker: string,
+  timedSpeaker = "narrator",
+) => {
+  const speaker = authoredSpeaker !== "narrator" ? authoredSpeaker : timedSpeaker;
+  if (speaker !== "character") return speaker;
+  return windStoryReader.chapterCharacterVoices?.[chapterNumber] ?? speaker;
+};
 ---
 
 <Base
@@ -288,7 +297,7 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
                               {wordIndex > 0 && " "}
                               <span
                                 data-narration-word
-                                data-speaker={word.speaker !== "narrator" ? word.speaker : cue?.speaker ?? word.speaker}
+                                data-speaker={resolvedSpeaker(chapter.number, word.speaker, cue?.speaker)}
                                 data-start={cue?.start ?? paragraphStart}
                                 data-end={cue?.end ?? paragraphEnd}
                               >

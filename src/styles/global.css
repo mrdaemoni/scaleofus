@@ -54,6 +54,26 @@ body.is-listening[data-active-speaker="machine"] {
   --voice-accent: #91b6c7;
 }
 
+body.is-listening[data-active-speaker="stonecutter"] {
+  --voice-accent: #a6a3aa;
+}
+
+body.is-listening[data-active-speaker="keeper"] {
+  --voice-accent: #c99778;
+}
+
+body.is-listening[data-active-speaker="potter"] {
+  --voice-accent: #b98270;
+}
+
+body.is-listening[data-active-speaker="girl"] {
+  --voice-accent: #7faabd;
+}
+
+body.is-listening[data-active-speaker="gardener"] {
+  --voice-accent: #8da88f;
+}
+
 body.is-listening[data-active-speaker="house"] {
   --voice-accent: #b49abd;
 }
@@ -2091,6 +2111,49 @@ body.is-listening .mountain-climber {
   font-style: italic;
 }
 
+.beat-copy [data-narration-word][data-speaker="stonecutter"] {
+  --word-weight: 455;
+  --word-wind-core: rgba(115, 114, 124, 0.28);
+  --word-wind-wisp: rgba(216, 213, 219, 0.46);
+  --word-wind-shadow: rgba(91, 89, 101, 0.25);
+  color: #62616a;
+  letter-spacing: 0.012em;
+}
+
+.beat-copy [data-narration-word][data-speaker="keeper"] {
+  --word-weight: 430;
+  --word-wind-core: rgba(185, 117, 82, 0.3);
+  --word-wind-wisp: rgba(239, 207, 185, 0.46);
+  --word-wind-shadow: rgba(143, 83, 61, 0.26);
+  color: #815e52;
+  font-style: italic;
+}
+
+.beat-copy [data-narration-word][data-speaker="potter"] {
+  --word-weight: 470;
+  --word-wind-core: rgba(157, 100, 78, 0.3);
+  --word-wind-wisp: rgba(228, 194, 179, 0.46);
+  --word-wind-shadow: rgba(122, 75, 61, 0.26);
+  color: #765a51;
+}
+
+.beat-copy [data-narration-word][data-speaker="girl"] {
+  --word-weight: 390;
+  --word-wind-core: rgba(83, 139, 164, 0.29);
+  --word-wind-wisp: rgba(190, 220, 229, 0.46);
+  --word-wind-shadow: rgba(61, 110, 132, 0.26);
+  color: #507481;
+  font-style: italic;
+}
+
+.beat-copy [data-narration-word][data-speaker="gardener"] {
+  --word-weight: 430;
+  --word-wind-core: rgba(90, 137, 94, 0.28);
+  --word-wind-wisp: rgba(202, 225, 200, 0.46);
+  --word-wind-shadow: rgba(65, 108, 70, 0.25);
+  color: #58705d;
+}
+
 .beat-copy [data-narration-word][data-speaker="machine"] {
   --word-weight: 490;
   --word-wind-core: rgba(83, 139, 167, 0.34);
@@ -2189,9 +2252,20 @@ body.is-listening .mountain-climber {
 }
 
 .beat-copy [data-narration-word][data-speaker="boy"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="character"].is-current-word {
+.beat-copy [data-narration-word][data-speaker="character"].is-current-word,
+.beat-copy [data-narration-word][data-speaker="stonecutter"].is-current-word,
+.beat-copy [data-narration-word][data-speaker="keeper"].is-current-word,
+.beat-copy [data-narration-word][data-speaker="potter"].is-current-word,
+.beat-copy [data-narration-word][data-speaker="girl"].is-current-word,
+.beat-copy [data-narration-word][data-speaker="gardener"].is-current-word {
   --word-weight: 540;
 }
+
+.beat-copy [data-narration-word][data-speaker="stonecutter"].is-current-word { color: #51505a; }
+.beat-copy [data-narration-word][data-speaker="keeper"].is-current-word { color: #70483d; }
+.beat-copy [data-narration-word][data-speaker="potter"].is-current-word { color: #63483f; }
+.beat-copy [data-narration-word][data-speaker="girl"].is-current-word { color: #3f6877; }
+.beat-copy [data-narration-word][data-speaker="gardener"].is-current-word { color: #46624c; }
 
 .beat-copy [data-narration-word][data-speaker="machine"].is-current-word {
   --word-weight: 620;

@@ -11,8 +11,8 @@ export const windStoryReader: StoryReaderConfig = {
   title: "The Boy Who Tried to Catch the Wind",
   intro: "A story about a boy, a machine, and the part of us no answer can hold.",
   audio: {
-    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=image-edition-20260718",
-    duration: 877.3,
+    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=full-cast-v10-20260719",
+    duration: 1045.567,
   },
   artwork: {
     cover: "/images/wind-story/sketches/scale-22-cover.png",
@@ -73,6 +73,14 @@ export const windStoryReader: StoryReaderConfig = {
     "fragments", "still", "ripple", "question", "wind", "windows", "question", "sky", "fragments", "gifts",
     "breath", "glow", "map", "windows", "glow", "breath", "page", "card", "wind",
   ],
+  chapterCharacterVoices: {
+    2: "stonecutter",
+    3: "keeper",
+    4: "potter",
+    5: "girl",
+    6: "gardener",
+    7: "house",
+  },
   // Most speaker identity travels with the aligned word cues. These exact
   // passages restore voice on phrases rewritten more substantially.
   voices: [

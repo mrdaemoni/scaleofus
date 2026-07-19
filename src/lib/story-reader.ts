@@ -1,6 +1,17 @@
 import type { StoryChapter } from "./story";
 
-export type StorySpeaker = "narrator" | "boy" | "character" | "machine" | "house" | "wind";
+export type StorySpeaker =
+  | "narrator"
+  | "boy"
+  | "character"
+  | "machine"
+  | "stonecutter"
+  | "keeper"
+  | "potter"
+  | "girl"
+  | "gardener"
+  | "house"
+  | "wind";
 
 export type VoicePassage = {
   beat: number;
@@ -28,6 +39,7 @@ export type StoryReaderConfig = {
   };
   motions: string[];
   voices: VoicePassage[];
+  chapterCharacterVoices?: Partial<Record<number, Exclude<StorySpeaker, "narrator" | "character">>>;
 };
 
 export type VoicedWord = {
