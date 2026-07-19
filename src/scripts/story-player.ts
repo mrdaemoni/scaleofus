@@ -70,6 +70,8 @@ let mobileRevealTimer = 0;
 let playbackRecoveryTimer = 0;
 let bufferingRecoveryTimer = 0;
 let playbackFollowTimer = 0;
+let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
+let ignoreTouchClickUntil = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let fitTimer = 0;
@@ -202,6 +204,7 @@ const runNarrationLoop = () => {
   narrationFrame = 0;
   if (!audio || audio.paused) return;
   syncReadingStage(audio.currentTime, "audio");
+  auditPlaybackFollow();
   syncNarrationWord();
   updateMountainJourney(audio.currentTime);
   narrationFrame = requestAnimationFrame(runNarrationLoop);
@@ -635,6 +638,38 @@ const centerReadingStage = (seconds: number, behavior: ScrollBehavior = "smooth"
   centerParagraph(paragraphForTime(seconds), behavior);
 };
 
+const playbackStageIsAligned = (seconds: number) => {
+  if (isCoverTime(seconds)) return scrollY < 48;
+  const bounds = readingBounds();
+  const headingIndex = headingForTime(seconds);
+  if (headingIndex >= 0) {
+    const rect = chapterHeadings[headingIndex]?.getBoundingClientRect();
+    if (!rect) return false;
+    const center = rect.top + rect.height / 2;
+    const readingCenter = bounds.top + bounds.height / 2;
+    return Math.abs(center - readingCenter) < Math.max(84, bounds.height * 0.16);
+  }
+  const paragraph = paragraphs[paragraphForTime(seconds)];
+  const frame = paragraph?.closest<HTMLElement>("[data-beat]")
+    ?.querySelector<HTMLElement>("[data-cinematic-art]");
+  if (!frame) return false;
+  const frameTop = frame.getBoundingClientRect().top;
+  return Math.abs(frameTop - bounds.top) < Math.max(120, bounds.height * 0.22);
+};
+
+const auditPlaybackFollow = () => {
+  if (
+    !audio
+    || audio.paused
+    || !followNarration
+    || manualScrollActive
+    || autoScrollActive
+    || Math.abs(audio.currentTime - lastFollowAuditSecond) < 0.55
+  ) return;
+  lastFollowAuditSecond = audio.currentTime;
+  if (!playbackStageIsAligned(audio.currentTime)) centerReadingStage(audio.currentTime);
+};
+
 const releaseScrollToNarration = () => {
   if (manualScrollTimer) window.clearTimeout(manualScrollTimer);
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
@@ -649,6 +684,7 @@ const releaseScrollToNarration = () => {
   touchMoved = false;
   lastCenteredParagraph = -1;
   lastCenteredHeading = -1;
+  lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 };
 
 const followPlaybackPosition = (behavior: ScrollBehavior = "smooth") => {
@@ -684,31 +720,41 @@ const togglePlayback = async (event?: Event) => {
   if (!audio) return;
   const trigger = event?.currentTarget as HTMLElement | null;
   if (!audio.paused && mediaIsBuffering) {
+    releaseScrollToNarration();
     playbackRequested = true;
     audio.currentTime = Math.min(audio.currentTime + 0.02, Math.max(0, audio.duration - 0.1));
     try {
       await audio.play();
+      queuePlaybackFollow();
     } catch {}
     return;
   }
-  if (audio.paused && trigger?.hasAttribute("data-hero-play")) {
-    audio.currentTime = 0;
-    updateStoryProgress(0);
-    setCover("restore");
-    setWord(-1);
-  }
   if (audio.paused) {
-    if (manualScrollActive && !trigger?.hasAttribute("data-hero-play")) {
+    const startsFromCover = Boolean(
+      trigger?.hasAttribute("data-hero-play")
+      || trigger?.hasAttribute("data-nav-listen")
+      || scrollY <= Math.min(innerHeight * 0.3, 240),
+    );
+    if (manualScrollActive && !startsFromCover) {
       autoScrollActive = false;
       autoScrollTarget = -1;
       touchActive = false;
       syncAudioFromViewport();
     }
     releaseScrollToNarration();
+    if (startsFromCover) audio.currentTime = 0;
     playbackRequested = true;
-    syncReadingStage(audio.currentTime, "restore");
+    const playAttempt = audio.play();
+    if (startsFromCover) {
+      updateStoryProgress(0);
+      setCover("restore");
+      setWord(-1);
+      history.replaceState(null, "", "#top");
+    } else {
+      syncReadingStage(audio.currentTime, "restore");
+    }
     try {
-      await audio.play();
+      await playAttempt;
       updateStoryProgress(audio.currentTime);
     } catch {
       playbackRequested = false;
@@ -811,7 +857,18 @@ storyArtImages.forEach((image) => {
   if (image.complete && image.naturalWidth === 0) showPlaceholder();
 });
 
-playButtons.forEach((button) => button.addEventListener("click", togglePlayback));
+playButtons.forEach((button) => {
+  button.addEventListener("pointerup", (event) => {
+    if (event.pointerType !== "touch") return;
+    ignoreTouchClickUntil = Date.now() + 700;
+    event.preventDefault();
+    void togglePlayback(event);
+  });
+  button.addEventListener("click", (event) => {
+    if (event.detail > 0 && Date.now() < ignoreTouchClickUntil) return;
+    void togglePlayback(event);
+  });
+});
 audio?.addEventListener("play", () => {
   playbackRequested = true;
   updatePlayState();
@@ -867,6 +924,7 @@ audio?.addEventListener("timeupdate", () => {
   if (mediaIsBuffering) setMediaBuffering(false);
   updateStoryProgress(audio.currentTime);
   syncReadingStage(audio.currentTime, "audio");
+  auditPlaybackFollow();
   syncNarrationWord();
   try {
     localStorage.setItem("scaleofus-wind-progress", String(audio.currentTime));
