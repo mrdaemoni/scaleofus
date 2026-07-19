@@ -5,6 +5,7 @@ import sharp from "sharp";
 const root = process.cwd();
 const sourcePath = path.join(root, "artwork/incoming/Scale 1 - page 1.svg");
 const chapterOneV2Path = path.join(root, "artwork/incoming/chapter-01-v2-page-09.svg");
+const scale22Path = path.join(root, "artwork/incoming/scale-22-page-01.svg");
 const outputDir = path.join(root, "public/images/wind-story/sketches");
 const source = await readFile(sourcePath, "utf8");
 const drawingOnly = source.replace(/<image\b[^>]*?\/>/s, "");
@@ -184,4 +185,130 @@ await sharp({
   .png({ compressionLevel: 9, palette: true, quality: 94 })
   .toFile(path.join(outputDir, "beat-08-leaving-town-v2.png"));
 
-console.log(`Rendered ${scenes.length} storyboard sketches and the complete chapter-one V2 detail sequence.`);
+const scale22Source = await readFile(scale22Path, "utf8");
+const scale22Drawing = scale22Source.replace(/<image\b[^>]*?\/>/s, "");
+const scale22Rendered = await sharp(Buffer.from(scale22Drawing), { limitInputPixels: false })
+  .ensureAlpha()
+  .png()
+  .toBuffer();
+
+async function scale22Ink({ top, bottom, left = 0, width = 1620 }) {
+  const extracted = await sharp(scale22Rendered)
+    .extract({ left, top, width, height: bottom - top })
+    .png()
+    .toBuffer();
+  const crop = await sharp(extracted)
+    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+    .png()
+    .toBuffer();
+  const metadata = await sharp(crop).metadata();
+  const mask = await sharp(crop)
+    .extractChannel("alpha")
+    .linear(0.76)
+    .png()
+    .toBuffer();
+  return sharp({
+    create: {
+      width: metadata.width,
+      height: metadata.height,
+      channels: 3,
+      background: "#5f5358",
+    },
+  })
+    .joinChannel(mask)
+    .png()
+    .toBuffer();
+}
+
+async function writeScale22Frame(ink, filename) {
+  const fitted = await sharp(ink)
+    .resize({
+      width: 1120,
+      height: 720,
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+  await sharp({
+    create: {
+      width: 1200,
+      height: 800,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([{ input: fitted, gravity: "center" }])
+    .png({ compressionLevel: 9, palette: true, quality: 94 })
+    .toFile(path.join(outputDir, filename));
+}
+
+const scale22StoryCrops = [
+  { number: 1, top: 883, bottom: 1879 },
+  { number: 2, top: 1896, bottom: 2751 },
+  { number: 3, top: 2747, bottom: 3601 },
+  { number: 4, top: 3663, bottom: 4443 },
+  { number: 5, top: 4537, bottom: 5397 },
+  { number: 6, top: 5447, bottom: 6261 },
+  { number: 7, top: 6360, bottom: 7120 },
+  { number: 8, top: 7171, bottom: 8296 },
+  { number: 9, top: 8424, bottom: 9479 },
+  // Source page 11 is a three-moment composition. Splitting it preserves the
+  // site's one-landscape-per-paragraph rhythm without redrawing the artwork.
+  { number: 10, top: 9624, bottom: 10500 },
+  { number: 11, top: 10470, bottom: 11446 },
+  { number: 12, top: 11493, bottom: 12369 },
+  { number: 13, top: 12515, bottom: 13134 },
+  { number: 14, top: 13364, bottom: 14128 },
+  { number: 15, top: 14163, bottom: 14860 },
+  { number: 16, top: 14964, bottom: 15675 },
+];
+
+for (const crop of scale22StoryCrops) {
+  const ink = await scale22Ink(crop);
+  const filename = `scale-22-beat-${String(crop.number).padStart(2, "0")}.png`;
+  await writeScale22Frame(ink, filename);
+}
+
+const scale22CoverWind = await scale22Ink({ top: 20, bottom: 790 });
+const scale22CoverBoy = await scale22Ink({
+  left: 450,
+  width: 720,
+  top: 970,
+  bottom: 1835,
+});
+const scale22CoverWindFitted = await sharp(scale22CoverWind)
+  .resize({
+    width: 760,
+    height: 330,
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toBuffer();
+const scale22CoverBoyFitted = await sharp(scale22CoverBoy)
+  .resize({
+    width: 420,
+    height: 390,
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toBuffer();
+
+await sharp({
+  create: {
+    width: 1600,
+    height: 1000,
+    channels: 4,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  },
+})
+  .composite([
+    { input: scale22CoverWindFitted, left: 720, top: 155 },
+    { input: scale22CoverBoyFitted, left: 1100, top: 490 },
+  ])
+  .png({ compressionLevel: 9, palette: true, quality: 94 })
+  .toFile(path.join(outputDir, "scale-22-cover.png"));
+
+console.log(`Rendered ${scenes.length} storyboard sketches, the V2 study, and 16 Scale 22 story frames.`);

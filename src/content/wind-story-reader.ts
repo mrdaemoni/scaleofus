@@ -1,10 +1,6 @@
 import type { StoryReaderConfig } from "../lib/story-reader";
 
 const assetNumber = (number: number) => String(number).padStart(2, "0");
-const original = (number: number): { src: string; kind: "original" } => ({
-  src: `/images/wind-story/sketches/beat-${assetNumber(number)}.png`,
-  kind: "original",
-});
 const study = (number: number): { src: string; kind: "study" } => ({
   src: `/images/wind-story/beats/beat-${assetNumber(number)}.jpg`,
   kind: "study",
@@ -19,25 +15,27 @@ export const windStoryReader: StoryReaderConfig = {
     duration: 877.3,
   },
   artwork: {
-    cover: "/images/wind-story/sketches/chapter-01-v2-cover.png",
+    cover: "/images/wind-story/sketches/scale-22-cover.png",
     originalThrough: 11,
     originalRoot: "/images/wind-story/sketches",
     studyRoot: "/images/wind-story/beats",
     sources: {
-      1: { src: "/images/wind-story/sketches/chapter-01-v2-beat-01.png", kind: "original" },
-      2: { src: "/images/wind-story/sketches/chapter-01-v2-beat-02.png", kind: "original" },
-      3: { src: "/images/wind-story/sketches/chapter-01-v2-beat-03.png", kind: "original" },
-      4: { src: "/images/wind-story/sketches/chapter-01-v2-beat-04.png", kind: "original" },
-      5: { src: "/images/wind-story/sketches/chapter-01-v2-beat-05.png", kind: "original" },
-      6: { src: "/images/wind-story/sketches/chapter-01-v2-beat-06.png", kind: "original" },
-      7: { src: "/images/wind-story/sketches/chapter-01-v2-beat-07.png", kind: "original" },
-      8: { src: "/images/wind-story/sketches/beat-08-leaving-town-v2.png", kind: "original" },
-      9: original(6),
-      11: original(7),
-      13: original(8),
-      14: original(9),
-      15: original(10),
-      16: original(11),
+      1: { src: "/images/wind-story/sketches/scale-22-beat-01.png", kind: "original" },
+      2: { src: "/images/wind-story/sketches/scale-22-beat-02.png", kind: "original" },
+      3: { src: "/images/wind-story/sketches/scale-22-beat-03.png", kind: "original" },
+      4: { src: "/images/wind-story/sketches/scale-22-beat-04.png", kind: "original" },
+      5: { src: "/images/wind-story/sketches/scale-22-beat-05.png", kind: "original" },
+      6: { src: "/images/wind-story/sketches/scale-22-beat-06.png", kind: "original" },
+      7: { src: "/images/wind-story/sketches/scale-22-beat-07.png", kind: "original" },
+      8: { src: "/images/wind-story/sketches/scale-22-beat-08.png", kind: "original" },
+      9: { src: "/images/wind-story/sketches/scale-22-beat-09.png", kind: "original" },
+      10: { src: "/images/wind-story/sketches/scale-22-beat-10.png", kind: "original" },
+      11: { src: "/images/wind-story/sketches/scale-22-beat-11.png", kind: "original" },
+      12: { src: "/images/wind-story/sketches/scale-22-beat-12.png", kind: "original" },
+      13: { src: "/images/wind-story/sketches/scale-22-beat-13.png", kind: "original" },
+      14: { src: "/images/wind-story/sketches/scale-22-beat-14.png", kind: "original" },
+      15: { src: "/images/wind-story/sketches/scale-22-beat-15.png", kind: "original" },
+      16: { src: "/images/wind-story/sketches/scale-22-beat-16.png", kind: "original" },
       17: study(12),
       19: study(13),
       20: study(14),
