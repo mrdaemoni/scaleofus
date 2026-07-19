@@ -336,7 +336,7 @@ img {
 
 .entry-options {
   display: grid;
-  grid-template-columns: 0.78fr 1.42fr;
+  grid-template-columns: 1fr 1.25fr;
 }
 
 .entry-read,
@@ -392,6 +392,7 @@ img {
   text-transform: uppercase;
 }
 
+.entry-read .round-book,
 .entry-listen .round-play {
   flex: 0 0 auto;
   width: 37px;
@@ -401,8 +402,33 @@ img {
   border: 1px solid currentColor;
   border-radius: 50%;
   font-size: 10px;
-  padding-left: 2px;
   opacity: 0.72;
+}
+
+.entry-listen .round-play {
+  padding-left: 2px;
+}
+
+.entry-read .round-book {
+  position: relative;
+}
+
+.entry-read .round-book::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 11px;
+  border: 1px solid currentColor;
+  border-radius: 2px 3px 3px 2px;
+  background: linear-gradient(
+    90deg,
+    transparent calc(50% - 0.5px),
+    currentColor calc(50% - 0.5px) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+  transform: translate(-50%, -50%);
 }
 
 .primary-action {

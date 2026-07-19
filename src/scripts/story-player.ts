@@ -865,7 +865,7 @@ playButtons.forEach((button) => {
     void togglePlayback(event);
   });
   button.addEventListener("click", (event) => {
-    if (event.detail > 0 && Date.now() < ignoreTouchClickUntil) return;
+    if (Date.now() < ignoreTouchClickUntil) return;
     void togglePlayback(event);
   });
 });
