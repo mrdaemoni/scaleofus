@@ -33,6 +33,7 @@ const dockChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>("[data
 const railChapterLinks = [...document.querySelectorAll<HTMLAnchorElement>(".chapter-rail [data-chapter-link]")];
 const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
+const storyCover = document.querySelector<HTMLElement>(".story-cover");
 const coverHeading = document.querySelector<HTMLElement>("[data-cover-heading]");
 const chapterHeadings = [...document.querySelectorAll<HTMLElement>("[data-chapter-heading]")];
 const narrationWords = [...document.querySelectorAll<HTMLElement>("[data-narration-word]")];
@@ -781,35 +782,76 @@ const syncDockFootprint = () => {
   setDockCompact(!desktopReader.matches || scrollY > Math.min(innerHeight * 0.28, 280));
 };
 
-const closestParagraphToReadingCenter = () => {
+type ViewportReadingStage =
+  | { kind: "cover"; index: -1; time: number; distance: number }
+  | { kind: "heading"; index: number; time: number; distance: number }
+  | { kind: "paragraph"; index: number; time: number; distance: number };
+
+const distanceFromReadingCenter = (element: HTMLElement, center: number) => {
+  const rect = element.getBoundingClientRect();
+  if (center < rect.top) return rect.top - center;
+  if (center > rect.bottom) return center - rect.bottom;
+  return 0;
+};
+
+const closestStageToReadingCenter = (): ViewportReadingStage | null => {
   const center = readingFocus();
-  let closest = -1;
-  let distance = Number.POSITIVE_INFINITY;
-  paragraphs.forEach((paragraph, index) => {
-    const rect = paragraph.getBoundingClientRect();
-    const paragraphCenter = rect.top + rect.height / 2;
-    const candidate = Math.abs(paragraphCenter - center);
-    if (candidate < distance) {
-      distance = candidate;
-      closest = index;
-    }
+  const candidates: ViewportReadingStage[] = [];
+
+  if (storyCover) {
+    candidates.push({
+      kind: "cover",
+      index: -1,
+      time: 0,
+      distance: distanceFromReadingCenter(storyCover, center),
+    });
+  }
+
+  chapterHeadings.forEach((heading, index) => {
+    candidates.push({
+      kind: "heading",
+      index,
+      time: Number(heading.dataset.headingStart ?? chapters[index]?.start ?? 0) + 0.02,
+      distance: distanceFromReadingCenter(heading, center),
+    });
   });
-  return closest;
+
+  paragraphs.forEach((paragraph, index) => {
+    const beat = paragraph.closest<HTMLElement>("[data-beat]") ?? paragraph;
+    candidates.push({
+      kind: "paragraph",
+      index,
+      time: paragraphStart(index) + 0.02,
+      distance: distanceFromReadingCenter(beat, center),
+    });
+  });
+
+  return candidates.reduce<ViewportReadingStage | null>(
+    (closest, candidate) => !closest || candidate.distance < closest.distance ? candidate : closest,
+    null,
+  );
 };
 
 const syncAudioFromViewport = () => {
   manualScrollTimer = 0;
-  if (!audio || !manualScrollActive || touchActive || autoScrollActive) return;
-  const closest = closestParagraphToReadingCenter();
-  if (closest < 0) return;
+  if (!audio || !manualScrollActive || autoScrollActive) return;
+  if (touchActive) {
+    queueViewportSync(120);
+    return;
+  }
+  const stage = closestStageToReadingCenter();
+  if (!stage) return;
   manualScrollActive = false;
-  const nextTime = paragraphStart(closest) + 0.02;
+  const nextTime = stage.time;
   if (Math.abs(audio.currentTime - nextTime) > 0.45) audio.currentTime = nextTime;
   updateStoryProgress(audio.currentTime);
-  setParagraph(closest, "scroll");
+  if (stage.kind === "cover") setCover("scroll");
+  else if (stage.kind === "heading") setHeading(stage.index, "scroll");
+  else setParagraph(stage.index, "scroll");
+  syncNarrationWord();
 };
 
-const queueViewportSync = (delay = 220) => {
+const queueViewportSync = (delay = 140) => {
   if (manualScrollTimer) window.clearTimeout(manualScrollTimer);
   manualScrollTimer = window.setTimeout(syncAudioFromViewport, delay);
 };
@@ -1022,12 +1064,12 @@ addEventListener("touchmove", (event) => {
 }, { passive: true });
 addEventListener("touchend", () => {
   touchActive = false;
-  if (touchMoved && manualScrollActive) queueViewportSync(240);
+  if (touchMoved && manualScrollActive) queueViewportSync(120);
   touchMoved = false;
 }, { passive: true });
 addEventListener("touchcancel", () => {
   touchActive = false;
-  if (touchMoved && manualScrollActive) queueViewportSync(240);
+  if (touchMoved && manualScrollActive) queueViewportSync(120);
   touchMoved = false;
 }, { passive: true });
 document.addEventListener("visibilitychange", () => {
@@ -1057,7 +1099,7 @@ addEventListener("scrollend", () => {
     autoScrollTarget = -1;
     return;
   }
-  if (manualScrollActive && !touchActive) queueViewportSync(80);
+  if (manualScrollActive && !touchActive) queueViewportSync(60);
 }, { passive: true });
 addEventListener("resize", () => {
   syncDockFootprint();
