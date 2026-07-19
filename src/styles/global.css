@@ -3176,6 +3176,23 @@ body.is-listening .mountain-climber {
 }
 
 @media (max-width: 760px) {
+  .watercolor-wash,
+  .story-beat.is-seen .watercolor-wash {
+    animation: none;
+    transition: none;
+    filter: blur(0.6px) saturate(1.02);
+    transform: rotate(var(--wash-rotation));
+    will-change: auto;
+  }
+
+  .story-chapter::after {
+    animation: none;
+    filter: blur(12px);
+    opacity: 0.48;
+    transform: none;
+    will-change: auto;
+  }
+
   body.story-page {
     padding-bottom: 102px;
   }

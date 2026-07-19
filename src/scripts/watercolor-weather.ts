@@ -36,6 +36,7 @@ const watercolorCanvases = [
 ];
 
 const reducedWatercolorMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const compactWatercolor = matchMedia("(max-width: 760px)");
 const stateByCanvas = new WeakMap<HTMLCanvasElement, WatercolorState>();
 
 const hashSeed = (value: number) => {
@@ -178,47 +179,30 @@ const buildWatercolorState = (canvas: HTMLCanvasElement): WatercolorState => {
   );
 
   const layers: PigmentLayer[] = [];
-  for (let index = 0; index < 56; index += 1) {
-    const colorRun = Math.floor(index / 5) % 2;
+  for (let index = 0; index < 18; index += 1) {
+    const colorRun = Math.floor(index / 3) % 2;
     const usePrimary = colorRun === 0;
     const base = usePrimary ? primaryBase : secondaryBase;
     const pigment = usePrimary ? primary : secondary;
-    const isPool = index < 18;
-    const isFringe = index >= 44;
-    const layerColor = index % 13 === 0
+    const isFringe = index >= 14;
+    const layerColor = index % 9 === 0
       ? (usePrimary ? deepPrimary : deepSecondary)
       : pigment;
     layers.push({
       points: deformRepeatedly(
         base,
         random,
-        isFringe || index % 4 === 0 ? 2 : 1,
-        isFringe ? 1.14 : 0.78,
+        isFringe || index % 5 === 0 ? 2 : 1,
+        isFringe ? 1.02 : 0.72,
       ),
       color: layerColor,
-      alpha: isFringe
-        ? 0.008 + random() * 0.007
-        : isPool
-          ? (index % 13 === 0 ? 0.037 : 0.041) + random() * 0.012
-          : (index % 13 === 0 ? 0.022 : 0.027) + random() * 0.011,
-      baseOpacity: isFringe
-        ? 0.035 + random() * 0.065
-        : isPool
-          ? 0.32 + random() * 0.22
-          : 0.16 + random() * 0.15,
-      offsetX: gaussian(random) * (isFringe ? 0.009 : 0.0045),
-      offsetY: gaussian(random) * (isFringe ? 0.009 : 0.0045),
-      scaleX: isFringe
-        ? 1.025 + random() * 0.13
-        : isPool
-          ? 0.88 + random() * 0.1
-          : 0.955 + random() * 0.085,
-      scaleY: isFringe
-        ? 1.015 + random() * 0.12
-        : isPool
-          ? 0.88 + random() * 0.1
-          : 0.955 + random() * 0.085,
-      textureCount: isFringe ? 150 : isPool ? 300 : 250,
+      alpha: isFringe ? 0.012 + random() * 0.006 : 0.028 + random() * 0.012,
+      baseOpacity: isFringe ? 0.28 + random() * 0.12 : 0.72 + random() * 0.16,
+      offsetX: gaussian(random) * (isFringe ? 0.007 : 0.0035),
+      offsetY: gaussian(random) * (isFringe ? 0.007 : 0.0035),
+      scaleX: isFringe ? 1.025 + random() * 0.085 : 0.97 + random() * 0.065,
+      scaleY: isFringe ? 1.02 + random() * 0.08 : 0.97 + random() * 0.065,
+      textureCount: isFringe ? 8 : 18,
       textureSeed: seed * 104729 + index * 1543 + 19,
     });
   }
@@ -256,7 +240,9 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
   const { canvas } = state;
   const bounds = canvas.getBoundingClientRect();
   if (bounds.width < 2 || bounds.height < 2) return;
-  const density = Math.min(devicePixelRatio || 1, 1.35, 920 / bounds.width, 620 / bounds.height);
+  const density = compactWatercolor.matches
+    ? Math.min(0.82, 420 / bounds.width, 280 / bounds.height)
+    : Math.min(devicePixelRatio || 1, 1.15, 820 / bounds.width, 540 / bounds.height);
   const width = Math.max(2, Math.round(bounds.width * density));
   const height = Math.max(2, Math.round(bounds.height * density));
   if (!force && width === state.renderedWidth && height === state.renderedHeight) return;
@@ -270,7 +256,11 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
   context.clearRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
 
-  state.layers.forEach((layer) => {
+  const visibleLayers = compactWatercolor.matches
+    ? state.layers.filter((_, index) => index % 2 === 0)
+    : state.layers;
+
+  visibleLayers.forEach((layer) => {
     const textureRandom = makeRandom(layer.textureSeed);
     context.save();
     tracePolygon(
@@ -288,7 +278,10 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
     context.fillStyle = `rgba(${layer.color.r}, ${layer.color.g}, ${layer.color.b}, ${layer.alpha * layer.baseOpacity})`;
     context.fillRect(0, 0, width, height);
 
-    for (let index = 0; index < layer.textureCount; index += 1) {
+    const textureCount = compactWatercolor.matches
+      ? Math.max(3, Math.round(layer.textureCount * 0.4))
+      : layer.textureCount;
+    for (let index = 0; index < textureCount; index += 1) {
       const x = textureRandom() * width;
       const y = textureRandom() * height;
       const diameter = Math.min(
@@ -317,7 +310,7 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
 
   context.globalCompositeOperation = "destination-out";
   const textureRandom = makeRandom(state.textureSeed);
-  const poreCount = Math.round(230 + width * height / 8000);
+  const poreCount = compactWatercolor.matches ? 18 : 72;
   for (let index = 0; index < poreCount; index += 1) {
     const x = textureRandom() * width;
     const y = textureRandom() * height;
@@ -348,7 +341,7 @@ const watercolorObserver = new IntersectionObserver((entries) => {
     stateByCanvas.set(canvas, state);
     renderWatercolor(state);
   });
-}, { rootMargin: "40% 0px 40%", threshold: 0.01 });
+}, { rootMargin: "12% 0px 12%", threshold: 0.01 });
 
 watercolorCanvases.forEach((canvas) => watercolorObserver.observe(canvas));
 
@@ -359,7 +352,7 @@ addEventListener("resize", () => {
     resizeTimer = 0;
     watercolorCanvases.forEach((canvas) => {
       const state = stateByCanvas.get(canvas);
-      if (state && canvas.getBoundingClientRect().width > 0) renderWatercolor(state, true);
+      if (state && canvas.getBoundingClientRect().width > 0) renderWatercolor(state);
     });
   }, reducedWatercolorMotion.matches ? 0 : 180);
 }, { passive: true });
