@@ -69,6 +69,7 @@ let autoScrollTarget = -1;
 let mobileRevealTimer = 0;
 let playbackRecoveryTimer = 0;
 let bufferingRecoveryTimer = 0;
+let playbackFollowTimer = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let fitTimer = 0;
@@ -634,6 +635,39 @@ const centerReadingStage = (seconds: number, behavior: ScrollBehavior = "smooth"
   centerParagraph(paragraphForTime(seconds), behavior);
 };
 
+const releaseScrollToNarration = () => {
+  if (manualScrollTimer) window.clearTimeout(manualScrollTimer);
+  if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
+  if (playbackFollowTimer) window.clearTimeout(playbackFollowTimer);
+  manualScrollTimer = 0;
+  autoScrollTimer = 0;
+  playbackFollowTimer = 0;
+  manualScrollActive = false;
+  autoScrollActive = false;
+  autoScrollTarget = -1;
+  touchActive = false;
+  touchMoved = false;
+  lastCenteredParagraph = -1;
+  lastCenteredHeading = -1;
+};
+
+const followPlaybackPosition = (behavior: ScrollBehavior = "smooth") => {
+  if (!audio || audio.paused || !followNarration || manualScrollActive) return;
+  syncReadingStage(audio.currentTime, "audio");
+  centerReadingStage(audio.currentTime, behavior);
+};
+
+const queuePlaybackFollow = () => {
+  if (playbackFollowTimer) window.clearTimeout(playbackFollowTimer);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => followPlaybackPosition());
+  });
+  playbackFollowTimer = window.setTimeout(() => {
+    playbackFollowTimer = 0;
+    followPlaybackPosition();
+  }, 260);
+};
+
 const updatePlayState = () => {
   if (!audio) return;
   const playing = !audio.paused;
@@ -659,25 +693,23 @@ const togglePlayback = async (event?: Event) => {
   }
   if (audio.paused && trigger?.hasAttribute("data-hero-play")) {
     audio.currentTime = 0;
-    manualScrollActive = false;
-    autoScrollActive = false;
-    autoScrollTarget = -1;
-    lastCenteredParagraph = -1;
-    lastCenteredHeading = -1;
     updateStoryProgress(0);
     setCover("restore");
     setWord(-1);
   }
-  if (manualScrollActive && !touchActive) syncAudioFromViewport();
   if (audio.paused) {
+    if (manualScrollActive && !trigger?.hasAttribute("data-hero-play")) {
+      autoScrollActive = false;
+      autoScrollTarget = -1;
+      touchActive = false;
+      syncAudioFromViewport();
+    }
+    releaseScrollToNarration();
     playbackRequested = true;
     syncReadingStage(audio.currentTime, "restore");
-    centerReadingStage(audio.currentTime);
     try {
       await audio.play();
       updateStoryProgress(audio.currentTime);
-      syncReadingStage(audio.currentTime, "audio");
-      centerReadingStage(audio.currentTime);
     } catch {
       playbackRequested = false;
       return;
@@ -783,6 +815,8 @@ playButtons.forEach((button) => button.addEventListener("click", togglePlayback)
 audio?.addEventListener("play", () => {
   playbackRequested = true;
   updatePlayState();
+  followPlaybackPosition();
+  queuePlaybackFollow();
   startNarrationLoop();
 });
 audio?.addEventListener("pause", () => {
