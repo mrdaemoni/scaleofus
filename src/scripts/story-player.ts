@@ -618,7 +618,7 @@ const setDockCompact = (compact: boolean) => {
 
 const syncDockFootprint = () => {
   if (dockPinnedOpen) return;
-  setDockCompact(scrollY > Math.min(innerHeight * 0.28, 280));
+  setDockCompact(!desktopReader.matches || scrollY > Math.min(innerHeight * 0.28, 280));
 };
 
 const closestParagraphToReadingCenter = () => {

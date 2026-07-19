@@ -2921,7 +2921,7 @@ body.is-listening .mountain-climber {
 
   .story-cover {
     min-height: 100svh;
-    align-items: end;
+    align-items: start;
   }
 
   .cover-art img {
@@ -2953,23 +2953,24 @@ body.is-listening .mountain-climber {
   .cover-copy {
     width: auto;
     margin: 0;
-    padding: 120px 23px 114px;
+    padding: 84px 23px 82px;
   }
 
   .cover-copy h1 {
     max-width: 10ch;
-    font-size: clamp(53px, 16vw, 80px);
-    line-height: 1.14;
+    font-size: clamp(50px, 14vw, 70px);
+    line-height: 1.08;
   }
 
   .cover-intro {
     max-width: 32ch;
+    margin-top: 21px;
     font-size: 17px;
   }
 
   .cover-story-entry {
     width: 100%;
-    margin-top: 28px;
+    margin-top: 20px;
   }
 
   .primary-action {
@@ -3194,17 +3195,24 @@ body.is-listening .mountain-climber {
 
 @media (max-width: 420px) {
   .entry-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: 0.78fr 1.42fr;
+  }
+
+  .entry-read,
+  .entry-listen {
+    min-height: 54px;
+    gap: 8px;
+    padding: 8px 10px;
   }
 
   .entry-read {
-    min-height: 49px;
-    border-right: 0;
-    border-bottom: 1px solid rgba(88, 73, 78, 0.18);
+    border-right: 1px solid rgba(88, 73, 78, 0.18);
+    border-bottom: 0;
   }
 
-  .entry-listen {
-    min-height: 56px;
+  .entry-listen .round-play {
+    width: 31px;
+    height: 31px;
   }
 }
 

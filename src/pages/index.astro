@@ -314,7 +314,7 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
     </div>
   </main>
 
-  <div class="audio-dock" data-audio-dock>
+  <div class="audio-dock is-compact" data-audio-dock>
     <audio
       data-audio
       src={windStoryReader.audio.src}
@@ -363,7 +363,7 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
       <button class="follow-toggle" type="button" data-follow aria-pressed="true">
         <span aria-hidden="true"></span> Follow voice
       </button>
-      <button class="dock-collapse" type="button" data-collapse aria-label="Minimize story controls" aria-expanded="true">⌄</button>
+      <button class="dock-collapse" type="button" data-collapse aria-label="Expand story controls" aria-expanded="false">⌃</button>
     </div>
   </div>
 
