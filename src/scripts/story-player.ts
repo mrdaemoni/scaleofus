@@ -1,3 +1,5 @@
+import "./watercolor-weather";
+
 const app = document.querySelector<HTMLElement>("[data-story-app]");
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
 const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
