@@ -1005,66 +1005,66 @@ body.is-listening .mountain-climber {
 }
 
 .chapter-1 {
-  --chapter-wash: #cb88a0;
-  --chapter-wash-secondary: #aa94b8;
-  --chapter-previous: #cb88a0;
-  --chapter-next: #aaa9a8;
+  --chapter-wash: #ff4f75;
+  --chapter-wash-secondary: #f58b59;
+  --chapter-previous: #ff4f75;
+  --chapter-next: #aeb1b3;
 }
 
 .chapter-2 {
-  --chapter-wash: #aaa9a8;
-  --chapter-wash-secondary: #c5b9ae;
-  --chapter-previous: #cb88a0;
-  --chapter-next: #d69a68;
+  --chapter-wash: #aeb1b3;
+  --chapter-wash-secondary: #d2bda6;
+  --chapter-previous: #ff4f75;
+  --chapter-next: #f29a49;
 }
 
 .chapter-3 {
-  --chapter-wash: #d69a68;
-  --chapter-wash-secondary: #c87967;
-  --chapter-previous: #aaa9a8;
-  --chapter-next: #ad7f63;
+  --chapter-wash: #f29a49;
+  --chapter-wash-secondary: #e66f58;
+  --chapter-previous: #aeb1b3;
+  --chapter-next: #bd7954;
 }
 
 .chapter-4 {
-  --chapter-wash: #ad7f63;
-  --chapter-wash-secondary: #c9a080;
-  --chapter-previous: #d69a68;
-  --chapter-next: #86afc1;
+  --chapter-wash: #bd7954;
+  --chapter-wash-secondary: #e0a36d;
+  --chapter-previous: #f29a49;
+  --chapter-next: #59acd1;
 }
 
 .chapter-5 {
-  --chapter-wash: #86afc1;
-  --chapter-wash-secondary: #abc5c4;
-  --chapter-previous: #ad7f63;
-  --chapter-next: #91a87e;
+  --chapter-wash: #59acd1;
+  --chapter-wash-secondary: #8ccfc9;
+  --chapter-previous: #bd7954;
+  --chapter-next: #71ae63;
 }
 
 .chapter-6 {
-  --chapter-wash: #91a87e;
-  --chapter-wash-secondary: #b6b07d;
-  --chapter-previous: #86afc1;
-  --chapter-next: #a9adb5;
+  --chapter-wash: #71ae63;
+  --chapter-wash-secondary: #c3b752;
+  --chapter-previous: #59acd1;
+  --chapter-next: #9da7b8;
 }
 
 .chapter-7 {
-  --chapter-wash: #a9adb5;
-  --chapter-wash-secondary: #c0b7c2;
-  --chapter-previous: #91a87e;
-  --chapter-next: #88a9c1;
+  --chapter-wash: #9da7b8;
+  --chapter-wash-secondary: #c3a7c8;
+  --chapter-previous: #71ae63;
+  --chapter-next: #55a0d2;
 }
 
 .chapter-8 {
-  --chapter-wash: #88a9c1;
-  --chapter-wash-secondary: #b1c0cd;
-  --chapter-previous: #a9adb5;
-  --chapter-next: #cc8fa8;
+  --chapter-wash: #55a0d2;
+  --chapter-wash-secondary: #91c7df;
+  --chapter-previous: #9da7b8;
+  --chapter-next: #ec6a91;
 }
 
 .chapter-9 {
-  --chapter-wash: #cc8fa8;
-  --chapter-wash-secondary: #ac95bd;
-  --chapter-previous: #88a9c1;
-  --chapter-next: #cc8fa8;
+  --chapter-wash: #ec6a91;
+  --chapter-wash-secondary: #b476c9;
+  --chapter-previous: #55a0d2;
+  --chapter-next: #ec6a91;
 }
 
 .chapter-7 {
@@ -1233,7 +1233,7 @@ body.is-listening .mountain-climber {
   --wash-width: 72%;
   --wash-height: 62%;
   --wash-rotation: -2deg;
-  --wash-opacity: 0.48;
+  --wash-opacity: 0.68;
   --weather-duration: 19s;
   --weather-delay: -4.5s;
   --spatter-duration: 14s;
@@ -1259,7 +1259,7 @@ body.is-listening .mountain-climber {
   width: var(--wash-width);
   height: var(--wash-height);
   pointer-events: none;
-  filter: blur(0.35px) saturate(0.92);
+  filter: blur(0.72px) saturate(1.1);
   opacity: 0;
   transform: rotate(var(--wash-rotation)) scale(0.91, 0.96);
   transform-origin: center;
@@ -1270,32 +1270,7 @@ body.is-listening .mountain-climber {
 }
 
 .beat-art-frame::after {
-  content: "";
-  position: absolute;
-  z-index: 3;
-  inset: 8% 9%;
-  background:
-    radial-gradient(ellipse 19% 7% at 39% 23%, rgba(255, 253, 250, 0.88) 0 22%, rgba(255, 252, 249, 0.42) 49%, transparent 79%),
-    radial-gradient(ellipse 14% 5.5% at 66% 71%, rgba(255, 252, 249, 0.76) 0 20%, rgba(255, 250, 247, 0.34) 47%, transparent 80%),
-    radial-gradient(ellipse 7.5% 2.5% at 18% 63%, color-mix(in srgb, var(--chapter-wash-deep) 58%, transparent) 0 27%, color-mix(in srgb, var(--chapter-wash-deep) 25%, transparent) 54%, transparent 79%),
-    radial-gradient(ellipse 6% 2.2% at 78% 34%, color-mix(in srgb, var(--chapter-wash-secondary-deep) 53%, transparent) 0 28%, color-mix(in srgb, var(--chapter-wash-secondary-deep) 22%, transparent) 56%, transparent 80%),
-    radial-gradient(ellipse 5% 2% at 62% 83%, color-mix(in srgb, var(--chapter-wash-deep) 44%, transparent) 0 25%, transparent 78%),
-    radial-gradient(circle at 17% 64%, color-mix(in srgb, var(--chapter-wash-deep) 52%, transparent) 0 1.5px, transparent 3.8px),
-    radial-gradient(circle at 23% 71%, color-mix(in srgb, var(--chapter-wash-secondary-deep) 42%, transparent) 0 2.2px, transparent 4.6px),
-    radial-gradient(circle at 74% 27%, color-mix(in srgb, var(--chapter-wash-deep) 38%, transparent) 0 1.2px, transparent 3.3px),
-    radial-gradient(circle at 80% 34%, rgba(255, 251, 248, 0.74) 0 1.6px, transparent 4px),
-    radial-gradient(circle at 68% 77%, color-mix(in srgb, var(--chapter-wash-secondary-deep) 35%, transparent) 0 1.4px, transparent 3.5px),
-    radial-gradient(circle at 34% 28%, rgba(255, 250, 247, 0.62) 0 1.2px, transparent 3px);
-  background-position: 0% 0%;
-  background-repeat: no-repeat;
-  background-size: 116% 112%;
-  filter: blur(0.35px) saturate(0.94);
-  opacity: 0;
-  transform: translate3d(0, 8px, 0) scale(0.96);
-  transition:
-    opacity 1900ms 180ms ease,
-    transform 2200ms 120ms cubic-bezier(0.16, 0.72, 0.2, 1);
-  mix-blend-mode: normal;
+  content: none;
 }
 
 .story-beat.is-seen .watercolor-wash {
@@ -1305,20 +1280,13 @@ body.is-listening .mountain-climber {
   will-change: transform, filter, opacity;
 }
 
-.story-beat.is-seen .beat-art-frame::after {
-  opacity: 0.66;
-  transform: translate3d(0, 0, 0) scale(1);
-  animation: watercolorSpatterWeather var(--spatter-duration) ease-in-out var(--spatter-delay) infinite alternate;
-  will-change: transform, background-position, filter;
-}
-
 .story-beat:nth-child(3n + 2) .beat-art-frame {
   --wash-left: 22%;
   --wash-top: 12%;
   --wash-width: 63%;
   --wash-height: 67%;
   --wash-rotation: 3deg;
-  --wash-opacity: 0.43;
+  --wash-opacity: 0.66;
   --weather-duration: 23s;
   --weather-delay: -9s;
   --spatter-duration: 17s;
@@ -1331,7 +1299,7 @@ body.is-listening .mountain-climber {
   --wash-width: 75%;
   --wash-height: 55%;
   --wash-rotation: -4deg;
-  --wash-opacity: 0.4;
+  --wash-opacity: 0.64;
   --weather-duration: 16s;
   --weather-delay: -7s;
   --spatter-duration: 12s;
@@ -1344,7 +1312,7 @@ body.is-listening .mountain-climber {
   --wash-width: 72%;
   --wash-height: 62%;
   --wash-rotation: 2deg;
-  --wash-opacity: 0.72;
+  --wash-opacity: 0.82;
   --weather-duration: 21s;
   --weather-delay: -5s;
   --spatter-duration: 15s;
@@ -2848,25 +2816,25 @@ body.is-listening .mountain-climber {
 
 @keyframes watercolorPigmentWeather {
   0% {
-    filter: blur(0.28px) saturate(0.88);
+    filter: blur(0.62px) saturate(1.04);
     opacity: calc(var(--wash-opacity) - 0.06);
     transform: rotate(var(--wash-rotation)) translate3d(-1.4%, 0.5%, 0) scale(1.02, 0.985);
   }
 
   37% {
-    filter: blur(0.48px) saturate(1.04);
+    filter: blur(0.88px) saturate(1.18);
     opacity: var(--wash-opacity);
     transform: rotate(var(--wash-rotation)) translate3d(1.1%, -0.9%, 0) scale(0.985, 1.025);
   }
 
   71% {
-    filter: blur(0.22px) saturate(0.94);
+    filter: blur(0.54px) saturate(1.09);
     opacity: calc(var(--wash-opacity) - 0.03);
     transform: rotate(var(--wash-rotation)) translate3d(-0.35%, 1.2%, 0) scale(1.03, 1.005);
   }
 
   100% {
-    filter: blur(0.4px) saturate(1.02);
+    filter: blur(0.78px) saturate(1.15);
     opacity: calc(var(--wash-opacity) - 0.02);
     transform: rotate(var(--wash-rotation)) translate3d(0.9%, 0.1%, 0) scale(0.995, 1.02);
   }

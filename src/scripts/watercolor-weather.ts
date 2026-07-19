@@ -14,21 +14,18 @@ type PigmentLayer = {
   points: PigmentPoint[];
   color: RGB;
   alpha: number;
+  baseOpacity: number;
   offsetX: number;
   offsetY: number;
   scaleX: number;
   scaleY: number;
-};
-
-type PaperLift = {
-  points: PigmentPoint[];
-  alpha: number;
+  textureCount: number;
+  textureSeed: number;
 };
 
 type WatercolorState = {
   canvas: HTMLCanvasElement;
   layers: PigmentLayer[];
-  lifts: PaperLift[];
   textureSeed: number;
   renderedWidth: number;
   renderedHeight: number;
@@ -163,71 +160,72 @@ const buildWatercolorState = (canvas: HTMLCanvasElement): WatercolorState => {
   const primary = parseHex(chapterStyle.getPropertyValue("--chapter-wash"));
   const secondary = parseHex(chapterStyle.getPropertyValue("--chapter-wash-secondary"));
   const ink = { r: 85, g: 73, b: 78 };
-  const deepPrimary = mixColor(primary, ink, 0.2);
-  const deepSecondary = mixColor(secondary, ink, 0.16);
+  const deepPrimary = mixColor(primary, ink, 0.1);
+  const deepSecondary = mixColor(secondary, ink, 0.08);
   const direction = seed % 2 === 0 ? 1 : -1;
 
   const primaryBase = deformRepeatedly(
-    makePolygon(random, 0.44 + direction * 0.025, 0.52, 0.47, 0.4),
+    makePolygon(random, 0.44 + direction * 0.025, 0.52, 0.44, 0.38),
     random,
     3,
     0.95,
   );
   const secondaryBase = deformRepeatedly(
-    makePolygon(random, 0.62 - direction * 0.02, 0.46, 0.38, 0.34),
+    makePolygon(random, 0.61 - direction * 0.02, 0.45, 0.37, 0.32),
     random,
     3,
     0.88,
   );
 
   const layers: PigmentLayer[] = [];
-  for (let index = 0; index < 50; index += 1) {
+  for (let index = 0; index < 56; index += 1) {
     const colorRun = Math.floor(index / 5) % 2;
     const usePrimary = colorRun === 0;
     const base = usePrimary ? primaryBase : secondaryBase;
     const pigment = usePrimary ? primary : secondary;
-    const layerColor = index % 11 === 0
+    const isPool = index < 18;
+    const isFringe = index >= 44;
+    const layerColor = index % 13 === 0
       ? (usePrimary ? deepPrimary : deepSecondary)
       : pigment;
     layers.push({
-      points: deformRepeatedly(base, random, index % 3 === 0 ? 2 : 1, 0.8),
+      points: deformRepeatedly(
+        base,
+        random,
+        isFringe || index % 4 === 0 ? 2 : 1,
+        isFringe ? 1.14 : 0.78,
+      ),
       color: layerColor,
-      alpha: (index % 11 === 0 ? 0.016 : 0.021) + random() * 0.012,
-      offsetX: gaussian(random) * 0.0045,
-      offsetY: gaussian(random) * 0.0045,
-      scaleX: 0.975 + random() * 0.05,
-      scaleY: 0.975 + random() * 0.05,
+      alpha: isFringe
+        ? 0.008 + random() * 0.007
+        : isPool
+          ? (index % 13 === 0 ? 0.037 : 0.041) + random() * 0.012
+          : (index % 13 === 0 ? 0.022 : 0.027) + random() * 0.011,
+      baseOpacity: isFringe
+        ? 0.035 + random() * 0.065
+        : isPool
+          ? 0.32 + random() * 0.22
+          : 0.16 + random() * 0.15,
+      offsetX: gaussian(random) * (isFringe ? 0.009 : 0.0045),
+      offsetY: gaussian(random) * (isFringe ? 0.009 : 0.0045),
+      scaleX: isFringe
+        ? 1.025 + random() * 0.13
+        : isPool
+          ? 0.88 + random() * 0.1
+          : 0.955 + random() * 0.085,
+      scaleY: isFringe
+        ? 1.015 + random() * 0.12
+        : isPool
+          ? 0.88 + random() * 0.1
+          : 0.955 + random() * 0.085,
+      textureCount: isFringe ? 150 : isPool ? 300 : 250,
+      textureSeed: seed * 104729 + index * 1543 + 19,
     });
   }
-
-  const lifts: PaperLift[] = Array.from({ length: 5 }, (_, index) => {
-    const centerX = 0.18 + random() * 0.64;
-    const centerY = 0.2 + random() * 0.6;
-    const radiusX = 0.02 + random() * (index < 1 ? 0.105 : 0.05);
-    const radiusY = 0.01 + random() * (index < 1 ? 0.045 : 0.026);
-    return {
-      points: deformRepeatedly(
-        makePolygon(
-          random,
-          centerX,
-          centerY,
-          radiusX,
-          radiusY,
-          5 + Math.floor(random() * 3),
-          -0.75 + random() * 1.5,
-        ),
-        random,
-        2,
-        1.15,
-      ),
-      alpha: index < 2 ? 0.2 + random() * 0.16 : 0.08 + random() * 0.12,
-    };
-  });
 
   return {
     canvas,
     layers,
-    lifts,
     textureSeed: seed * 1543 + 83,
     renderedWidth: 0,
     renderedHeight: 0,
@@ -273,6 +271,8 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
   context.globalCompositeOperation = "source-over";
 
   state.layers.forEach((layer) => {
+    const textureRandom = makeRandom(layer.textureSeed);
+    context.save();
     tracePolygon(
       context,
       layer.points,
@@ -283,26 +283,48 @@ const renderWatercolor = (state: WatercolorState, force = false) => {
       layer.scaleX,
       layer.scaleY,
     );
-    context.fillStyle = `rgba(${layer.color.r}, ${layer.color.g}, ${layer.color.b}, ${layer.alpha})`;
-    context.fill();
+    context.clip();
+
+    context.fillStyle = `rgba(${layer.color.r}, ${layer.color.g}, ${layer.color.b}, ${layer.alpha * layer.baseOpacity})`;
+    context.fillRect(0, 0, width, height);
+
+    for (let index = 0; index < layer.textureCount; index += 1) {
+      const x = textureRandom() * width;
+      const y = textureRandom() * height;
+      const diameter = Math.min(
+        width * 0.09,
+        Math.max(width * 0.004, Math.abs(width * 0.03 + gaussian(textureRandom) * width * 0.02)),
+      );
+      const radiusX = diameter * (0.38 + textureRandom() * 0.28);
+      const radiusY = diameter * (0.32 + textureRandom() * 0.31);
+      const rotation = textureRandom() * Math.PI;
+      const circleAlpha = layer.alpha * (0.5 + textureRandom() * 0.8);
+
+      if (index % 11 === 0) {
+        context.beginPath();
+        context.ellipse(x, y, radiusX * 1.8, radiusY * 1.7, rotation, 0, Math.PI * 2);
+        context.fillStyle = `rgba(${layer.color.r}, ${layer.color.g}, ${layer.color.b}, ${circleAlpha * 0.22})`;
+        context.fill();
+      }
+
+      context.beginPath();
+      context.ellipse(x, y, radiusX, radiusY, rotation, 0, Math.PI * 2);
+      context.fillStyle = `rgba(${layer.color.r}, ${layer.color.g}, ${layer.color.b}, ${circleAlpha})`;
+      context.fill();
+    }
+    context.restore();
   });
 
   context.globalCompositeOperation = "destination-out";
-  state.lifts.forEach((lift) => {
-    tracePolygon(context, lift.points, width, height);
-    context.fillStyle = `rgba(0, 0, 0, ${lift.alpha})`;
-    context.fill();
-  });
-
   const textureRandom = makeRandom(state.textureSeed);
-  const poreCount = Math.round(150 + width * height / 10000);
+  const poreCount = Math.round(230 + width * height / 8000);
   for (let index = 0; index < poreCount; index += 1) {
     const x = textureRandom() * width;
     const y = textureRandom() * height;
     const radius = (0.45 + Math.abs(gaussian(textureRandom)) * 1.45) * density;
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
-    context.fillStyle = `rgba(0, 0, 0, ${0.018 + textureRandom() * 0.05})`;
+    context.fillStyle = `rgba(0, 0, 0, ${0.012 + textureRandom() * 0.042})`;
     context.fill();
   }
 
