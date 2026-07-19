@@ -684,17 +684,13 @@ const requestCinematicMotion = () => {
 
 storyArtImages.forEach((image) => {
   const frame = image.closest<HTMLElement>("[data-cinematic-art]");
-  const status = frame?.closest("figure")?.querySelector<HTMLElement>("[data-art-status]");
-  const artworkStatus = status?.textContent ?? "artwork";
   const showPlaceholder = () => {
     frame?.classList.add("is-missing-art");
     image.setAttribute("aria-hidden", "true");
-    if (status) status.textContent = "drawing placeholder";
   };
   const showArtwork = () => {
     frame?.classList.remove("is-missing-art");
     image.removeAttribute("aria-hidden");
-    if (status) status.textContent = artworkStatus;
   };
   image.addEventListener("error", showPlaceholder);
   image.addEventListener("load", showArtwork);
