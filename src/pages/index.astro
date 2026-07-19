@@ -140,18 +140,15 @@ const resolvedSpeaker = (
           ))}
         </h1>
         <p class="cover-intro">{windStoryReader.intro}</p>
-        <div class="cover-story-entry" role="group" aria-label="Enter the story">
-          <span class="entry-label">Enter the story</span>
-          <div class="entry-options">
-            <a class="entry-read" href="#story">
-              <span class="round-book" aria-hidden="true"></span>
-              <span><strong>Read</strong><small>At your pace</small></span>
-            </a>
-            <button class="entry-listen" type="button" data-hero-play>
-              <span class="round-play" aria-hidden="true">▶</span>
-              <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
-            </button>
-          </div>
+        <div class="cover-story-entry" role="group" aria-label="Read or listen">
+          <a class="entry-read" href="#story">
+            <span class="round-book" aria-hidden="true"></span>
+            <span><strong>Read</strong><small>At your pace</small></span>
+          </a>
+          <button class="entry-listen" type="button" data-hero-play>
+            <span class="round-play" aria-hidden="true">▶</span>
+            <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
+          </button>
         </div>
       </div>
 

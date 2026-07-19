@@ -316,6 +316,7 @@ const startNarrationLoop = () => {
   if (!narrationHeartbeatTimer) {
     narrationHeartbeatTimer = window.setInterval(() => {
       if (!audio || audio.paused || audio.ended) return;
+      if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
       const seconds = audio.currentTime;
       updateStoryProgress(seconds);
       syncNarrationWord();
@@ -496,12 +497,21 @@ const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smoo
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   autoScrollTimer = window.setTimeout(() => {
     if (!manualScrollActive && autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5) {
-      scrollTo({ top: autoScrollTarget, behavior: "auto" });
+      const forcedTop = autoScrollTarget;
+      window.scrollTo(0, forcedTop);
+      if (Math.abs(scrollY - forcedTop) > 5) {
+        document.documentElement.scrollTop = forcedTop;
+        document.body.scrollTop = forcedTop;
+      }
     }
     autoScrollActive = false;
     autoScrollTarget = -1;
   }, reducedMotion.matches ? 50 : clamp(760 + distance * 0.28, 980, 2200));
-  scrollTo({ top: targetTop, behavior: reducedMotion.matches ? "auto" : behavior });
+  try {
+    window.scrollTo({ top: targetTop, behavior: reducedMotion.matches ? "auto" : behavior });
+  } catch {
+    window.scrollTo(0, targetTop);
+  }
 };
 
 const clearMobileParagraphReveal = () => {
@@ -825,7 +835,7 @@ const queuePlaybackFollow = () => {
 
 const updatePlayState = () => {
   if (!audio) return;
-  const playing = !audio.paused;
+  const playing = playbackRequested && !audio.ended;
   document.body.classList.toggle("is-listening", playing);
   document.body.classList.toggle("is-buffering", mediaIsBuffering);
   if (playIcon) playIcon.textContent = mediaIsBuffering ? "↻" : playing ? "❚❚" : "▶";
@@ -865,6 +875,11 @@ const togglePlayback = async (event?: Event) => {
     if (startsFromCover) requestMediaSeek(0);
     playbackRequested = true;
     const playAttempt = audio.play();
+    // Start the visual clock from the tap itself. Mobile Safari can begin
+    // audible playback before its play/playing events or play promise settle.
+    updatePlayState();
+    startNarrationLoop();
+    queuePlaybackFollow();
     if (startsFromCover) {
       updateStoryProgress(0);
       setCover("restore");
@@ -879,6 +894,8 @@ const togglePlayback = async (event?: Event) => {
       updateStoryProgress(audio.currentTime);
     } catch {
       playbackRequested = false;
+      stopNarrationLoop();
+      updatePlayState();
       return;
     }
   } else {
@@ -1240,7 +1257,7 @@ addEventListener("scroll", () => {
 addEventListener("scrollend", () => {
   if (autoScrollActive) {
     if (autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5 && !manualScrollActive) {
-      scrollTo({ top: autoScrollTarget, behavior: "auto" });
+      window.scrollTo(0, autoScrollTarget);
     }
     autoScrollActive = false;
     autoScrollTarget = -1;
