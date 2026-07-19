@@ -7,6 +7,7 @@ import storyWordTimings from "../content/story-word-timings.json";
 import { windStoryReader } from "../content/wind-story-reader";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
 import { storyArt, storyArtKind, validateVoicePassages, voiceWords } from "../lib/story-reader";
+import type { StoryArtworkLoop } from "../lib/story-reader";
 
 const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
@@ -52,6 +53,21 @@ const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.numb
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+const loopStyle = (loop: StoryArtworkLoop) => {
+  const [top, right, bottom, left] = loop.inset;
+  const intensity = loop.intensity ?? 0.7;
+  return [
+    `--loop-top:${top}%`,
+    `--loop-right:${right}%`,
+    `--loop-bottom:${bottom}%`,
+    `--loop-left:${left}%`,
+    `--loop-duration:${loop.duration ?? 7}s`,
+    `--loop-delay:${loop.delay ?? 0}s`,
+    `--loop-soft-opacity:${(intensity * 0.13).toFixed(3)}`,
+    `--loop-strong-opacity:${(intensity * 0.28).toFixed(3)}`,
+    `--loop-accent-opacity:${(intensity * 0.34).toFixed(3)}`,
+  ].join(";");
+};
 ---
 
 <Base
@@ -81,6 +97,16 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
         <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
+        {windStoryReader.artwork.coverLoop && (
+          <div
+            class={`art-motion-loop is-cover-loop loop-${windStoryReader.artwork.coverLoop.kind}`}
+            style={loopStyle(windStoryReader.artwork.coverLoop)}
+          >
+            <img class="art-motion-echo echo-one" src={coverArt} alt="" />
+            <img class="art-motion-echo echo-two" src={coverArt} alt="" />
+            <i class="loop-accent accent-one"></i><i class="loop-accent accent-two"></i><i class="loop-accent accent-three"></i>
+          </div>
+        )}
       </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
@@ -234,6 +260,7 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
                 const artworkSrc = artForBeat(beat.number);
                 const artworkKind = artKindForBeat(beat.number);
                 const isOriginalArtwork = artworkKind === "original";
+                const artworkLoop = windStoryReader.artwork.loops?.[beat.number];
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -262,6 +289,17 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
                             data-story-art
                             loading={beat.number === 1 ? "eager" : "lazy"}
                           />
+                        )}
+                        {artworkSrc && artworkLoop && (
+                          <div
+                            class={`art-motion-loop loop-${artworkLoop.kind}`}
+                            style={loopStyle(artworkLoop)}
+                            aria-hidden="true"
+                          >
+                            <img class="art-motion-echo echo-one" src={artworkSrc} alt="" />
+                            <img class="art-motion-echo echo-two" src={artworkSrc} alt="" />
+                            <i class="loop-accent accent-one"></i><i class="loop-accent accent-two"></i><i class="loop-accent accent-three"></i>
+                          </div>
                         )}
                         <div class={`cinematic-layer motion-${motion}`} aria-hidden="true">
                           {[1, 2, 3, 4, 5].map((mark) => <i class={`motion-mark mark-${mark}`}></i>)}

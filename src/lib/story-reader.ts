@@ -8,6 +8,15 @@ export type VoicePassage = {
   text: string;
 };
 
+export type StoryArtworkLoop = {
+  kind: "wind" | "shine" | "speech" | "pulse" | "path" | "stream" | "steam" | "flame";
+  /** Percentage inset: top, right, bottom, left. Keeps the moving ink local to the drawn detail. */
+  inset: [number, number, number, number];
+  duration?: number;
+  delay?: number;
+  intensity?: number;
+};
+
 export type StoryReaderConfig = {
   id: string;
   title: string;
@@ -18,6 +27,7 @@ export type StoryReaderConfig = {
   };
   artwork: {
     cover?: string;
+    coverLoop?: StoryArtworkLoop;
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;
@@ -25,6 +35,7 @@ export type StoryReaderConfig = {
       src: string;
       kind: "original" | "study";
     }>;
+    loops?: Record<number, StoryArtworkLoop>;
   };
   motions: string[];
   voices: VoicePassage[];

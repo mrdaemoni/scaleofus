@@ -16,6 +16,7 @@ export const windStoryReader: StoryReaderConfig = {
   },
   artwork: {
     cover: "/images/wind-story/sketches/scale-22-cover.png",
+    coverLoop: { kind: "wind", inset: [7, 1, 26, 52], duration: 6.8, delay: -2.4, intensity: 0.82 },
     originalThrough: 11,
     originalRoot: "/images/wind-story/sketches",
     studyRoot: "/images/wind-story/beats",
@@ -63,6 +64,26 @@ export const windStoryReader: StoryReaderConfig = {
       56: study(36),
       57: study(37),
       59: study(38),
+    },
+    // Motion is deliberately local: a clipped duplicate of the original ink
+    // drifts by only a few pixels, so the drawing remains recognisably Alicia's.
+    loops: {
+      1: { kind: "wind", inset: [3, 4, 30, 3], duration: 6.4, delay: -1.8, intensity: 0.9 },
+      2: { kind: "shine", inset: [13, 5, 20, 31], duration: 5.7, delay: -3.1, intensity: 0.72 },
+      3: { kind: "speech", inset: [1, 6, 43, 42], duration: 7.2, delay: -2.2, intensity: 0.78 },
+      4: { kind: "speech", inset: [0, 43, 43, 1], duration: 6.8, delay: -4.3, intensity: 0.7 },
+      5: { kind: "pulse", inset: [48, 44, 1, 13], duration: 5.2, delay: -1.2, intensity: 0.74 },
+      6: { kind: "path", inset: [5, 4, 18, 27], duration: 8.1, delay: -5.4, intensity: 0.62 },
+      7: { kind: "pulse", inset: [19, 49, 19, 6], duration: 6.1, delay: -3.6, intensity: 0.58 },
+      8: { kind: "wind", inset: [1, 2, 29, 1], duration: 7.4, delay: -4.7, intensity: 0.86 },
+      9: { kind: "path", inset: [45, 0, 0, 0], duration: 8.8, delay: -6.1, intensity: 0.58 },
+      10: { kind: "stream", inset: [42, 1, 0, 24], duration: 7.7, delay: -2.8, intensity: 0.68 },
+      11: { kind: "speech", inset: [2, 0, 43, 47], duration: 6.6, delay: -4.9, intensity: 0.75 },
+      12: { kind: "shine", inset: [15, 0, 19, 43], duration: 5.9, delay: -2.1, intensity: 0.7 },
+      13: { kind: "stream", inset: [16, 0, 0, 0], duration: 8.4, delay: -5.5, intensity: 0.72 },
+      14: { kind: "path", inset: [20, 0, 2, 20], duration: 8.9, delay: -3.9, intensity: 0.6 },
+      15: { kind: "steam", inset: [0, 28, 30, 36], duration: 6.2, delay: -1.5, intensity: 0.78 },
+      16: { kind: "flame", inset: [0, 35, 17, 39], duration: 5.4, delay: -3.4, intensity: 0.8 },
     },
   },
   motions: [
