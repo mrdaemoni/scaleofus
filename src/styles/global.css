@@ -208,8 +208,11 @@ img {
 }
 
 .cover-art img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 15%;
+  right: 0;
+  width: 70%;
+  height: 70%;
   object-fit: contain;
   object-position: right center;
   filter: saturate(0.42) sepia(0.08) hue-rotate(308deg) brightness(1.025);
