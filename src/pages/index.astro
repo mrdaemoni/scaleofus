@@ -224,7 +224,6 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
 
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
-                const motion = windStoryReader.motions[beat.number - 1] ?? "drift";
                 const alignedBeat = wordTimingByBeat.get(beat.number);
                 const passages = windStoryReader.voices.filter((passage) => passage.beat === beat.number);
                 const words = beat.paragraphs.flatMap((paragraph) => voiceWords(paragraph, passages));
@@ -246,7 +245,6 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
                       <div
                         class={`beat-art-frame ${isOriginalArtwork ? "is-original-sketch" : ""} ${artworkSrc ? "" : "is-missing-art"}`}
                         data-cinematic-art
-                        data-motion={motion}
                       >
                         <div class="art-placeholder" aria-hidden="true">
                           <span>{String(beat.number).padStart(2, "0")}</span>
@@ -263,9 +261,6 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
                             loading={beat.number === 1 ? "eager" : "lazy"}
                           />
                         )}
-                        <div class={`cinematic-layer motion-${motion}`} aria-hidden="true">
-                          {[1, 2, 3, 4, 5].map((mark) => <i class={`motion-mark mark-${mark}`}></i>)}
-                        </div>
                       </div>
                     </figure>
 
