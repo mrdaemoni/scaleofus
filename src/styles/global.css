@@ -1428,7 +1428,11 @@ body.is-listening .mountain-climber {
   background: transparent;
 }
 
-.beat-art-frame > img {
+.beat-art-frame picture {
+  display: contents;
+}
+
+.beat-art-frame img {
   position: relative;
   z-index: 1;
   width: 70%;
@@ -1447,11 +1451,11 @@ body.is-listening .mountain-climber {
   opacity: 1;
 }
 
-.beat-art-frame.is-missing-art > img {
+.beat-art-frame.is-missing-art img {
   opacity: 0;
 }
 
-.beat-art-frame > img.is-hand-sketch {
+.beat-art-frame img.is-hand-sketch {
   filter: saturate(0.3) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.04);
   transform: translate3d(0, var(--image-shift), 0);
 }
@@ -3278,12 +3282,9 @@ body.is-listening .mountain-climber {
     will-change: auto;
   }
 
+  .story-chapter::before,
   .story-chapter::after {
-    animation: none;
-    filter: blur(12px);
-    opacity: 0.48;
-    transform: none;
-    will-change: auto;
+    display: none;
   }
 
   body.story-page {
@@ -3425,21 +3426,59 @@ body.is-listening .mountain-climber {
   }
 
   .story-beat {
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
+    --mobile-page-height: calc(100svh - 108px);
+    --mobile-art-height: clamp(168px, 32svh, 270px);
+    width: 100%;
+    height: var(--mobile-page-height);
+    min-height: var(--mobile-page-height);
+    display: grid;
+    grid-template-rows: var(--mobile-art-height) minmax(0, 1fr);
     align-items: stretch;
-    gap: 29px;
-    padding: 12vh 0;
+    align-content: stretch;
+    gap: 10px;
+    padding: 10px 0 12px;
+    overflow: hidden;
+    scroll-margin-top: clamp(14px, 2.5vh, 30px);
+    contain: layout paint style;
+    contain-intrinsic-size: auto var(--mobile-page-height);
+  }
+
+  .story-beat:not(.is-current-beat) {
+    content-visibility: auto;
   }
 
   .story-beat:nth-child(even) .beat-visual {
     order: 0;
   }
 
+  .beat-visual,
+  .beat-art-frame {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .beat-art-frame img,
+  .beat-art-frame img.is-hand-sketch {
+    width: 88%;
+    height: 88%;
+    -webkit-mask-image: none;
+    mask-image: none;
+    mix-blend-mode: normal;
+    transform: none;
+  }
+
+  .beat-copy {
+    min-height: 0;
+    align-self: start;
+  }
+
+  .beat-number {
+    margin-bottom: 6px !important;
+  }
+
   .beat-copy p {
-    font-size: clamp(24px, 6.6vw, 31px);
-    line-height: 1.5;
+    font-size: clamp(15px, 4.7vw, 22px);
+    line-height: 1.3;
   }
 
   .audio-dock {
@@ -3449,6 +3488,10 @@ body.is-listening .mountain-climber {
     gap: 5px;
     padding: 7px 9px 9px;
     border-radius: 16px;
+    background: rgba(224, 178, 187, 0.985);
+    box-shadow: 0 10px 30px rgba(83, 51, 61, 0.18);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .dock-chapters ol {
@@ -3619,7 +3662,7 @@ body.is-listening .mountain-climber {
     display: none;
   }
 
-  .beat-art-frame > img {
+  .beat-art-frame img {
     transform: none;
   }
 }

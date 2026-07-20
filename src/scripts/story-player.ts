@@ -69,7 +69,6 @@ let lastCenteredHeading = -1;
 let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let autoScrollTarget = -1;
-let mobileRevealTimer = 0;
 let playbackRecoveryTimer = 0;
 let bufferingRecoveryTimer = 0;
 let playbackFollowTimer = 0;
@@ -498,58 +497,6 @@ const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smoo
   }
 };
 
-const clearMobileParagraphReveal = () => {
-  if (mobileRevealTimer) window.clearTimeout(mobileRevealTimer);
-  mobileRevealTimer = 0;
-};
-
-const mobileRevealAt = (index: number) => {
-  const start = Number(paragraphs[index]?.dataset.start ?? 0);
-  const end = Number(paragraphs[index]?.dataset.end ?? start + 8);
-  return start + clamp((end - start) * 0.24, 1.8, 3.2);
-};
-
-const mobileParagraphTarget = (index: number, revealText: boolean) => {
-  const paragraph = paragraphs[index];
-  const frame = paragraph?.closest<HTMLElement>("[data-beat]")
-    ?.querySelector<HTMLElement>("[data-cinematic-art]");
-  if (!paragraph || !frame) return null;
-  const bounds = readingBounds();
-  const frameRect = frame.getBoundingClientRect();
-  const frameFirstTop = scrollY + frameRect.top - bounds.top;
-  if (!revealText) return frameFirstTop;
-  const gentleLift = Math.min(frameRect.height * 0.18, bounds.height * 0.07, 54);
-  return frameFirstTop + gentleLift;
-};
-
-const revealMobileParagraph = (index: number) => {
-  mobileRevealTimer = 0;
-  if (
-    desktopReader.matches
-    || activeParagraph !== index
-    || !followNarration
-    || manualScrollActive
-    || !audio
-    || audio.paused
-  ) return;
-  const target = mobileParagraphTarget(index, true);
-  if (target !== null) scrollForNarration(target);
-};
-
-const queueMobileParagraphReveal = (index: number) => {
-  clearMobileParagraphReveal();
-  if (desktopReader.matches || !audio || audio.paused) return;
-  const remaining = mobileRevealAt(index) - audio.currentTime;
-  if (remaining <= 0.08) {
-    revealMobileParagraph(index);
-    return;
-  }
-  mobileRevealTimer = window.setTimeout(
-    () => queueMobileParagraphReveal(index),
-    clamp(remaining * 1000, 180, 800),
-  );
-};
-
 const fitBeatToViewport = (index: number) => {
   const paragraph = paragraphs[index];
   const beat = paragraph?.closest<HTMLElement>("[data-beat]");
@@ -558,7 +505,56 @@ const fitBeatToViewport = (index: number) => {
 
   frame.style.removeProperty("--fitted-art-height");
   beat.style.removeProperty("--reader-beat-gap");
-  if (!desktopReader.matches) return frame;
+  beat.style.removeProperty("--mobile-page-height");
+  beat.style.removeProperty("--mobile-art-height");
+  paragraph.style.removeProperty("font-size");
+  paragraph.style.removeProperty("line-height");
+
+  if (!desktopReader.matches) {
+    const bounds = readingBounds();
+    const pageHeight = Math.max(430, Math.floor(bounds.height));
+    const beatStyle = getComputedStyle(beat);
+    const padding = Number.parseFloat(beatStyle.paddingTop) + Number.parseFloat(beatStyle.paddingBottom);
+    const gap = Number.parseFloat(beatStyle.rowGap) || 12;
+    const beatNumber = beat.querySelector<HTMLElement>(".beat-number");
+    const numberHeight = beatNumber
+      ? beatNumber.getBoundingClientRect().height + Number.parseFloat(getComputedStyle(beatNumber).marginBottom)
+      : 0;
+    const wordCount = paragraph.querySelectorAll("[data-narration-word]").length;
+    const density = clamp((wordCount - 32) / 105);
+    const naturalArtHeight = frame.clientWidth * 2 / 3;
+    const minimumArtHeight = Math.min(154, pageHeight * 0.24);
+    let artHeight = clamp(
+      Math.min(naturalArtHeight, pageHeight * (0.43 - density * 0.13)),
+      minimumArtHeight,
+      pageHeight * 0.43,
+    );
+
+    beat.style.setProperty("--mobile-page-height", `${pageHeight}px`);
+
+    const fitCopy = () => {
+      beat.style.setProperty("--mobile-art-height", `${Math.round(artHeight)}px`);
+      const availableCopyHeight = Math.max(150, pageHeight - padding - gap - artHeight - numberHeight);
+      let low = 13.5;
+      let high = 28;
+      for (let attempt = 0; attempt < 8; attempt += 1) {
+        const candidate = (low + high) / 2;
+        paragraph.style.fontSize = `${candidate.toFixed(2)}px`;
+        paragraph.style.lineHeight = candidate < 17 ? "1.24" : "1.3";
+        if (paragraph.scrollHeight <= availableCopyHeight + 1) low = candidate;
+        else high = candidate;
+      }
+      paragraph.style.fontSize = `${low.toFixed(2)}px`;
+      paragraph.style.lineHeight = low < 17 ? "1.24" : "1.3";
+      return paragraph.scrollHeight <= availableCopyHeight + 2;
+    };
+
+    if (!fitCopy()) {
+      artHeight = minimumArtHeight;
+      fitCopy();
+    }
+    return beat;
+  }
 
   const bounds = readingBounds();
   const frameRect = frame.getBoundingClientRect();
@@ -583,19 +579,14 @@ const fitBeatToViewport = (index: number) => {
 const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => {
   const paragraph = paragraphs[index];
   if (!paragraph || !followNarration || manualScrollActive) return;
-  const frame = fitBeatToViewport(index);
+  const fittedElement = fitBeatToViewport(index);
   const bounds = readingBounds();
   const rect = paragraph.getBoundingClientRect();
-  const paragraphIsRevealed = !desktopReader.matches && Boolean(audio && audio.currentTime >= mobileRevealAt(index));
-  const mobileTarget = !desktopReader.matches && frame
-    ? mobileParagraphTarget(index, paragraphIsRevealed)
-    : null;
-  const desiredTop = desktopReader.matches && frame
-    ? scrollY + frame.getBoundingClientRect().top - bounds.top
-    : mobileTarget ?? scrollY + rect.top + rect.height / 2 - readingFocus();
+  const desiredTop = fittedElement
+    ? scrollY + fittedElement.getBoundingClientRect().top - bounds.top
+    : scrollY + rect.top + rect.height / 2 - readingFocus();
   lastCenteredParagraph = index;
   scrollForNarration(desiredTop, behavior);
-  if (!desktopReader.matches && !paragraphIsRevealed) queueMobileParagraphReveal(index);
 };
 
 const centerHeading = (index: number, behavior: ScrollBehavior = "smooth", force = false) => {
@@ -625,7 +616,6 @@ const queueViewportFit = (delay = 380) => {
 };
 
 const clearParagraphState = () => {
-  clearMobileParagraphReveal();
   activeParagraph = -1;
   paragraphs.forEach((paragraph) => {
     paragraph.classList.remove("is-current-paragraph");
@@ -708,6 +698,7 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   });
   const beatNumber = Number(paragraphs[index].dataset.beatNumber);
   setBeat(beatForNumber(beatNumber));
+  if (!desktopReader.matches && changed) fitBeatToViewport(index);
   if (
     source === "audio"
     && audio
@@ -762,6 +753,11 @@ const playbackStageIsAligned = (seconds: number) => {
     return Math.abs(center - readingCenter) < Math.max(84, bounds.height * 0.16);
   }
   const paragraph = paragraphs[paragraphForTime(seconds)];
+  const beat = paragraph?.closest<HTMLElement>("[data-beat]");
+  if (!desktopReader.matches && beat) {
+    const rect = beat.getBoundingClientRect();
+    return Math.abs(rect.top - bounds.top) < 72 && rect.bottom <= bounds.bottom + 72;
+  }
   const frame = paragraph?.closest<HTMLElement>("[data-beat]")
     ?.querySelector<HTMLElement>("[data-cinematic-art]");
   if (!frame) return false;
@@ -797,7 +793,6 @@ const releaseScrollToNarration = () => {
   lastCenteredParagraph = -1;
   lastCenteredHeading = -1;
   lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
-  clearMobileParagraphReveal();
 };
 
 const followPlaybackPosition = (behavior: ScrollBehavior = "smooth") => {
@@ -1042,7 +1037,6 @@ const handlePlaybackStarted = () => {
 
 audio?.addEventListener("play", handlePlaybackStarted);
 audio?.addEventListener("pause", () => {
-  clearMobileParagraphReveal();
   saveProgress(true);
   updatePlayState();
   stopNarrationLoop();
@@ -1238,7 +1232,11 @@ addEventListener("resize", () => {
   if (!desktopReader.matches) {
     beatElements.forEach((beat) => {
       beat.style.removeProperty("--reader-beat-gap");
+      beat.style.removeProperty("--mobile-page-height");
+      beat.style.removeProperty("--mobile-art-height");
       beat.querySelector<HTMLElement>("[data-cinematic-art]")?.style.removeProperty("--fitted-art-height");
+      beat.querySelector<HTMLElement>("[data-narration-paragraph]")?.style.removeProperty("font-size");
+      beat.querySelector<HTMLElement>("[data-narration-paragraph]")?.style.removeProperty("line-height");
     });
   }
   requestAnimationFrame(() => {

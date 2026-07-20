@@ -74,6 +74,10 @@ const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.numb
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+const mobileArtworkSrc = (src: string) => src.replace(
+  "/images/wind-story/",
+  "/images/wind-story/mobile/",
+);
 const resolvedSpeaker = (
   chapterNumber: number,
   authoredSpeaker: string,
@@ -111,7 +115,10 @@ const resolvedSpeaker = (
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
+        <picture>
+          <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
+          <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
+        </picture>
       </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
@@ -289,17 +296,20 @@ const resolvedSpeaker = (
                           <small>{beat.prompt}</small>
                         </div>
                         {artworkSrc && (
-                          <img
-                            class={isOriginalArtwork ? "is-hand-sketch" : undefined}
-                            src={artworkSrc}
-                            alt={`Drawing ${beat.number}: ${beat.prompt}`}
-                            data-story-art
-                            loading={beat.number === 1 ? "eager" : "lazy"}
-                            decoding="async"
-                            fetchpriority={beat.number === 1 ? "high" : "low"}
-                            width="1200"
-                            height="800"
-                          />
+                          <picture>
+                            <source media="(max-width: 760px)" srcset={mobileArtworkSrc(artworkSrc)} />
+                            <img
+                              class={isOriginalArtwork ? "is-hand-sketch" : undefined}
+                              src={artworkSrc}
+                              alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                              data-story-art
+                              loading={beat.number === 1 ? "eager" : "lazy"}
+                              decoding="async"
+                              fetchpriority={beat.number === 1 ? "high" : "low"}
+                              width="1200"
+                              height="800"
+                            />
+                          </picture>
                         )}
                       </div>
                     </figure>
