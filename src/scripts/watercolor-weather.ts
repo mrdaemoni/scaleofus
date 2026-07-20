@@ -343,7 +343,9 @@ const watercolorObserver = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: "12% 0px 12%", threshold: 0.01 });
 
-watercolorCanvases.forEach((canvas) => watercolorObserver.observe(canvas));
+if (!compactWatercolor.matches) {
+  watercolorCanvases.forEach((canvas) => watercolorObserver.observe(canvas));
+}
 
 let resizeTimer = 0;
 addEventListener("resize", () => {

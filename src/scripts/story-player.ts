@@ -73,16 +73,13 @@ let mobileRevealTimer = 0;
 let playbackRecoveryTimer = 0;
 let bufferingRecoveryTimer = 0;
 let playbackFollowTimer = 0;
-let narrationHeartbeatTimer = 0;
 let pendingMediaSeekTimer = 0;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
-let ignoreTouchClickUntil = 0;
 let cinematicFrame = 0;
 let narrationFrame = 0;
 let pointerFrame = 0;
 let fitTimer = 0;
 let lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
-let lastMountainFrame = Number.NEGATIVE_INFINITY;
 let lastSavedProgressSecond = -1;
 let mountainAnchors: Array<{ x: number; y: number }> = [];
 const windTrailTimers = new Map<HTMLElement, number>();
@@ -293,46 +290,26 @@ const syncNarrationWord = (preserveCurrentOnGap = false) => {
 
 const runNarrationLoop = (timestamp: number) => {
   narrationFrame = 0;
-  if (!audio || audio.paused) return;
-  // Queue the next frame first so an isolated rendering failure cannot stop
-  // the media clock from driving later frames.
+  if (!audio || !playbackRequested || audio.ended) return;
   narrationFrame = requestAnimationFrame(runNarrationLoop);
+  if (audio.paused || timestamp - lastNarrationStageFrame < 90) return;
+  const seconds = audio.currentTime;
+  updateStoryProgress(seconds);
   syncNarrationWord();
-  if (timestamp - lastNarrationStageFrame >= 80) {
-    syncReadingStage(audio.currentTime, "audio");
-    auditPlaybackFollow();
-    lastNarrationStageFrame = timestamp;
-  }
-  if (timestamp - lastMountainFrame >= 40) {
-    updateMountainJourney(audio.currentTime);
-    lastMountainFrame = timestamp;
-  }
+  syncReadingStage(seconds, "audio");
+  auditPlaybackFollow();
+  lastNarrationStageFrame = timestamp;
 };
 
 const startNarrationLoop = () => {
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
-  lastMountainFrame = Number.NEGATIVE_INFINITY;
   if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
-  if (!narrationHeartbeatTimer) {
-    narrationHeartbeatTimer = window.setInterval(() => {
-      if (!audio || audio.paused || audio.ended) return;
-      if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
-      const seconds = audio.currentTime;
-      updateStoryProgress(seconds);
-      syncNarrationWord();
-      syncReadingStage(seconds, "audio");
-      auditPlaybackFollow();
-    }, 180);
-  }
 };
 
 const stopNarrationLoop = () => {
   if (narrationFrame) cancelAnimationFrame(narrationFrame);
   narrationFrame = 0;
-  if (narrationHeartbeatTimer) window.clearInterval(narrationHeartbeatTimer);
-  narrationHeartbeatTimer = 0;
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
-  lastMountainFrame = Number.NEGATIVE_INFINITY;
   syncNarrationWord(true);
 };
 
@@ -494,6 +471,13 @@ const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smoo
   }
   autoScrollActive = true;
   autoScrollTarget = targetTop;
+  const longMobileJump = !desktopReader.matches && distance > innerHeight * 1.4;
+  const resolvedBehavior = reducedMotion.matches || longMobileJump ? "auto" : behavior;
+  const settleDelay = resolvedBehavior === "auto"
+    ? 80
+    : desktopReader.matches
+      ? clamp(620 + distance * 0.16, 720, 1200)
+      : 720;
   if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
   autoScrollTimer = window.setTimeout(() => {
     if (!manualScrollActive && autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5) {
@@ -506,9 +490,9 @@ const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smoo
     }
     autoScrollActive = false;
     autoScrollTarget = -1;
-  }, reducedMotion.matches ? 50 : clamp(760 + distance * 0.28, 980, 2200));
+  }, settleDelay);
   try {
-    window.scrollTo({ top: targetTop, behavior: reducedMotion.matches ? "auto" : behavior });
+    window.scrollTo({ top: targetTop, behavior: resolvedBehavior });
   } catch {
     window.scrollTo(0, targetTop);
   }
@@ -1022,6 +1006,7 @@ const updateCinematicMotion = () => {
 };
 
 const requestCinematicMotion = () => {
+  if (!desktopReader.matches) return;
   if (!cinematicFrame) cinematicFrame = requestAnimationFrame(updateCinematicMotion);
 };
 
@@ -1041,14 +1026,7 @@ storyArtImages.forEach((image) => {
 });
 
 playButtons.forEach((button) => {
-  button.addEventListener("pointerup", (event) => {
-    if (event.pointerType !== "touch") return;
-    ignoreTouchClickUntil = Date.now() + 700;
-    event.preventDefault();
-    void togglePlayback(event);
-  });
   button.addEventListener("click", (event) => {
-    if (Date.now() < ignoreTouchClickUntil) return;
     void togglePlayback(event);
   });
 });
@@ -1253,17 +1231,6 @@ addEventListener("scroll", () => {
   syncDockFootprint();
   if (manualScrollActive && !autoScrollActive) queueViewportSync();
   requestCinematicMotion();
-}, { passive: true });
-addEventListener("scrollend", () => {
-  if (autoScrollActive) {
-    if (autoScrollTarget >= 0 && Math.abs(scrollY - autoScrollTarget) > 5 && !manualScrollActive) {
-      window.scrollTo(0, autoScrollTarget);
-    }
-    autoScrollActive = false;
-    autoScrollTarget = -1;
-    return;
-  }
-  if (manualScrollActive && !touchActive) queueViewportSync(60);
 }, { passive: true });
 addEventListener("resize", () => {
   syncDockFootprint();

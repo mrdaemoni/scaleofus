@@ -3269,7 +3269,11 @@ body.is-listening .mountain-climber {
   .story-beat.is-seen .watercolor-wash {
     animation: none;
     transition: none;
-    filter: blur(0.6px) saturate(1.02);
+    border-radius: 48% 52% 43% 57% / 57% 42% 58% 43%;
+    background:
+      radial-gradient(ellipse 58% 54% at 39% 48%, color-mix(in srgb, var(--chapter-wash) 24%, transparent), transparent 76%),
+      radial-gradient(ellipse 52% 46% at 65% 56%, color-mix(in srgb, var(--chapter-wash-secondary) 20%, transparent), transparent 78%);
+    filter: blur(1px) saturate(1.02);
     transform: rotate(var(--wash-rotation));
     will-change: auto;
   }
