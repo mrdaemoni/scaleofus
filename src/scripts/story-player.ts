@@ -86,6 +86,8 @@ let mobileNarrationTimer = 0;
 let pointerFrame = 0;
 let fitTimer = 0;
 let readingCompassHideTimer = 0;
+let coverWindResponseTimer = 0;
+let chapterSeekMinimumTimer = 0;
 let lastReadingScrollY = scrollY;
 let lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
 let lastSavedProgressSecond = -1;
@@ -96,10 +98,14 @@ type PendingMediaSeek = {
   target: number;
   attempts: number;
   token: number;
+  minimumReadyState: number;
+  onSettled?: (confirmed: boolean) => void;
 };
 
 let pendingMediaSeek: PendingMediaSeek | null = null;
 let mediaSeekToken = 0;
+let chapterSeekToken = 0;
+let chapterSeekInProgress = false;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
@@ -171,22 +177,40 @@ const clearPendingMediaSeek = () => {
   pendingMediaSeek = null;
 };
 
+const settlePendingMediaSeek = (request: PendingMediaSeek, confirmed: boolean) => {
+  if (pendingMediaSeek?.token !== request.token) return;
+  const onSettled = request.onSettled;
+  clearPendingMediaSeek();
+  onSettled?.(confirmed);
+};
+
 const applyPendingMediaSeek = () => {
   if (!audio || !pendingMediaSeek) return;
   const request = pendingMediaSeek;
   if (pendingMediaSeekTimer) window.clearTimeout(pendingMediaSeekTimer);
   pendingMediaSeekTimer = 0;
 
-  try {
-    audio.currentTime = request.target;
-  } catch {}
-  request.attempts += 1;
-
   const tolerance = audio.paused ? 0.28 : 0.9;
-  const accepted = audio.readyState > HTMLMediaElement.HAVE_NOTHING
+  const closeEnough = Math.abs(audio.currentTime - request.target) <= tolerance;
+  const accepted = !audio.seeking
+    && audio.readyState >= request.minimumReadyState
     && Math.abs(audio.currentTime - request.target) <= tolerance;
-  if (accepted || request.attempts >= 14) {
-    clearPendingMediaSeek();
+  if (accepted) {
+    settlePendingMediaSeek(request, true);
+    return;
+  }
+
+  // Reassigning currentTime while a seek is already active can continually
+  // restart the native HLS/MP3 seek on mobile. Let the browser finish the
+  // in-flight request, and only retry when it has not reached the target.
+  if (!audio.seeking && !closeEnough) {
+    try {
+      audio.currentTime = request.target;
+    } catch {}
+  }
+  request.attempts += 1;
+  if (request.attempts >= 24) {
+    settlePendingMediaSeek(request, false);
     return;
   }
 
@@ -197,13 +221,21 @@ const applyPendingMediaSeek = () => {
   }, audio.readyState === HTMLMediaElement.HAVE_NOTHING ? 220 : 140);
 };
 
-const requestMediaSeek = (seconds: number) => {
+const requestMediaSeek = (
+  seconds: number,
+  options: {
+    minimumReadyState?: number;
+    onSettled?: (confirmed: boolean) => void;
+  } = {},
+) => {
   if (!audio) return 0;
   const target = clamp(Number.isFinite(seconds) ? seconds : 0, 0, mediaDuration());
   pendingMediaSeek = {
     target,
     attempts: 0,
     token: ++mediaSeekToken,
+    minimumReadyState: options.minimumReadyState ?? HTMLMediaElement.HAVE_METADATA,
+    onSettled: options.onSettled,
   };
   applyPendingMediaSeek();
   return target;
@@ -311,7 +343,7 @@ const runNarrationLoop = (timestamp: number) => {
   narrationFrame = 0;
   if (!audio || !playbackRequested || audio.ended) return;
   narrationFrame = requestAnimationFrame(runNarrationLoop);
-  if (audio.paused || timestamp - lastNarrationStageFrame < 90) return;
+  if (audio.paused || chapterSeekInProgress || timestamp - lastNarrationStageFrame < 90) return;
   const seconds = audio.currentTime;
   updateStoryProgress(seconds);
   syncNarrationWord();
@@ -323,7 +355,7 @@ const runNarrationLoop = (timestamp: number) => {
 const runMobileNarrationLoop = () => {
   mobileNarrationTimer = 0;
   if (!audio || !playbackRequested || audio.ended) return;
-  if (!audio.paused) {
+  if (!audio.paused && !chapterSeekInProgress) {
     const seconds = audio.currentTime;
     updateStoryProgress(seconds);
     syncNarrationWord();
@@ -387,6 +419,13 @@ const setReaderMode = (mode: ReaderMode) => {
     followNarration = true;
     follow?.setAttribute("aria-pressed", "true");
   } else {
+    if (chapterSeekInProgress) {
+      chapterSeekToken += 1;
+      if (chapterSeekMinimumTimer) window.clearTimeout(chapterSeekMinimumTimer);
+      chapterSeekMinimumTimer = 0;
+      clearPendingMediaSeek();
+      setChapterSeekBusy(false);
+    }
     playbackRequested = false;
     mediaIsBuffering = false;
     audio?.pause();
@@ -857,6 +896,7 @@ const auditPlaybackFollow = () => {
   if (
     !audio
     || audio.paused
+    || chapterSeekInProgress
     || !followNarration
     || manualScrollActive
     || autoScrollActive
@@ -884,7 +924,7 @@ const releaseScrollToNarration = () => {
 };
 
 const followPlaybackPosition = (behavior: ScrollBehavior = "smooth") => {
-  if (!audio || audio.paused || !followNarration || manualScrollActive) return;
+  if (!audio || audio.paused || chapterSeekInProgress || !followNarration || manualScrollActive) return;
   syncReadingStage(audio.currentTime, "audio");
   centerReadingStage(audio.currentTime, behavior);
 };
@@ -917,9 +957,23 @@ const recordPlaybackError = (error: unknown) => {
   document.body.dataset.playbackError = name;
 };
 
+const wakeCoverWind = () => {
+  if (!storyCover || scrollY > Math.min(innerHeight * 0.3, 240)) return;
+  if (coverWindResponseTimer) window.clearTimeout(coverWindResponseTimer);
+  document.body.classList.remove("is-cover-wind-awake");
+  // Restart the gust even when someone taps Listen again after pausing.
+  void storyCover.offsetWidth;
+  document.body.classList.add("is-cover-wind-awake");
+  coverWindResponseTimer = window.setTimeout(() => {
+    coverWindResponseTimer = 0;
+    document.body.classList.remove("is-cover-wind-awake");
+  }, 1700);
+};
+
 const togglePlayback = async (event?: Event) => {
   if (!audio) return;
   const trigger = event?.currentTarget as HTMLElement | null;
+  if (trigger?.hasAttribute("data-hero-play")) wakeCoverWind();
   setReaderMode("listen");
   if (!audio.paused && mediaIsBuffering) {
     releaseScrollToNarration();
@@ -1132,6 +1186,101 @@ const goToReadingChapter = (index: number) => {
   showReadingCompass(3400);
 };
 
+const setChapterSeekBusy = (busy: boolean, index = -1) => {
+  chapterSeekInProgress = busy;
+  dock?.classList.toggle("is-seeking", busy);
+  dock?.setAttribute("aria-busy", String(busy));
+  if (dock) {
+    if (busy && index >= 0) dock.dataset.seekLabel = `Following the wind · Chapter ${index + 1}`;
+    else delete dock.dataset.seekLabel;
+  }
+  if (busy) {
+    mediaIsBuffering = true;
+  } else if (!audio?.seeking) {
+    mediaIsBuffering = false;
+  }
+  updatePlayState();
+};
+
+const finishChapterSeek = (
+  token: number,
+  index: number,
+  target: number,
+  hash: string,
+  shouldResume: boolean,
+  startedAt: number,
+  confirmed: boolean,
+) => {
+  if (!audio || token !== chapterSeekToken) return;
+  if (!confirmed) {
+    try {
+      audio.currentTime = target;
+    } catch {}
+  }
+
+  manualScrollActive = false;
+  autoScrollActive = false;
+  autoScrollTarget = -1;
+  lastCenteredParagraph = -1;
+  lastCenteredHeading = -1;
+  const alignedTime = Math.abs(audio.currentTime - target) <= 1 ? audio.currentTime : target;
+  updateStoryProgress(alignedTime);
+  setHeading(index, "restore");
+  centerHeading(index, "auto", true);
+  setWord(readerMode === "listen" ? wordForTime(alignedTime) : -1);
+  saveProgress(true, alignedTime);
+  history.replaceState(null, "", hash);
+
+  // Keep the cue long enough to read as an intentional transition rather
+  // than a flash, while never delaying a slower native media seek.
+  const minimumCue = reducedMotion.matches ? 0 : 240;
+  const remainingCue = Math.max(0, minimumCue - (performance.now() - startedAt));
+  if (chapterSeekMinimumTimer) window.clearTimeout(chapterSeekMinimumTimer);
+  chapterSeekMinimumTimer = window.setTimeout(() => {
+    chapterSeekMinimumTimer = 0;
+    if (token !== chapterSeekToken || !audio) return;
+    setChapterSeekBusy(false);
+    const settledTime = Math.abs(audio.currentTime - target) <= 1.25 ? audio.currentTime : target;
+    updateStoryProgress(settledTime);
+    syncReadingStage(settledTime, "restore");
+    setWord(readerMode === "listen" ? wordForTime(settledTime) : -1);
+    if (shouldResume) {
+      playbackRequested = true;
+      if (audio.paused) {
+        mediaIsBuffering = true;
+        updatePlayState();
+        audio.play().catch((error) => {
+          recordPlaybackError(error);
+          playbackRequested = false;
+          mediaIsBuffering = false;
+          updatePlayState();
+        });
+      } else {
+        handlePlaybackStarted();
+      }
+    } else {
+      mediaIsBuffering = false;
+      updatePlayState();
+    }
+  }, remainingCue);
+};
+
+const goToListeningChapter = (index: number, hash: string, seconds: number) => {
+  if (!audio || !chapters[index]) return;
+  const target = clamp(Number.isFinite(seconds) ? seconds : 0, 0, mediaDuration());
+  const token = ++chapterSeekToken;
+  const shouldResume = playbackRequested && !audio.ended;
+  const startedAt = performance.now();
+  releaseScrollToNarration();
+  setChapterSeekBusy(true, index);
+  requestMediaSeek(target, {
+    minimumReadyState: HTMLMediaElement.HAVE_CURRENT_DATA,
+    onSettled: (confirmed) => {
+      finishChapterSeek(token, index, target, hash, shouldResume, startedAt, confirmed);
+    },
+  });
+};
+
 readingPrevious?.addEventListener("click", () => goToReadingChapter(activeChapter - 1));
 readingNext?.addEventListener("click", () => goToReadingChapter(activeChapter + 1));
 readingCompass?.addEventListener("pointerenter", () => {
@@ -1156,6 +1305,10 @@ const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
   updatePlayState();
+  if (chapterSeekInProgress) {
+    startNarrationLoop();
+    return;
+  }
   followPlaybackPosition();
   queuePlaybackFollow();
   startNarrationLoop();
@@ -1166,6 +1319,10 @@ audio?.addEventListener("pause", () => {
   saveProgress(true);
   updatePlayState();
   if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
+  if (chapterSeekInProgress) {
+    startNarrationLoop();
+    return;
+  }
   if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
     // iOS may briefly pause a media element while it changes buffers. Keep
     // the lightweight visual clock alive so a successful resume cannot leave
@@ -1192,7 +1349,9 @@ audio?.addEventListener("ended", () => {
   stopNarrationLoop();
 });
 const setMediaBuffering = (buffering: boolean) => {
-  mediaIsBuffering = buffering && playbackRequested && Boolean(audio && !audio.ended);
+  mediaIsBuffering = (buffering || chapterSeekInProgress)
+    && playbackRequested
+    && Boolean(audio && !audio.ended);
   updatePlayState();
 };
 
@@ -1203,7 +1362,7 @@ audio?.addEventListener("error", () => {
 });
 audio?.addEventListener("playing", () => {
   delete document.body.dataset.playbackError;
-  setMediaBuffering(false);
+  if (!chapterSeekInProgress) setMediaBuffering(false);
   handlePlaybackStarted();
 });
 audio?.addEventListener("loadedmetadata", retryPendingMediaSeek);
@@ -1212,9 +1371,13 @@ audio?.addEventListener("progress", retryPendingMediaSeek);
 audio?.addEventListener("seeked", retryPendingMediaSeek);
 audio?.addEventListener("canplay", () => {
   retryPendingMediaSeek();
-  setMediaBuffering(false);
+  if (!chapterSeekInProgress) setMediaBuffering(false);
 });
 audio?.addEventListener("timeupdate", () => {
+  if (chapterSeekInProgress) {
+    retryPendingMediaSeek();
+    return;
+  }
   if (mediaIsBuffering) setMediaBuffering(false);
   updateStoryProgress(audio.currentTime);
   syncNarrationWord();
@@ -1242,18 +1405,11 @@ chapterLinks.forEach((link) => {
     event.preventDefault();
     if (!audio) return;
     const index = Number(link.dataset.chapterIndex);
-    const target = requestMediaSeek(Number(link.dataset.start ?? 0));
-    updateStoryProgress(target);
-    history.replaceState(null, "", link.hash);
-    manualScrollActive = false;
-    autoScrollActive = false;
-    lastCenteredParagraph = -1;
-    lastCenteredHeading = -1;
-    setHeading(index, "scroll");
-    centerHeading(index, "smooth", true);
-    setWord(readerMode === "listen" ? wordForTime(target) : -1);
-    saveProgress(true, target);
-    if (playbackRequested && audio.paused) audio.play().catch(() => {});
+    if (readerMode !== "listen") {
+      goToReadingChapter(index);
+      return;
+    }
+    goToListeningChapter(index, link.hash, Number(link.dataset.start ?? 0));
   });
 });
 
@@ -1329,12 +1485,20 @@ addEventListener("touchcancel", () => {
   touchMoved = false;
 }, { passive: true });
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible" || !playbackRequested || !audio || audio.ended) return;
+  if (
+    document.visibilityState !== "visible"
+    || chapterSeekInProgress
+    || !playbackRequested
+    || !audio
+    || audio.ended
+  ) return;
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });
 addEventListener("pageshow", () => {
-  if (playbackRequested && audio && !audio.paused && !audio.ended) handlePlaybackStarted();
+  if (playbackRequested && !chapterSeekInProgress && audio && !audio.paused && !audio.ended) {
+    handlePlaybackStarted();
+  }
 });
 addEventListener("keydown", (event) => {
   const target = event.target as Element | null;

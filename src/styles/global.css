@@ -295,6 +295,20 @@ img {
   animation-duration: 12s;
 }
 
+body.is-cover-wind-awake .wind-script {
+  opacity: 0.32;
+  transition: opacity 140ms ease-out;
+}
+
+body.is-cover-wind-awake .wind-script i {
+  animation: coverListenGust 1.45s cubic-bezier(0.16, 0.72, 0.24, 1) both;
+}
+
+body.is-cover-wind-awake .wind-script i:nth-child(2) { animation-delay: 45ms; }
+body.is-cover-wind-awake .wind-script i:nth-child(3) { animation-delay: 90ms; }
+body.is-cover-wind-awake .wind-script i:nth-child(4) { animation-delay: 130ms; }
+body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
+
 .cover-copy {
   position: relative;
   z-index: 1;
@@ -2332,6 +2346,45 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     transform 300ms ease;
 }
 
+.audio-dock.is-seeking::before {
+  content: attr(data-seek-label);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  min-width: max-content;
+  padding: 7px 12px 8px;
+  border: 1px solid rgba(88, 70, 76, 0.14);
+  border-radius: 999px;
+  background: rgba(242, 220, 223, 0.97);
+  color: rgba(88, 70, 76, 0.78);
+  box-shadow: 0 8px 24px rgba(83, 51, 61, 0.12);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  animation: chapterSeekCue 240ms ease-out both;
+}
+
+.audio-dock.is-seeking::after {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: calc(50% - 72px);
+  width: 144px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(141, 89, 103, 0.48), transparent);
+  transform-origin: center;
+  animation: chapterSeekWind 1.05s ease-in-out infinite;
+}
+
+.audio-dock.is-seeking .dock-chapters,
+.audio-dock.is-seeking .dock-player {
+  opacity: 0.58;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+
 .dock-chapters {
   min-width: 0;
   overflow-x: auto;
@@ -3086,6 +3139,23 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   0%, 100% { transform: translate3d(0, 0, 0) scaleX(1); }
   42% { transform: translate3d(-18px, -2px, 0) scaleX(1.025); }
   72% { transform: translate3d(-7px, 2px, 0) scaleX(0.99); }
+}
+
+@keyframes coverListenGust {
+  0% { transform: translate3d(38px, 3px, 0) scaleX(0.91); opacity: 0.24; }
+  36% { transform: translate3d(-24px, -3px, 0) scaleX(1.08); opacity: 0.88; }
+  72% { transform: translate3d(-9px, 2px, 0) scaleX(1.015); opacity: 0.58; }
+  100% { transform: translate3d(0, 0, 0) scaleX(1); opacity: 1; }
+}
+
+@keyframes chapterSeekCue {
+  from { opacity: 0; transform: translate3d(-50%, 6px, 0); }
+  to { opacity: 1; transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes chapterSeekWind {
+  0%, 100% { opacity: 0.2; transform: translateX(-18px) scaleX(0.62); }
+  50% { opacity: 0.72; transform: translateX(18px) scaleX(1.12); }
 }
 
 @keyframes coverBoyInWind {
