@@ -322,12 +322,14 @@ const runNarrationLoop = (timestamp: number) => {
 
 const runMobileNarrationLoop = () => {
   mobileNarrationTimer = 0;
-  if (!audio || !playbackRequested || audio.paused || audio.ended) return;
-  const seconds = audio.currentTime;
-  updateStoryProgress(seconds);
-  syncNarrationWord();
-  syncReadingStage(seconds, "audio");
-  auditPlaybackFollow();
+  if (!audio || !playbackRequested || audio.ended) return;
+  if (!audio.paused) {
+    const seconds = audio.currentTime;
+    updateStoryProgress(seconds);
+    syncNarrationWord();
+    syncReadingStage(seconds, "audio");
+    auditPlaybackFollow();
+  }
   mobileNarrationTimer = window.setTimeout(runMobileNarrationLoop, 125);
 };
 
@@ -1163,9 +1165,12 @@ audio?.addEventListener("play", handlePlaybackStarted);
 audio?.addEventListener("pause", () => {
   saveProgress(true);
   updatePlayState();
-  stopNarrationLoop();
   if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
   if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
+    // iOS may briefly pause a media element while it changes buffers. Keep
+    // the lightweight visual clock alive so a successful resume cannot leave
+    // the read-along frozen on the previous page.
+    startNarrationLoop();
     audio.play().catch((error) => {
       recordPlaybackError(error);
       playbackRecoveryTimer = window.setTimeout(() => {
@@ -1175,6 +1180,8 @@ audio?.addEventListener("pause", () => {
         }
       }, 600);
     });
+  } else {
+    stopNarrationLoop();
   }
 });
 audio?.addEventListener("ended", () => {

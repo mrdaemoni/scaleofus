@@ -14,6 +14,10 @@ export const windStoryReader: StoryReaderConfig = {
     src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=full-cast-v10-20260719",
     sources: [
       {
+        src: "/audio/wind-story-hls/story.m3u8?v=full-cast-v10-20260720",
+        type: "application/vnd.apple.mpegurl",
+      },
+      {
         src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=full-cast-v10-20260720b",
         type: "audio/mpeg",
       },
