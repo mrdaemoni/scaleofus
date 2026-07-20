@@ -352,10 +352,13 @@ const resolvedSpeaker = (
   <div class="audio-dock is-compact" data-audio-dock>
     <audio
       data-audio
-      src={windStoryReader.audio.src}
-      preload="metadata"
+      preload="auto"
       playsinline
-    ></audio>
+    >
+      {(windStoryReader.audio.sources ?? [{ src: windStoryReader.audio.src, type: "audio/mpeg" }]).map((source) => (
+        <source src={source.src} type={source.type} />
+      ))}
+    </audio>
     <nav class="dock-chapters" aria-label="Story chapters">
       <ol>
         {chapters.map((chapter) => (

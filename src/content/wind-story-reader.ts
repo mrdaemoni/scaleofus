@@ -12,6 +12,16 @@ export const windStoryReader: StoryReaderConfig = {
   intro: "A story about a boy, a machine, and the part of us no answer can hold.",
   audio: {
     src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=full-cast-v10-20260719",
+    sources: [
+      {
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=full-cast-v10-20260720",
+        type: 'audio/mp4; codecs="mp4a.40.2"',
+      },
+      {
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=full-cast-v10-20260719",
+        type: "audio/mpeg",
+      },
+    ],
     duration: 1045.567,
   },
   artwork: {

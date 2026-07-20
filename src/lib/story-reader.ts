@@ -25,6 +25,10 @@ export type StoryReaderConfig = {
   intro: string;
   audio: {
     src: string;
+    sources?: ReadonlyArray<{
+      src: string;
+      type: string;
+    }>;
     duration: number;
   };
   artwork: {

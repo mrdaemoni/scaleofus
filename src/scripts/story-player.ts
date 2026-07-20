@@ -77,9 +77,14 @@ let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let autoScrollTarget = -1;
 let playbackRecoveryTimer = 0;
-let bufferingRecoveryTimer = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
+let playbackWatchdogTimer = 0;
+let mediaReloadTimer = 0;
+let lastObservedMediaTime = 0;
+let lastMediaAdvanceAt = Date.now();
+let mediaRecoveryStage = 0;
+let mediaReloadInFlight = false;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
@@ -360,6 +365,7 @@ const setReaderMode = (mode: ReaderMode) => {
     playbackRequested = false;
     mediaIsBuffering = false;
     audio?.pause();
+    stopPlaybackWatchdog();
     stopNarrationLoop();
     setWord(-1);
     clearFittedBeatStyles();
@@ -882,6 +888,11 @@ const updatePlayState = () => {
   );
 };
 
+const recordPlaybackError = (error: unknown) => {
+  const name = error instanceof DOMException ? error.name : "PlaybackError";
+  document.body.dataset.playbackError = name;
+};
+
 const togglePlayback = async (event?: Event) => {
   if (!audio) return;
   const trigger = event?.currentTarget as HTMLElement | null;
@@ -889,7 +900,6 @@ const togglePlayback = async (event?: Event) => {
   if (!audio.paused && mediaIsBuffering) {
     releaseScrollToNarration();
     playbackRequested = true;
-    requestMediaSeek(Math.min(audio.currentTime + 0.02, Math.max(0, mediaDuration() - 0.1)));
     try {
       await audio.play();
       handlePlaybackStarted();
@@ -927,9 +937,11 @@ const togglePlayback = async (event?: Event) => {
     }
     try {
       await playAttempt;
+      delete document.body.dataset.playbackError;
       handlePlaybackStarted();
       updateStoryProgress(audio.currentTime);
-    } catch {
+    } catch (error) {
+      recordPlaybackError(error);
       playbackRequested = false;
       stopNarrationLoop();
       updatePlayState();
@@ -1119,6 +1131,7 @@ playButtons.forEach((button) => {
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
+  startPlaybackWatchdog();
   updatePlayState();
   followPlaybackPosition();
   queuePlaybackFollow();
@@ -1130,8 +1143,9 @@ audio?.addEventListener("pause", () => {
   saveProgress(true);
   updatePlayState();
   stopNarrationLoop();
+  if (!playbackRequested) stopPlaybackWatchdog();
   if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
-  if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
+  if (playbackRequested && !mediaReloadInFlight && !audio.ended && document.visibilityState === "visible") {
     playbackRecoveryTimer = window.setTimeout(() => {
       playbackRecoveryTimer = 0;
       if (playbackRequested && audio.paused && !audio.ended) audio.play().catch(() => {});
@@ -1142,34 +1156,138 @@ audio?.addEventListener("ended", () => {
   playbackRequested = false;
   mediaIsBuffering = false;
   clearPendingMediaSeek();
+  stopPlaybackWatchdog();
   updatePlayState();
   stopNarrationLoop();
 });
 const setMediaBuffering = (buffering: boolean) => {
   mediaIsBuffering = buffering && playbackRequested && Boolean(audio && !audio.ended);
-  if (bufferingRecoveryTimer) {
-    window.clearTimeout(bufferingRecoveryTimer);
-    bufferingRecoveryTimer = 0;
-  }
-  if (mediaIsBuffering && audio) {
-    bufferingRecoveryTimer = window.setTimeout(() => {
-      bufferingRecoveryTimer = 0;
-      if (
-        !audio
-        || !playbackRequested
-        || audio.ended
-        || document.visibilityState !== "visible"
-        || audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA
-      ) return;
-      requestMediaSeek(Math.min(audio.currentTime + 0.02, Math.max(0, mediaDuration() - 0.1)));
-      audio.play().catch(() => {});
-    }, 4500);
-  }
   updatePlayState();
 };
+
+const noteMediaProgress = (force = false) => {
+  if (!audio) return;
+  const observedTime = audio.currentTime;
+  if (!force && Math.abs(observedTime - lastObservedMediaTime) < 0.04) return;
+  lastObservedMediaTime = observedTime;
+  lastMediaAdvanceAt = Date.now();
+  mediaRecoveryStage = 0;
+  if (mediaIsBuffering && !audio.paused) setMediaBuffering(false);
+};
+
+const stopPlaybackWatchdog = () => {
+  if (playbackWatchdogTimer) window.clearInterval(playbackWatchdogTimer);
+  playbackWatchdogTimer = 0;
+  if (mediaReloadTimer) window.clearTimeout(mediaReloadTimer);
+  mediaReloadTimer = 0;
+  mediaReloadInFlight = false;
+  mediaRecoveryStage = 0;
+};
+
+const reloadMediaStream = (resumeAt: number) => {
+  if (!audio || mediaReloadInFlight || !playbackRequested || audio.ended) return;
+  mediaReloadInFlight = true;
+  clearPendingMediaSeek();
+
+  let resumed = false;
+  const resume = () => {
+    if (resumed || !audio) return;
+    resumed = true;
+    if (mediaReloadTimer) window.clearTimeout(mediaReloadTimer);
+    mediaReloadTimer = 0;
+    audio.removeEventListener("loadedmetadata", resume);
+    if (!playbackRequested || audio.ended) {
+      mediaReloadInFlight = false;
+      return;
+    }
+    requestMediaSeek(resumeAt);
+    audio.play()
+      .then(() => {
+        mediaReloadInFlight = false;
+        delete document.body.dataset.playbackError;
+        noteMediaProgress(true);
+        handlePlaybackStarted();
+      })
+      .catch((error) => {
+        mediaReloadInFlight = false;
+        recordPlaybackError(error);
+        updatePlayState();
+      });
+  };
+
+  audio.addEventListener("loadedmetadata", resume, { once: true });
+  audio.preload = "auto";
+  audio.load();
+  mediaReloadTimer = window.setTimeout(resume, 5000);
+};
+
+const auditMediaProgress = () => {
+  if (!audio || !playbackRequested || audio.ended) return;
+  if (document.visibilityState !== "visible" || mediaReloadInFlight) {
+    lastObservedMediaTime = audio.currentTime;
+    lastMediaAdvanceAt = Date.now();
+    return;
+  }
+
+  if (audio.seeking && Date.now() - lastMediaAdvanceAt < 15000) return;
+
+  if (Math.abs(audio.currentTime - lastObservedMediaTime) >= 0.04) {
+    noteMediaProgress();
+    return;
+  }
+
+  const stalledFor = Date.now() - lastMediaAdvanceAt;
+  if (stalledFor < 3000) return;
+  setMediaBuffering(true);
+
+  // First ask the existing media element to resume without touching its buffer.
+  if (stalledFor >= 5000 && mediaRecoveryStage < 1) {
+    mediaRecoveryStage = 1;
+    audio.play().catch(() => {});
+    return;
+  }
+
+  // If the connection is still wedged, make one tiny seek to request a fresh
+  // byte range. Unlike the previous recovery path, this never loops or walks
+  // the narration clock forward.
+  if (stalledFor >= 9000 && mediaRecoveryStage < 2) {
+    mediaRecoveryStage = 2;
+    const resumeAt = audio.currentTime;
+    try {
+      audio.currentTime = Math.min(resumeAt + 0.001, Math.max(0, mediaDuration() - 0.05));
+    } catch {}
+    audio.play().catch(() => {});
+    return;
+  }
+
+  // A genuinely dead connection gets one controlled reload at the exact story
+  // time. Audio remains the master clock, so the text never advances on its own.
+  if (stalledFor >= 15000 && mediaRecoveryStage < 3) {
+    mediaRecoveryStage = 3;
+    reloadMediaStream(audio.currentTime);
+  }
+};
+
+const startPlaybackWatchdog = () => {
+  if (!audio) return;
+  if (!playbackWatchdogTimer) {
+    lastObservedMediaTime = audio.currentTime;
+    lastMediaAdvanceAt = Date.now();
+    playbackWatchdogTimer = window.setInterval(auditMediaProgress, 1000);
+  }
+};
+
 audio?.addEventListener("waiting", () => setMediaBuffering(true));
 audio?.addEventListener("stalled", () => setMediaBuffering(true));
+audio?.addEventListener("error", () => {
+  if (!playbackRequested || audio.ended) return;
+  setMediaBuffering(true);
+  mediaRecoveryStage = Math.max(mediaRecoveryStage, 2);
+  lastMediaAdvanceAt = Math.min(lastMediaAdvanceAt, Date.now() - 15000);
+  startPlaybackWatchdog();
+});
 audio?.addEventListener("playing", () => {
+  noteMediaProgress(true);
   setMediaBuffering(false);
   handlePlaybackStarted();
 });
@@ -1182,6 +1300,7 @@ audio?.addEventListener("canplay", () => {
   setMediaBuffering(false);
 });
 audio?.addEventListener("timeupdate", () => {
+  noteMediaProgress();
   if (mediaIsBuffering) setMediaBuffering(false);
   updateStoryProgress(audio.currentTime);
   syncNarrationWord();
@@ -1297,6 +1416,8 @@ addEventListener("touchcancel", () => {
 }, { passive: true });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible" || !playbackRequested || !audio || audio.ended) return;
+  noteMediaProgress(true);
+  startPlaybackWatchdog();
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });
