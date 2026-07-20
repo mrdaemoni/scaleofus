@@ -1375,10 +1375,12 @@ if (matchMedia("(pointer: fine)").matches) {
 const restorePosition = () => {
   if (!audio || !seek) return;
   let restored = 0;
-  try {
-    const saved = Number(localStorage.getItem("scaleofus-wind-progress"));
-    if (Number.isFinite(saved) && saved > 5 && saved < Number(seek.max) - 5) restored = saved;
-  } catch {}
+  if (location.hash && location.hash !== "#top") {
+    try {
+      const saved = Number(localStorage.getItem("scaleofus-wind-progress"));
+      if (Number.isFinite(saved) && saved > 5 && saved < Number(seek.max) - 5) restored = saved;
+    } catch {}
+  }
   if (location.hash.startsWith("#beat-")) {
     const beatNumber = Number(location.hash.replace("#beat-", ""));
     restored = Number(beats.find((beat) => beat.number === beatNumber)?.start ?? restored);
