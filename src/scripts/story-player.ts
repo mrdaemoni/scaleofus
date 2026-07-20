@@ -79,15 +79,10 @@ let autoScrollTarget = -1;
 let playbackRecoveryTimer = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
-let playbackWatchdogTimer = 0;
-let mediaReloadTimer = 0;
-let lastObservedMediaTime = 0;
-let lastMediaAdvanceAt = Date.now();
-let mediaRecoveryStage = 0;
-let mediaReloadInFlight = false;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
+let mobileNarrationTimer = 0;
 let pointerFrame = 0;
 let fitTimer = 0;
 let readingCompassHideTimer = 0;
@@ -110,6 +105,17 @@ const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, v
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
 
 const shapeWindWake = (word: HTMLElement) => {
+  if (!desktopReader.matches) {
+    const releaseDuration = Math.round(randomBetween(620, 900));
+    word.dataset.windRelease = String(releaseDuration);
+    word.style.setProperty("--wind-arrival-duration", `${Math.round(randomBetween(360, 520))}ms`);
+    word.style.setProperty("--wind-release-duration", `${releaseDuration}ms`);
+    word.style.setProperty("--wind-settle-x", `${randomBetween(0.08, 0.28).toFixed(2)}em`);
+    word.style.setProperty("--wind-release-x", `${randomBetween(1.1, 2.1).toFixed(2)}em`);
+    word.style.setProperty("--wind-lift", `${randomBetween(-0.1, 0.08).toFixed(2)}em`);
+    return releaseDuration;
+  }
+
   const arrivalDuration = Math.round(randomBetween(760, 1180));
   const releaseDuration = Math.round(randomBetween(1520, 2480));
   const lift = randomBetween(-0.32, 0.24);
@@ -314,14 +320,31 @@ const runNarrationLoop = (timestamp: number) => {
   lastNarrationStageFrame = timestamp;
 };
 
+const runMobileNarrationLoop = () => {
+  mobileNarrationTimer = 0;
+  if (!audio || !playbackRequested || audio.paused || audio.ended) return;
+  const seconds = audio.currentTime;
+  updateStoryProgress(seconds);
+  syncNarrationWord();
+  syncReadingStage(seconds, "audio");
+  auditPlaybackFollow();
+  mobileNarrationTimer = window.setTimeout(runMobileNarrationLoop, 125);
+};
+
 const startNarrationLoop = () => {
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
-  if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
+  if (desktopReader.matches) {
+    if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
+  } else if (!mobileNarrationTimer) {
+    runMobileNarrationLoop();
+  }
 };
 
 const stopNarrationLoop = () => {
   if (narrationFrame) cancelAnimationFrame(narrationFrame);
   narrationFrame = 0;
+  if (mobileNarrationTimer) window.clearTimeout(mobileNarrationTimer);
+  mobileNarrationTimer = 0;
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
   syncNarrationWord(true);
 };
@@ -365,7 +388,6 @@ const setReaderMode = (mode: ReaderMode) => {
     playbackRequested = false;
     mediaIsBuffering = false;
     audio?.pause();
-    stopPlaybackWatchdog();
     stopNarrationLoop();
     setWord(-1);
     clearFittedBeatStyles();
@@ -1131,7 +1153,6 @@ playButtons.forEach((button) => {
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
-  startPlaybackWatchdog();
   updatePlayState();
   followPlaybackPosition();
   queuePlaybackFollow();
@@ -1143,20 +1164,23 @@ audio?.addEventListener("pause", () => {
   saveProgress(true);
   updatePlayState();
   stopNarrationLoop();
-  if (!playbackRequested) stopPlaybackWatchdog();
   if (playbackRecoveryTimer) window.clearTimeout(playbackRecoveryTimer);
-  if (playbackRequested && !mediaReloadInFlight && !audio.ended && document.visibilityState === "visible") {
-    playbackRecoveryTimer = window.setTimeout(() => {
-      playbackRecoveryTimer = 0;
-      if (playbackRequested && audio.paused && !audio.ended) audio.play().catch(() => {});
-    }, 280);
+  if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
+    audio.play().catch((error) => {
+      recordPlaybackError(error);
+      playbackRecoveryTimer = window.setTimeout(() => {
+        playbackRecoveryTimer = 0;
+        if (playbackRequested && audio.paused && !audio.ended) {
+          audio.play().catch(recordPlaybackError);
+        }
+      }, 600);
+    });
   }
 });
 audio?.addEventListener("ended", () => {
   playbackRequested = false;
   mediaIsBuffering = false;
   clearPendingMediaSeek();
-  stopPlaybackWatchdog();
   updatePlayState();
   stopNarrationLoop();
 });
@@ -1165,129 +1189,13 @@ const setMediaBuffering = (buffering: boolean) => {
   updatePlayState();
 };
 
-const noteMediaProgress = (force = false) => {
-  if (!audio) return;
-  const observedTime = audio.currentTime;
-  if (!force && Math.abs(observedTime - lastObservedMediaTime) < 0.04) return;
-  lastObservedMediaTime = observedTime;
-  lastMediaAdvanceAt = Date.now();
-  mediaRecoveryStage = 0;
-  if (mediaIsBuffering && !audio.paused) setMediaBuffering(false);
-};
-
-const stopPlaybackWatchdog = () => {
-  if (playbackWatchdogTimer) window.clearInterval(playbackWatchdogTimer);
-  playbackWatchdogTimer = 0;
-  if (mediaReloadTimer) window.clearTimeout(mediaReloadTimer);
-  mediaReloadTimer = 0;
-  mediaReloadInFlight = false;
-  mediaRecoveryStage = 0;
-};
-
-const reloadMediaStream = (resumeAt: number) => {
-  if (!audio || mediaReloadInFlight || !playbackRequested || audio.ended) return;
-  mediaReloadInFlight = true;
-  clearPendingMediaSeek();
-
-  let resumed = false;
-  const resume = () => {
-    if (resumed || !audio) return;
-    resumed = true;
-    if (mediaReloadTimer) window.clearTimeout(mediaReloadTimer);
-    mediaReloadTimer = 0;
-    audio.removeEventListener("loadedmetadata", resume);
-    if (!playbackRequested || audio.ended) {
-      mediaReloadInFlight = false;
-      return;
-    }
-    requestMediaSeek(resumeAt);
-    audio.play()
-      .then(() => {
-        mediaReloadInFlight = false;
-        delete document.body.dataset.playbackError;
-        noteMediaProgress(true);
-        handlePlaybackStarted();
-      })
-      .catch((error) => {
-        mediaReloadInFlight = false;
-        recordPlaybackError(error);
-        updatePlayState();
-      });
-  };
-
-  audio.addEventListener("loadedmetadata", resume, { once: true });
-  audio.preload = "auto";
-  audio.load();
-  mediaReloadTimer = window.setTimeout(resume, 5000);
-};
-
-const auditMediaProgress = () => {
-  if (!audio || !playbackRequested || audio.ended) return;
-  if (document.visibilityState !== "visible" || mediaReloadInFlight) {
-    lastObservedMediaTime = audio.currentTime;
-    lastMediaAdvanceAt = Date.now();
-    return;
-  }
-
-  if (audio.seeking && Date.now() - lastMediaAdvanceAt < 15000) return;
-
-  if (Math.abs(audio.currentTime - lastObservedMediaTime) >= 0.04) {
-    noteMediaProgress();
-    return;
-  }
-
-  const stalledFor = Date.now() - lastMediaAdvanceAt;
-  if (stalledFor < 3000) return;
-  setMediaBuffering(true);
-
-  // First ask the existing media element to resume without touching its buffer.
-  if (stalledFor >= 5000 && mediaRecoveryStage < 1) {
-    mediaRecoveryStage = 1;
-    audio.play().catch(() => {});
-    return;
-  }
-
-  // If the connection is still wedged, make one tiny seek to request a fresh
-  // byte range. Unlike the previous recovery path, this never loops or walks
-  // the narration clock forward.
-  if (stalledFor >= 9000 && mediaRecoveryStage < 2) {
-    mediaRecoveryStage = 2;
-    const resumeAt = audio.currentTime;
-    try {
-      audio.currentTime = Math.min(resumeAt + 0.001, Math.max(0, mediaDuration() - 0.05));
-    } catch {}
-    audio.play().catch(() => {});
-    return;
-  }
-
-  // A genuinely dead connection gets one controlled reload at the exact story
-  // time. Audio remains the master clock, so the text never advances on its own.
-  if (stalledFor >= 15000 && mediaRecoveryStage < 3) {
-    mediaRecoveryStage = 3;
-    reloadMediaStream(audio.currentTime);
-  }
-};
-
-const startPlaybackWatchdog = () => {
-  if (!audio) return;
-  if (!playbackWatchdogTimer) {
-    lastObservedMediaTime = audio.currentTime;
-    lastMediaAdvanceAt = Date.now();
-    playbackWatchdogTimer = window.setInterval(auditMediaProgress, 1000);
-  }
-};
-
 audio?.addEventListener("waiting", () => setMediaBuffering(true));
 audio?.addEventListener("stalled", () => setMediaBuffering(true));
 audio?.addEventListener("error", () => {
-  if (!playbackRequested || audio.ended) return;
-  setMediaBuffering(true);
-  mediaRecoveryStage = Math.max(mediaRecoveryStage, 2);
-  lastMediaAdvanceAt = Math.min(lastMediaAdvanceAt, Date.now() - 15000);
-  startPlaybackWatchdog();
+  if (playbackRequested && !audio.ended) setMediaBuffering(true);
 });
 audio?.addEventListener("playing", () => {
-  noteMediaProgress(true);
+  delete document.body.dataset.playbackError;
   setMediaBuffering(false);
   handlePlaybackStarted();
 });
@@ -1300,7 +1208,6 @@ audio?.addEventListener("canplay", () => {
   setMediaBuffering(false);
 });
 audio?.addEventListener("timeupdate", () => {
-  noteMediaProgress();
   if (mediaIsBuffering) setMediaBuffering(false);
   updateStoryProgress(audio.currentTime);
   syncNarrationWord();
@@ -1416,8 +1323,6 @@ addEventListener("touchcancel", () => {
 }, { passive: true });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible" || !playbackRequested || !audio || audio.ended) return;
-  noteMediaProgress(true);
-  startPlaybackWatchdog();
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });

@@ -113,15 +113,9 @@ const resolvedSpeaker = (
     data-beats={JSON.stringify(beatData)}
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
-      <div class="cover-art" aria-hidden="true">
-        <picture>
-          <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
-          <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
-        </picture>
-      </div>
       <div class="cover-vignette" aria-hidden="true"></div>
       <div class="wind-script" aria-hidden="true">
-        <i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
       </div>
 
       <div class="cover-copy">
@@ -156,9 +150,14 @@ const resolvedSpeaker = (
             <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
           </button>
         </div>
+        <div class="cover-invitation-art" aria-hidden="true">
+          <picture>
+            <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
+            <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
+          </picture>
+        </div>
       </div>
 
-      <p class="cover-note">26 original reMarkable scenes · 21 rose-gray studies · 12 drawings to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story" data-reader-read><span></span></a>
     </section>
 

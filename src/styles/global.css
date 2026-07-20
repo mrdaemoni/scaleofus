@@ -217,38 +217,10 @@ img {
   background: #f2dcdf;
 }
 
-.cover-art,
 .cover-vignette {
   position: absolute;
   z-index: -3;
   inset: 0;
-}
-
-.cover-art {
-  top: 11%;
-  right: clamp(24px, 5vw, 84px);
-  bottom: 9%;
-  left: auto;
-  width: min(48vw, 690px);
-  opacity: 0.44;
-  transform: translate3d(calc(var(--pointer-x) * -7px), calc(var(--pointer-y) * -5px), 0) scale(0.985);
-  transition: transform 300ms ease-out;
-}
-
-.cover-art img {
-  position: absolute;
-  top: 15%;
-  right: 0;
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  object-position: right center;
-  filter: saturate(0.42) sepia(0.08) hue-rotate(308deg) brightness(1.025);
-}
-
-.cover-art img.is-hand-sketch {
-  object-position: right center;
-  filter: saturate(0.32) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.045);
 }
 
 .cover-vignette {
@@ -305,6 +277,24 @@ img {
   animation-delay: -5.2s;
 }
 
+.wind-script i:nth-child(4) {
+  top: 83%;
+  right: 9%;
+  width: 69%;
+  opacity: 0.58;
+  animation-delay: -1.3s;
+  animation-duration: 10.5s;
+}
+
+.wind-script i:nth-child(5) {
+  top: 106%;
+  right: -4%;
+  width: 88%;
+  opacity: 0.42;
+  animation-delay: -7.1s;
+  animation-duration: 12s;
+}
+
 .cover-copy {
   position: relative;
   z-index: 1;
@@ -349,6 +339,29 @@ img {
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
   align-items: center;
   column-gap: clamp(20px, 4vw, 42px);
+}
+
+.cover-invitation-art {
+  width: min(560px, 86%);
+  height: clamp(118px, 17svh, 168px);
+  margin: 10px auto 0 58px;
+  overflow: hidden;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.cover-invitation-art picture,
+.cover-invitation-art img {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-invitation-art img {
+  object-fit: contain;
+  object-position: center;
+  filter: saturate(0.32) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.045);
+  transform-origin: 84% 64%;
+  animation: coverBoyInWind 9s ease-in-out infinite;
 }
 
 .entry-read,
@@ -473,18 +486,6 @@ img {
 .primary-action.light:focus-visible {
   background: transparent;
   color: var(--paper);
-}
-
-.cover-note {
-  position: absolute;
-  bottom: 25px;
-  left: clamp(22px, 5vw, 78px);
-  margin: 0;
-  font-size: 9px;
-  font-weight: 750;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.55;
 }
 
 .scroll-cue {
@@ -3082,8 +3083,14 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
 }
 
 @keyframes breatheWind {
-  0%, 100% { transform: translateX(0) scaleX(1); }
-  50% { transform: translateX(-18px) scaleX(1.025); }
+  0%, 100% { transform: translate3d(0, 0, 0) scaleX(1); }
+  42% { transform: translate3d(-18px, -2px, 0) scaleX(1.025); }
+  72% { transform: translate3d(-7px, 2px, 0) scaleX(0.99); }
+}
+
+@keyframes coverBoyInWind {
+  0%, 100% { transform: translate3d(-3px, 1px, 0) rotate(-0.25deg) scale(1.68); }
+  48% { transform: translate3d(4px, -2px, 0) rotate(0.35deg) scale(1.73); }
 }
 
 @keyframes headingWindBreathe {
@@ -3170,6 +3177,17 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     opacity: 0;
     transform: translateX(var(--wind-release-x, 3.8em)) rotate(var(--wind-release-rotate, 3deg)) scaleX(0.58);
   }
+}
+
+@keyframes mobileWordWind {
+  0% { opacity: 0; transform: translate3d(-0.72em, 0.04em, 0) scaleX(0.44); }
+  58% { opacity: 0.44; }
+  100% { opacity: 0.3; transform: translate3d(var(--wind-settle-x, 0.16em), var(--wind-lift, 0), 0) scaleX(1.08); }
+}
+
+@keyframes mobileWordWindAway {
+  0% { opacity: 0.28; transform: translate3d(var(--wind-settle-x, 0.16em), var(--wind-lift, 0), 0) scaleX(1.04); }
+  100% { opacity: 0; transform: translate3d(var(--wind-release-x, 1.6em), 0, 0) scaleX(0.72); }
 }
 
 @keyframes scrollCue {
@@ -3271,6 +3289,44 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     display: none;
   }
 
+  :where(.beat-copy, .spoken-heading) [data-narration-word] {
+    isolation: auto;
+    transition: color 140ms ease;
+  }
+
+  :where(.beat-copy, .spoken-heading) [data-narration-word]::before {
+    inset: -8% -0.8em -10% -0.55em;
+    border-radius: 64% 42% 58% 46%;
+    background: linear-gradient(
+      102deg,
+      transparent 0%,
+      color-mix(in srgb, var(--word-wind-wisp) 58%, transparent) 31%,
+      color-mix(in srgb, var(--word-wind-core) 42%, transparent) 58%,
+      transparent 100%
+    );
+    filter: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  :where(.beat-copy, .spoken-heading) [data-narration-word]::after {
+    display: none;
+  }
+
+  :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word,
+  :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail {
+    text-shadow: none;
+    animation: none;
+  }
+
+  :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before {
+    animation: mobileWordWind var(--wind-arrival-duration, 440ms) ease-out both;
+  }
+
+  :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
+    animation: mobileWordWindAway var(--wind-release-duration, 760ms) ease-out both;
+  }
+
   body.story-page[data-reader-mode="listen"] {
     padding-bottom: 102px;
   }
@@ -3294,19 +3350,6 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     align-items: start;
   }
 
-  .cover-art img {
-    object-position: right center;
-  }
-
-  .cover-art {
-    top: 7%;
-    right: -6vw;
-    bottom: auto;
-    width: 86vw;
-    height: 48svh;
-    opacity: 0.38;
-  }
-
   .cover-vignette {
     background:
       linear-gradient(0deg, rgba(241, 229, 226, 0.98) 0%, rgba(241, 229, 226, 0.88) 52%, rgba(241, 229, 226, 0.1) 88%),
@@ -3314,10 +3357,11 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   }
 
   .wind-script {
-    top: 12%;
-    right: -20%;
-    width: 108vw;
-    opacity: 0.12;
+    top: 9%;
+    right: -25%;
+    width: 122vw;
+    height: 52%;
+    opacity: 0.17;
   }
 
   .cover-copy {
@@ -3343,13 +3387,17 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     margin-top: 20px;
   }
 
-  .primary-action {
-    min-height: 46px;
+  .cover-invitation-art {
+    width: min(82vw, 310px);
+    height: clamp(92px, 15svh, 128px);
+    margin-top: 8px;
+    margin-right: 0;
+    margin-left: auto;
+    opacity: 0.58;
   }
 
-  .cover-note {
-    left: 23px;
-    bottom: 17px;
+  .primary-action {
+    min-height: 46px;
   }
 
   .scroll-cue {
