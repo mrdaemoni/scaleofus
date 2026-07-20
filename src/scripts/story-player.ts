@@ -4,7 +4,8 @@ const app = document.querySelector<HTMLElement>("[data-story-app]");
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
 const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
 const dockChapterNav = document.querySelector<HTMLElement>(".dock-chapters");
-const playButtons = document.querySelectorAll<HTMLButtonElement>("[data-play], [data-hero-play], [data-nav-listen]");
+const playButtons = document.querySelectorAll<HTMLButtonElement>("[data-play], [data-hero-play]");
+const readModeTriggers = document.querySelectorAll<HTMLAnchorElement>("[data-reader-read]");
 const dockPlay = document.querySelector<HTMLButtonElement>("[data-play]");
 const playIcon = document.querySelector<HTMLElement>("[data-play-icon]");
 const seek = document.querySelector<HTMLInputElement>("[data-seek]");
@@ -45,9 +46,91 @@ const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-st
 const readerHomes = [...document.querySelectorAll<HTMLAnchorElement>("[data-reader-home]")];
 const mountainArt = document.querySelector<HTMLElement>("[data-mountain-art]");
 const mountainClimber = document.querySelector<HTMLElement>("[data-mountain-climber]");
-const mountainPaths = [...document.querySelectorAll<HTMLElement>("[data-mountain-path]")];
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
+const scale22LoopTest = new URLSearchParams(location.search).get("scale22loops") === "1";
+
+type Scale22Animation = {
+  picture: HTMLPictureElement;
+  image: HTMLImageElement;
+  source: HTMLSourceElement | null;
+  kind: "cover" | "beat";
+  storyBeat: number;
+  loopSrc: string;
+  stillSrc: string;
+  defaultImageSrc: string;
+  defaultSourceMedia: string | null;
+  defaultSourceSrcset: string | null;
+};
+
+const scale22Animations = [...document.querySelectorAll<HTMLPictureElement>("[data-scale22-animation]")]
+  .flatMap<Scale22Animation>((picture) => {
+    const image = picture.querySelector<HTMLImageElement>("img");
+    const loopSrc = picture.dataset.scale22LoopSrc;
+    const stillSrc = picture.dataset.scale22StillSrc;
+    if (!image || !loopSrc || !stillSrc) return [];
+    const source = picture.querySelector<HTMLSourceElement>("source");
+    return [{
+      picture,
+      image,
+      source,
+      kind: picture.dataset.scale22Animation === "cover" ? "cover" : "beat",
+      storyBeat: Number(picture.dataset.scale22StoryBeat ?? -1),
+      loopSrc,
+      stillSrc,
+      defaultImageSrc: image.getAttribute("src") ?? image.src,
+      defaultSourceMedia: source?.getAttribute("media") ?? null,
+      defaultSourceSrcset: source?.getAttribute("srcset") ?? null,
+    }];
+  });
+
+type Scale22ReadingStage = { kind: "cover" | "beat" | "none"; storyBeat: number };
+let scale22ReadingStage: Scale22ReadingStage = { kind: "none", storyBeat: -1 };
+
+const setScale22Asset = (
+  animation: Scale22Animation,
+  src: string,
+  state: "animation" | "still" | "idle",
+) => {
+  if (
+    animation.picture.dataset.scale22ActiveSrc === src
+    && animation.picture.dataset.scale22State === state
+  ) return;
+  if (state === "idle") {
+    if (animation.source) {
+      if (animation.defaultSourceMedia === null) animation.source.removeAttribute("media");
+      else animation.source.setAttribute("media", animation.defaultSourceMedia);
+      if (animation.defaultSourceSrcset === null) animation.source.removeAttribute("srcset");
+      else animation.source.setAttribute("srcset", animation.defaultSourceSrcset);
+    }
+  } else if (animation.source) {
+    // Prevent the mobile <source> from overriding the test WebP or its
+    // reduced-motion still. The URL remains inert until this active swap.
+    animation.source.setAttribute("media", "not all");
+  }
+  animation.image.src = src;
+  animation.picture.dataset.scale22ActiveSrc = src;
+  animation.picture.dataset.scale22State = state;
+};
+
+const syncScale22Animations = (kind: Scale22ReadingStage["kind"], storyBeat = -1) => {
+  scale22ReadingStage = { kind, storyBeat };
+  if (!scale22LoopTest) return;
+  document.documentElement.dataset.scale22Loops = "opt-in-test";
+  scale22Animations.forEach((animation) => {
+    const isActive = animation.kind === kind
+      && (kind === "cover" || animation.storyBeat === storyBeat);
+    if (!isActive) {
+      setScale22Asset(animation, animation.defaultImageSrc, "idle");
+      return;
+    }
+    setScale22Asset(
+      animation,
+      reducedMotion.matches ? animation.stillSrc : animation.loopSrc,
+      reducedMotion.matches ? "still" : "animation",
+    );
+  });
+};
 
 let activeChapter = -1;
 let activeBeat = -1;
@@ -55,6 +138,9 @@ let activeParagraph = -1;
 let activeHeading = -1;
 let coverIsActive = false;
 let activeWord = -1;
+type ReaderMode = "cover" | "read" | "listen";
+let readerMode: ReaderMode = location.hash && location.hash !== "#top" ? "read" : "cover";
+document.body.dataset.readerMode = readerMode;
 let followNarration = true;
 let dockPinnedOpen = false;
 let playbackRequested = false;
@@ -312,6 +398,27 @@ const stopNarrationLoop = () => {
   syncNarrationWord(true);
 };
 
+const setReaderMode = (mode: ReaderMode) => {
+  readerMode = mode;
+  document.body.dataset.readerMode = mode;
+  dockPinnedOpen = false;
+
+  if (mode === "listen") {
+    followNarration = true;
+    follow?.setAttribute("aria-pressed", "true");
+  } else {
+    playbackRequested = false;
+    mediaIsBuffering = false;
+    audio?.pause();
+    stopNarrationLoop();
+    setWord(-1);
+  }
+
+  updatePlayState();
+  syncDockFootprint();
+  queueViewportFit();
+};
+
 const beatForNumber = (number: number) => beats.findIndex((beat) => beat.number === number);
 
 const setChapter = (index: number) => {
@@ -392,16 +499,7 @@ const updateMountainJourney = (seconds: number) => {
   mountainArt.style.setProperty("--climber-y", `${y.toFixed(2)}px`);
   mountainArt.style.setProperty("--climber-turn", `${(arcDirection * Math.sin(easedProgress * Math.PI) * 4).toFixed(2)}deg`);
   mountainArt.style.setProperty("--mountain-progress", journeyProgress.toFixed(4));
-
-  mountainPaths.forEach((path, pathIndex) => {
-    const overlap = 0.045;
-    const pathStart = Math.max(0, pathIndex / mountainPaths.length - overlap);
-    const pathEnd = Math.min(1, (pathIndex + 1) / mountainPaths.length + overlap);
-    const reveal = clamp((journeyProgress - pathStart) / Math.max(0.01, pathEnd - pathStart));
-    path.style.setProperty("--path-clip", `${((1 - reveal) * 100).toFixed(2)}%`);
-    path.style.setProperty("--path-wake", reveal.toFixed(3));
-    path.classList.toggle("is-being-travelled", reveal > 0.02 && reveal < 0.98);
-  });
+  mountainClimber.classList.toggle("is-celebrating", journeyProgress >= 0.995);
 };
 
 const updateStoryProgress = (seconds: number) => {
@@ -432,6 +530,7 @@ const setBeat = (index: number) => {
     element.toggleAttribute("aria-current", isCurrent);
   });
   setChapter(Number(beats[index].chapter) - 1);
+  syncScale22Animations("beat", beats[index].number);
 };
 
 const clearBeat = () => {
@@ -445,11 +544,14 @@ const clearBeat = () => {
     element.classList.remove("is-current-beat");
     element.removeAttribute("aria-current");
   });
+  syncScale22Animations("none");
 };
 
 const readingBounds = () => {
   const top = clamp(innerHeight * 0.025, 14, 30);
-  const dockTop = dock?.getBoundingClientRect().top ?? innerHeight;
+  const dockTop = readerMode === "listen" && dock
+    ? dock.getBoundingClientRect().top
+    : innerHeight;
   const bottom = Math.max(top + 320, Math.min(innerHeight - 12, dockTop - 16));
   return { top, bottom, height: bottom - top };
 };
@@ -666,6 +768,7 @@ const setCover = (source: "audio" | "scroll" | "restore" = "audio") => {
   coverHeading?.classList.add("is-current-heading");
   document.body.dataset.readingStage = "cover";
   setChapter(0);
+  syncScale22Animations("cover");
   if (
     source === "audio"
     && audio
@@ -827,6 +930,7 @@ const updatePlayState = () => {
 const togglePlayback = async (event?: Event) => {
   if (!audio) return;
   const trigger = event?.currentTarget as HTMLElement | null;
+  setReaderMode("listen");
   if (!audio.paused && mediaIsBuffering) {
     releaseScrollToNarration();
     playbackRequested = true;
@@ -841,7 +945,6 @@ const togglePlayback = async (event?: Event) => {
   if (audio.paused) {
     const startsFromCover = Boolean(
       trigger?.hasAttribute("data-hero-play")
-      || trigger?.hasAttribute("data-nav-listen")
       || scrollY <= Math.min(innerHeight * 0.3, 240),
     );
     if (manualScrollActive && !startsFromCover) {
@@ -894,6 +997,7 @@ const setDockCompact = (compact: boolean) => {
 };
 
 const syncDockFootprint = () => {
+  if (readerMode !== "listen") return;
   if (dockPinnedOpen) return;
   setDockCompact(!desktopReader.matches || scrollY > Math.min(innerHeight * 0.28, 280));
 };
@@ -966,7 +1070,7 @@ const syncAudioFromViewport = () => {
   if (stage.kind === "cover") setCover("scroll");
   else if (stage.kind === "heading") setHeading(stage.index, "scroll");
   else setParagraph(stage.index, "scroll");
-  setWord(wordForTime(syncedTime));
+  setWord(readerMode === "listen" ? wordForTime(syncedTime) : -1);
 };
 
 const queueViewportSync = (delay = 140) => {
@@ -1018,6 +1122,12 @@ storyArtImages.forEach((image) => {
   image.addEventListener("error", showPlaceholder);
   image.addEventListener("load", showArtwork);
   if (image.complete && image.naturalWidth === 0) showPlaceholder();
+});
+
+readModeTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", () => {
+    setReaderMode("read");
+  });
 });
 
 playButtons.forEach((button) => {
@@ -1128,7 +1238,7 @@ chapterLinks.forEach((link) => {
     lastCenteredHeading = -1;
     setHeading(index, "scroll");
     centerHeading(index, "smooth", true);
-    setWord(wordForTime(target));
+    setWord(readerMode === "listen" ? wordForTime(target) : -1);
     saveProgress(true, target);
     if (playbackRequested && audio.paused) audio.play().catch(() => {});
   });
@@ -1137,8 +1247,7 @@ chapterLinks.forEach((link) => {
 readerHomes.forEach((readerHome) => {
   readerHome.addEventListener("click", (event) => {
     event.preventDefault();
-    playbackRequested = false;
-    audio?.pause();
+    setReaderMode("cover");
     if (audio) requestMediaSeek(0);
     manualScrollActive = false;
     autoScrollActive = false;
@@ -1246,6 +1355,10 @@ addEventListener("resize", () => {
   queueViewportFit(160);
 }, { passive: true });
 
+reducedMotion.addEventListener("change", () => {
+  syncScale22Animations(scale22ReadingStage.kind, scale22ReadingStage.storyBeat);
+});
+
 if (matchMedia("(pointer: fine)").matches) {
   addEventListener("pointermove", (event) => {
     if (pointerFrame) return;
@@ -1272,10 +1385,11 @@ const restorePosition = () => {
   } else if (location.hash.startsWith("#chapter-")) {
     restored = Number(chapters.find((chapter) => `#${chapter.id}` === location.hash)?.start ?? restored);
   }
+  setReaderMode(location.hash && location.hash !== "#top" ? "read" : "cover");
   requestMediaSeek(restored);
   updateStoryProgress(restored);
   syncReadingStage(restored, "restore");
-  setWord(wordForTime(restored));
+  setWord(-1);
 };
 
 restorePosition();

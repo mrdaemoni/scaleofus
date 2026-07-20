@@ -47,7 +47,15 @@ body {
 }
 
 body.story-page {
+  padding-bottom: 0;
+}
+
+body.story-page[data-reader-mode="listen"] {
   padding-bottom: 122px;
+}
+
+body.story-page:not([data-reader-mode="listen"]) .audio-dock {
+  display: none;
 }
 
 body.is-listening[data-active-speaker="machine"] {
@@ -676,142 +684,6 @@ img {
   animation-delay: -11s;
 }
 
-.mountain-face,
-.mountain-snow,
-.mountain-path,
-.mountain-ridge,
-.mountain-summit {
-  position: absolute;
-  z-index: 1;
-  display: block;
-}
-
-.mountain-face {
-  inset: 4% 0 0;
-  background:
-    repeating-linear-gradient(102deg, rgba(85, 89, 90, 0.038) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(8deg, rgba(189, 152, 159, 0.035) 0 1px, transparent 1px 11px),
-    linear-gradient(150deg, rgba(241, 229, 227, 0.72), rgba(205, 189, 190, 0.48) 72%, rgba(216, 185, 189, 0.4));
-  clip-path: polygon(0 100%, 8% 90%, 16% 84%, 23% 72%, 31% 66%, 39% 51%, 46% 38%, 52% 7%, 58% 31%, 65% 44%, 73% 58%, 81% 69%, 91% 87%, 100% 100%);
-  filter: drop-shadow(0 -1px 0 rgba(85, 89, 90, 0.48));
-}
-
-.mountain-snow {
-  top: 10.2%;
-  left: 42%;
-  width: 23%;
-  height: 20%;
-  background: rgba(245, 234, 231, 0.7);
-  clip-path: polygon(43% 0, 100% 100%, 71% 76%, 54% 92%, 36% 67%, 0 100%);
-  filter: drop-shadow(0 1px 0 rgba(85, 89, 90, 0.18));
-}
-
-.mountain-path {
-  --path-clip: 100%;
-  --path-wake: 0;
-  z-index: 2;
-  height: 8.5%;
-  border-top: 1px dashed rgba(85, 89, 90, 0.22);
-  border-radius: 50%;
-  transform: rotate(-7deg);
-  filter: drop-shadow(0 1px 0 rgba(216, 185, 189, 0.5));
-}
-
-.mountain-path::after {
-  content: "";
-  position: absolute;
-  inset: -1px 0 auto;
-  height: 100%;
-  border-top: 1px dashed rgba(85, 89, 90, 0.67);
-  border-radius: inherit;
-  clip-path: inset(0 var(--path-clip) 0 0);
-  filter: drop-shadow(0 0 4px rgba(216, 185, 189, 0.72));
-  opacity: clamp(0.38, calc(0.38 + var(--path-wake)), 1);
-}
-
-.mountain-path.path-reverse::after {
-  clip-path: inset(0 0 0 var(--path-clip));
-}
-
-.mountain-path.is-being-travelled::after {
-  animation: mountainPathWake 2.8s ease-in-out infinite;
-}
-
-.path-one {
-  right: 5%;
-  bottom: 11%;
-  width: 91%;
-}
-
-.path-two {
-  left: 11%;
-  bottom: 27%;
-  width: 82%;
-  transform: rotate(8deg);
-}
-
-.path-three {
-  right: 13%;
-  bottom: 43%;
-  width: 75%;
-  transform: rotate(-8deg);
-}
-
-.path-four {
-  left: 20%;
-  bottom: 58%;
-  width: 64%;
-  transform: rotate(9deg);
-}
-
-.path-five {
-  right: 25%;
-  bottom: 71%;
-  width: 54%;
-  transform: rotate(-8deg);
-}
-
-.path-six {
-  left: 36%;
-  bottom: 81%;
-  width: 36%;
-  transform: rotate(8deg);
-}
-
-.mountain-ridge {
-  z-index: 2;
-  width: 1px;
-  height: 42%;
-  background: linear-gradient(180deg, rgba(85, 89, 90, 0.46), transparent);
-  transform-origin: top;
-  opacity: 0.55;
-}
-
-.ridge-one {
-  top: 28%;
-  left: 51%;
-  transform: rotate(31deg);
-}
-
-.ridge-two {
-  top: 34%;
-  left: 49%;
-  height: 31%;
-  transform: rotate(-37deg);
-}
-
-.mountain-summit {
-  z-index: 3;
-  top: 9.5%;
-  left: 51%;
-  width: 5px;
-  height: 5px;
-  border: 1px solid rgba(85, 89, 90, 0.66);
-  border-radius: 50%;
-  background: var(--paper);
-  box-shadow: 0 0 0 4px rgba(216, 185, 189, 0.18);
-}
-
 .mountain-climber {
   position: absolute;
   z-index: 5;
@@ -864,6 +736,44 @@ img {
   border-radius: 50%;
   transform-origin: left center;
   animation: climberScarf 2.9s ease-in-out infinite;
+}
+
+.mountain-climber .climber-arm {
+  position: absolute;
+  z-index: 3;
+  top: 1px;
+  display: block;
+  width: 7px;
+  height: 1px;
+  border-top: 1px solid currentColor;
+  opacity: 0;
+  transition: opacity 260ms ease, transform 320ms ease;
+}
+
+.mountain-climber .arm-left {
+  left: -9px;
+  transform: rotate(8deg);
+  transform-origin: right center;
+}
+
+.mountain-climber .arm-right {
+  left: 2px;
+  transform: rotate(-8deg);
+  transform-origin: left center;
+}
+
+.mountain-climber.is-celebrating .climber-arm {
+  opacity: 0.9;
+}
+
+.mountain-climber.is-celebrating .arm-left {
+  animation: celebrateLeftArm 1.8s ease-in-out infinite;
+  transform: rotate(58deg);
+}
+
+.mountain-climber.is-celebrating .arm-right {
+  animation: celebrateRightArm 1.8s ease-in-out infinite;
+  transform: rotate(-58deg);
 }
 
 body.is-listening .mountain-climber {
@@ -2824,10 +2734,6 @@ body.is-listening .mountain-climber {
   border-bottom: 1px solid currentColor;
 }
 
-.vault-note {
-  color: var(--clay);
-}
-
 .grown-footer {
   min-height: 72svh;
   display: grid;
@@ -3087,14 +2993,19 @@ body.is-listening .mountain-climber {
   }
 }
 
-@keyframes mountainPathWake {
-  0%, 100% { filter: drop-shadow(0 0 3px rgba(216, 185, 189, 0.54)); }
-  50% { filter: drop-shadow(4px -1px 6px rgba(216, 185, 189, 0.9)); }
-}
-
 @keyframes climberScarf {
   0%, 100% { transform: rotate(-7deg) scaleX(0.78); opacity: 0.48; }
   52% { transform: rotate(6deg) scaleX(1.12); opacity: 0.9; }
+}
+
+@keyframes celebrateLeftArm {
+  0%, 100% { transform: rotate(52deg); }
+  50% { transform: rotate(68deg); }
+}
+
+@keyframes celebrateRightArm {
+  0%, 100% { transform: rotate(-56deg); }
+  50% { transform: rotate(-70deg); }
 }
 
 @keyframes breatheWind {
@@ -3287,7 +3198,7 @@ body.is-listening .mountain-climber {
     display: none;
   }
 
-  body.story-page {
+  body.story-page[data-reader-mode="listen"] {
     padding-bottom: 102px;
   }
 
@@ -3592,7 +3503,7 @@ body.is-listening .mountain-climber {
   }
 
   .grown-hero h1 {
-    font-size: clamp(60px, 18vw, 89px);
+    font-size: clamp(48px, 13vw, 62px);
   }
 
   .grown-layout {

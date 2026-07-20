@@ -74,6 +74,19 @@ const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.numb
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+// Opt-in animation study. Keep this explicit: Scale 22 currently covers
+// drawing slots 1-26, while the reader contains 59 authored story beats.
+const scale22LoopTestByBeat = new Map<number, string>([
+  [1, "01"],
+  [14, "14"],
+  [17, "17"],
+  [20, "20"],
+  [25, "25"],
+]);
+const scale22LoopSrc = (id: string) => `/images/wind-story/loops/scale-22-${id}.webp`;
+const scale22StillSrc = (id: string) => id === "cover"
+  ? "/images/wind-story/sketches/scale-22-cover.png"
+  : `/images/wind-story/sketches/scale-22-beat-${id}.png`;
 const mobileArtworkSrc = (src: string) => src.replace(
   "/images/wind-story/",
   "/images/wind-story/mobile/",
@@ -101,8 +114,7 @@ const resolvedSpeaker = (
       <span>Scale</span><i>of</i><span>Us</span>
     </a>
     <nav aria-label="Story links">
-      <a href="#story">Read</a>
-      <button type="button" data-nav-listen>Listen</button>
+      <a href="#story" data-reader-read>Read</a>
       <a href="/grown-ups/">For grown-ups</a>
     </nav>
   </header>
@@ -115,7 +127,12 @@ const resolvedSpeaker = (
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <picture>
+        <picture
+          data-scale22-animation="cover"
+          data-scale22-id="cover"
+          data-scale22-loop-src={scale22LoopSrc("cover")}
+          data-scale22-still-src={scale22StillSrc("cover")}
+        >
           <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
           <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
         </picture>
@@ -148,7 +165,7 @@ const resolvedSpeaker = (
         </h1>
         <p class="cover-intro">{windStoryReader.intro}</p>
         <div class="cover-story-entry" role="group" aria-label="Read or listen">
-          <a class="entry-read" href="#story">
+          <a class="entry-read" href="#story" data-reader-read>
             <span class="round-book" aria-hidden="true"></span>
             <span><strong>Read</strong><small>At your pace</small></span>
           </a>
@@ -160,7 +177,7 @@ const resolvedSpeaker = (
       </div>
 
       <p class="cover-note">16 original reMarkable scenes · 27 rose-gray studies · 16 drawings to come</p>
-      <a class="scroll-cue" href="#story" aria-label="Scroll into the story"><span></span></a>
+      <a class="scroll-cue" href="#story" aria-label="Scroll into the story" data-reader-read><span></span></a>
     </section>
 
     <div class="reader-shell" id="story">
@@ -172,19 +189,10 @@ const resolvedSpeaker = (
           <span class="nav-cloud cloud-four"></span>
           <span class="nav-cloud cloud-five"></span>
           <span class="nav-cloud cloud-six"></span>
-          <span class="mountain-face"></span>
-          <span class="mountain-snow"></span>
-          <span class="mountain-ridge ridge-one"></span>
-          <span class="mountain-ridge ridge-two"></span>
-          <span class="mountain-path path-one" data-mountain-path></span>
-          <span class="mountain-path path-two path-reverse" data-mountain-path></span>
-          <span class="mountain-path path-three" data-mountain-path></span>
-          <span class="mountain-path path-four path-reverse" data-mountain-path></span>
-          <span class="mountain-path path-five" data-mountain-path></span>
-          <span class="mountain-path path-six path-reverse" data-mountain-path></span>
-          <span class="mountain-summit"></span>
           <span class="mountain-climber" data-mountain-climber>
             <i></i>
+            <b class="climber-arm arm-left"></b>
+            <b class="climber-arm arm-right"></b>
           </span>
         </div>
         <a class="rail-home" href="#top" data-reader-home>
@@ -268,6 +276,7 @@ const resolvedSpeaker = (
                 const artworkSrc = artForBeat(beat.number);
                 const artworkKind = artKindForBeat(beat.number);
                 const isOriginalArtwork = artworkKind === "original";
+                const scale22LoopId = scale22LoopTestByBeat.get(beat.number);
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -296,7 +305,13 @@ const resolvedSpeaker = (
                           <small>{beat.prompt}</small>
                         </div>
                         {artworkSrc && (
-                          <picture>
+                          <picture
+                            data-scale22-animation={scale22LoopId ? "beat" : undefined}
+                            data-scale22-id={scale22LoopId}
+                            data-scale22-story-beat={scale22LoopId ? beat.number : undefined}
+                            data-scale22-loop-src={scale22LoopId ? scale22LoopSrc(scale22LoopId) : undefined}
+                            data-scale22-still-src={scale22LoopId ? scale22StillSrc(scale22LoopId) : undefined}
+                          >
                             <source media="(max-width: 760px)" srcset={mobileArtworkSrc(artworkSrc)} />
                             <img
                               class={isOriginalArtwork ? "is-hand-sketch" : undefined}

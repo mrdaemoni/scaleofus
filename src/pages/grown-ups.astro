@@ -8,7 +8,7 @@ const reading = parseReadingMarkdown(readingMarkdown);
 
 <Base
   title="Further Reading for Grown-ups — Scale of Us"
-  description="The old ideas and thinkers keeping company with The Boy Who Tried to Catch the Wind."
+  description="Books and essays related to The Boy Who Tried to Catch the Wind."
   bodyClass="grown-ups-page"
 >
   <header class="grown-nav">
@@ -20,18 +20,18 @@ const reading = parseReadingMarkdown(readingMarkdown);
 
   <main class="grown-main">
     <section class="grown-hero" aria-labelledby="grown-title">
-      <p class="eyebrow">After the wind</p>
-      <h1 id="grown-title">Further Reading<br />for Grown-ups</h1>
+      <p class="eyebrow">For curious readers</p>
+      <h1 id="grown-title">Further Reading<br />for Grown‑ups</h1>
       {reading.intro.map((paragraph) => <p>{paragraph}</p>)}
       <div class="not-a-key">
         <span aria-hidden="true">↳</span>
-        <p>None of this is a key to the story. A fable should stay bigger than its sources.</p>
+        <p>You do not need this page to understand the story. These are places to go if you want to keep reading.</p>
       </div>
     </section>
 
     <div class="grown-layout">
       <aside class="reading-rail" aria-label="Further reading chapters">
-        <p>Nine lineages</p>
+        <p>Nine chapters</p>
         <ol>
           {reading.chapters.map((chapter) => (
             <li><a href={`#${chapter.id}`}><span>{chapter.numeral}</span>{chapter.title}</a></li>
@@ -55,7 +55,7 @@ const reading = parseReadingMarkdown(readingMarkdown);
     </div>
 
     <footer class="grown-footer">
-      <p>The path is still the path. The notes are only what we carried onto it.</p>
+      <p>You can return to the story whenever you like.</p>
       <a class="primary-action" href="/">Read the story again <span aria-hidden="true">↺</span></a>
     </footer>
   </main>

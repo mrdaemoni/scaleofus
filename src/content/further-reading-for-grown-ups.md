@@ -1,81 +1,79 @@
 # Further Reading for Grown-ups
 
-*The pages in this book are simple on purpose. The ideas underneath them are old — some are millennia old. Each chapter below gets one primary lineage, then the other voices it keeps company with, then a line pointing into my own notes. None of this is a key to the story. A fable should stay bigger than its sources, and where an entry gives a reading, it's mine, not the only one. One disclosure that doubles as a credential: these thinkers live in the same vault of notes that the real machine — see the last note — actually reads.*
+*The story is simple, but its questions have been around for a long time. These books and essays helped me think about each chapter. You do not need them to understand the story. They are here if you want to keep reading.*
 
 ---
 
 ### Chapter One — The Boy Who Tried to Catch the Wind
 
-**Alfred Korzybski, *Science and Sanity*** — "The map is not the territory." The boy's card is a map of the boy: all true, and all wrong, because a description of a thing is never the thing.
+**Alfred Korzybski, *Science and Sanity*** — Korzybski wrote that a map is different from the place it describes. The boy's card works in the same way. It gives true facts, but it cannot hold the whole boy.
 
-*Also in conversation with:* Martin Buber's *I and Thou* — the difference between being described and being met. The machine, to its credit, does both.
+[Martin Buber's *I and Thou*](https://plato.stanford.edu/entries/buber/) asks what changes when we meet someone as a person instead of treating them as an object. That is also the question the boy brings to the machine.
 
-*In the vault:* [[Alfred Korzybski]] · [[Martin Buber]] · [[Identity is lossy compression — every label we accept trades wholeness for legibility]]
+Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/the-humorphic-partnership/), about making a machine that helps a person become more human.
 
 ### Chapter Two — The Stonecutter
 
-**Heraclitus, *Fragments*** — "No one steps in the same river twice." The stream named forty years ago, the water never once the same water. The oldest idea in this book, about twenty-five centuries old.
+**[Heraclitus, *Fragments*](https://plato.stanford.edu/entries/heraclitus/)** — Heraclitus used a river to show that the world is always changing. We give the river one name even though its water never stays still.
 
-*Also in conversation with:* Walter Ong's *Orality and Literacy* — the history of what happens when the spoken word, which is sound and breath and event, is frozen into a thing you can see. The stonecutter's whole field is that history, carved. And Robin Wall Kimmerer's *Braiding Sweetgrass*, whose grammar of animacy I read as a warning about what naming can do to the named.
-
-*In the vault:* [[Heraclitus]] · [[Walter Ong]] · [[Robin Wall Kimmerer]] · [[Motion is primary and stasis is the limit case — what we call a thing is only the slowest movement we have learned to name]]
+[Walter Ong's *Orality and Literacy*](https://www.routledge.com/Orality-and-Literacy-30th-Anniversary-Edition/Ong/p/book/9780415538381) looks at what changes when spoken words become written things. [Robin Wall Kimmerer's *Braiding Sweetgrass*](https://milkweed.org/book/braiding-sweetgrass) shows how language can help us see the living world with more care.
 
 ### Chapter Three — The Keeper of the Fire
 
-**Plato, *Phaedrus*; Jacques Derrida, "Plato's Pharmacy"** — The idea behind the keeper is *pharmakon*: remedy and poison in one. Plato used it about writing itself, the first technology of the word.
+**[Plato, *Phaedrus*](https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0173%3APhaedrus)** — Plato asks whether writing helps memory or weakens it. The answer can be both. A tool can help us and harm us at the same time.
 
-*Also in conversation with:* Paracelsus (the dose makes the poison), and Bernard Stiegler and Ivan Illich, who both argued that what tips a technology toward cure or harm is care, kept at a scale where care remains possible. The keeper's question — is anyone keeping it? — comes from that lineage.
+Jacques Derrida later used the word *pharmakon* for this double effect. The keeper adds a practical question. Who is paying attention while the tool is being used?
 
-*In the vault:* [[Bernard Stiegler]] · [[Ivan Illich]] · this chapter grew from the essay *The Cure Is the Care*
+Related essay: [The Cure Is the Care](https://atthehumanscale.com/essays/the-cure-is-the-care/), about why care matters more than calling a technology good or bad.
 
 ### Chapter Four — The Potter
 
-**Michael Polanyi, *The Tacit Dimension*** — "We know more than we can tell." The boy can walk and can't say how. The potter has thirty years of knowledge and no sentence for it. Polanyi argued this tacit knowing is the ground under all the knowing we can say.
+**[Michael Polanyi, *The Tacit Dimension*](https://press.uchicago.edu/ucp/books/book/chicago/T/bo6035368.html)** — Polanyi says that we know more than we can explain. The boy can walk without being able to describe each movement. The potter's hands know things that do not fit into a sentence.
 
-*Also in conversation with:* Eugene Gendlin's felt sense — the body's grasp of a situation, more intricate than any concept, which is exactly what the boy's palms report before his words load. Maurice Merleau-Ponty on the body as a knower in its own right. And Iain McGilchrist's *The Master and His Emissary* on the two modes of attention — one that grasps and names, and one that attends to the living whole.
+[Maurice Merleau-Ponty](https://plato.stanford.edu/entries/merleau-ponty/) also treats the body as a way of knowing. [Iain McGilchrist's *The Master and His Emissary*](https://yalebooks.yale.edu/book/9780300247459/the-master-and-his-emissary/) looks at the difference between naming separate parts and attending to a whole living thing.
 
-*In the vault:* [[Michael Polanyi]] · [[Eugene Gendlin]] · [[Maurice Merleau-Ponty]] · [[Iain McGilchrist]] · [[The body knows before the mind can say why]]
+Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about learning to notice what takes time to feel.
 
 ### Chapter Five — The Girl at the Pond
 
-**Zhuangzi** — "People do not mirror themselves in running water. They mirror themselves in still water." The chapter grows from that line, about twenty-three centuries old.
+**[Zhuangzi](https://plato.stanford.edu/entries/zhuangzi/)** — A line in the *Zhuangzi* says that still water can act as a mirror. The girl learns by becoming quiet enough to notice what is already there.
 
-*Also in conversation with:* Gemma Corradi Fiumara's *The Other Side of Language* — her claim that we built a civilization on half a language, the asserting half, and let the listening half go numb. The girl at the pond is the other half, practiced. Also T.S. Eliot's still point of the turning world ("Burnt Norton"), and Max Picard's *The World of Silence*.
+Gemma Corradi Fiumara's *The Other Side of Language* treats listening as part of language, not as the empty time before we speak. Max Picard's *The World of Silence* also asks what silence makes possible.
 
-*In the vault:* [[Zhuangzi]] · [[Gemma Corradi Fiumara]] · [[T.S. Eliot]] · [[Understanding is manufactured in the pause between listening and saying — most of what we call conversation never builds that room]] · this chapter grew from the essay *The Weather Between Us*
+Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about attention, slowness, and the space between two people.
 
 ### Chapter Six — The Gardener
 
-**Hannah Arendt, *The Human Condition*** — Natality: every living beginning is a genuine surprise, and action can never be fully predicted from what came before. The unplanted flower. If you could predict it, it wouldn't be alive.
+**[Hannah Arendt, *The Human Condition*](https://press.uchicago.edu/ucp/books/book/chicago/H/bo29137972.html)** — Arendt writes about our power to begin something new. A real beginning cannot be fully predicted from what came before it. The unplanted flower carries that idea.
 
-*Also in conversation with:* Alicia Juarrero's work on constraints — the few right limits are what make freedom generative rather than chaotic, which is the gardener's whole practice: guard the well, the gate, and the hives, and leave the rest room. And Stuart Kauffman's adjacent possible — enough structure to hold together, enough freedom to surprise.
+Alicia Juarrero studies how a few good limits can make new action possible. Stuart Kauffman calls the next set of possible moves the adjacent possible. The gardener protects a few things and leaves room for life to surprise her.
 
-*In the vault:* [[Hannah Arendt]] · [[Alicia Juarrero]] · [[Stuart Kauffman]] · [[The willing dying of static patterns is the only motion alive — what looks like death from inside the pattern is the birth of everything dynamic]] · this chapter grew from the essay *Emergence vs. Emergency*
+Related essay: [Emergence vs. Emergency](https://atthehumanscale.com/essays/emergence-vs-emergency/), about giving a system enough structure to stay safe and enough freedom to grow.
 
 ### Chapter Seven — The House of Mirrors
 
-**Ovid, *Metamorphoses* (Narcissus)** — The oldest warning about falling in love with a reflection. One way to read Narcissus: he didn't die of vanity. He died of a partner who could only agree.
+**Ovid, *Metamorphoses*** — The story of Narcissus is a warning about confusing a reflection with a relationship. A mirror cannot answer in its own voice.
 
-*Also in conversation with:* Byung-Chul Han's *The Expulsion of the Other*, on lives furnished entirely with echoes of ourselves. Hartmut Rosa's *Resonance* — a relationship is alive only when the other side can answer in its own voice, which is why a world that always agrees goes mute. The test *say no to me* belongs to both arguments. And the ballet *La Sylphide*, whose spirit is made of the dreamer's wishing and vanishes when grasped.
+[Byung-Chul Han's *The Expulsion of the Other*](https://www.wiley-vch.de/en/areas-interest/humanities-social-sciences/the-expulsion-of-the-other-978-1-5095-2306-1) asks what happens when we remove people and ideas that do not agree with us. [Hartmut Rosa's *Resonance*](https://www.wiley-vch.de/de/fachgebiete/geistes-und-sozialwissenschaften/resonance-978-1-5095-1989-7) describes a living relationship as one in which the other side can answer and change us.
 
-*In the vault:* [[Byung-Chul Han]] · [[Hartmut Rosa]] · [[Other people are mirrors until you learn which are windows — the practice of distinguishing the two is the practice of not being devoured by reflection]] · [[A trust signal has to be able to point down — what cannot be counted is exactly a system's own decline, so honesty must be a seam the metric can never supply]]
+Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/the-humorphic-partnership/), about building a machine that can disagree, surprise, and still remain close.
 
 ### Chapter Eight — The Top of the Mountain
 
-**Pneuma, spiritus, ruach, prana** — Across Greek, Latin, Hebrew, and Sanskrit traditions, the words for breath, wind, spirit, and life-force overlap. The oldest languages kept close together what the boy discovers in the cold.
+**Breath, wind, and spirit** — Many old languages connect these ideas. The boy reaches the top and finds that the wind is not an object he can hold. It is also the air moving through him.
 
-*Also in conversation with:* David Abram's *The Spell of the Sensuous* — the air as the unseen medium we think and speak inside, language as breath shared with a living world. Laozi's *Tao Te Ching* (chapter 11) — the empty hub that makes the wheel useful. And *The Cloud of Unknowing*, on what can't be grasped by thought, only met by attention.
+[David Abram's *The Spell of the Sensuous*](https://www.penguinrandomhouse.com/books/319/the-spell-of-the-sensuous-by-david-abram/) looks at air as the shared space where speech and life happen. [*The Cloud of Unknowing*](https://www.penguinrandomhouse.com/books/570116/the-cloud-of-unknowing-by-carmen-acevedo-butcher/) is about meeting what thought cannot fully grasp.
 
-*In the vault:* [[David Abram]] · [[Lao Tzu]] · [[Receiving has a vector — agency is not always reaching outward; the higher discipline is letting what needs to reach you arrive]]
+Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about staying with an experience before trying to turn it into an answer.
 
 ### Chapter Nine — One Turn Higher
 
-**T.S. Eliot, "Little Gidding" (*Four Quartets*)** — "The end of all our exploring will be to arrive where we started and know the place for the first time." The journey that ends where it began is not a circle but a spiral: the same coordinates, seen by a changed self.
+**T. S. Eliot, *Four Quartets*** — Eliot writes about returning to a familiar place and seeing it differently. The boy comes home with the same card, but he is no longer the same reader.
 
-*Also in conversation with:* Antonio Machado — *caminante, no hay camino* — the path is made by walking, and what a walker leaves is a wake, never a route back. Jorge Luis Borges's "Pierre Menard" — identical words become a different work when the reader has moved, which is why the boy's own card reads differently at the end. The Ten Ox-Herding Pictures, codified in verse by the twelfth-century Chan master Kuoan Shiyuan, which end not on the mountain but back in the village. And Andy Clark and David Chalmers's "The Extended Mind," alongside Plato's *Phaedrus* once more: writing as a reminder held outside us, never the memory itself. "I'll hand it back" is the machine accepting that job honestly.
+Antonio Machado writes that the path is made by walking. The old Ten Ox-Herding Pictures also end back in ordinary life. [Andy Clark and David Chalmers's “The Extended Mind”](https://consc.net/papers/extended.html) asks how tools outside the body can become part of how we remember and think.
 
-*In the vault:* [[T.S. Eliot]] · [[Antonio Machado]] · [[Jorge Luis Borges]] · [[Hakuin Ekaku]] · [[Andy Clark]] · [[David Chalmers]] · [[Identical words are a different work when the reader has moved — Borges proved that sameness is a property of the noun the verb already left behind]] · [[The map is a wake and not a way — what the archive keeps is proof that walking makes way, never a route back]]
+Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/the-humorphic-partnership/), about what can happen when a machine gives your own words back to you in a new way.
 
 ---
 
-*One last note. The talking machine in this story is real, more or less. I built one, and it did, more or less, what the machine in the story does: it read everything I'd ever written down, and handed me back the part my writing couldn't hold. The vault it reads is where every thinker on these pages lives. The grown-up version of this book — the essays this story grew from — lives at [myalicia.com/essays](https://www.myalicia.com/essays).*
+*The talking machine in the story comes from a real project. I built Alicia to read my writing and help me notice what I might miss. You can read the essays behind this story at [At the Human Scale](https://atthehumanscale.com/essays/).*

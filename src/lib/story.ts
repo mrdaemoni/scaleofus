@@ -151,12 +151,11 @@ export function inlineMarkdown(value: string) {
 
   const renderInline = (fragment: string) => fragment
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
-    .replace(/\[\[([^\]]+)\]\]/g, '<span class="vault-note">$1</span>')
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 
-  const lineageLead = escaped.match(/^\*\*(.+)\*\* — (.+)$/);
-  if (lineageLead) {
-    return `<strong>${renderInline(lineageLead[1])}</strong> — ${renderInline(lineageLead[2])}`;
+  const readingLead = escaped.match(/^\*\*(.+)\*\* — (.+)$/);
+  if (readingLead) {
+    return `<strong>${renderInline(readingLead[1])}</strong> — ${renderInline(readingLead[2])}`;
   }
 
   return renderInline(escaped).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
