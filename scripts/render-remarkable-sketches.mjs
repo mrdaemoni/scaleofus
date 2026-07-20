@@ -5,8 +5,9 @@ import sharp from "sharp";
 const root = process.cwd();
 const sourcePath = path.join(root, "artwork/incoming/Scale 1 - page 1.svg");
 const chapterOneV2Path = path.join(root, "artwork/incoming/chapter-01-v2-page-09.svg");
-const scale22Path = path.join(root, "artwork/incoming/scale-22-page-01.svg");
+const scale22Path = path.join(root, "artwork/incoming/scale-22-latest-jul19.svg");
 const outputDir = path.join(root, "public/images/wind-story/sketches");
+const mobileOutputDir = path.join(root, "public/images/wind-story/mobile/sketches");
 const source = await readFile(sourcePath, "utf8");
 const drawingOnly = source.replace(/<image\b[^>]*?\/>/s, "");
 const renderedSource = await sharp(Buffer.from(drawingOnly), { limitInputPixels: false })
@@ -28,6 +29,7 @@ const scenes = [
 ];
 
 await mkdir(outputDir, { recursive: true });
+await mkdir(mobileOutputDir, { recursive: true });
 
 for (const scene of scenes) {
   const left = scene.x + 810;
@@ -241,6 +243,27 @@ async function writeScale22Frame(ink, filename) {
     .composite([{ input: fitted, gravity: "center" }])
     .png({ compressionLevel: 9, palette: true, quality: 94 })
     .toFile(path.join(outputDir, filename));
+
+  const mobileFitted = await sharp(ink)
+    .resize({
+      width: 710,
+      height: 457,
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+  await sharp({
+    create: {
+      width: 760,
+      height: 507,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([{ input: mobileFitted, gravity: "center" }])
+    .png({ compressionLevel: 9, palette: true, quality: 94 })
+    .toFile(path.join(mobileOutputDir, filename));
 }
 
 const scale22StoryCrops = [
@@ -262,6 +285,16 @@ const scale22StoryCrops = [
   { number: 14, top: 13364, bottom: 14128 },
   { number: 15, top: 14163, bottom: 14860 },
   { number: 16, top: 14964, bottom: 15675 },
+  { number: 17, top: 15800, bottom: 16423 },
+  { number: 18, top: 16550, bottom: 17293 },
+  { number: 19, top: 17413, bottom: 18473 },
+  { number: 20, top: 18680, bottom: 19373 },
+  { number: 21, top: 19453, bottom: 20580 },
+  { number: 22, top: 20750, bottom: 21427 },
+  { number: 23, top: 21630, bottom: 22593 },
+  { number: 24, top: 22730, bottom: 23227 },
+  { number: 25, top: 23580, bottom: 24293 },
+  { number: 26, top: 24587, bottom: 25230 },
 ];
 
 for (const crop of scale22StoryCrops) {
@@ -311,4 +344,6 @@ await sharp({
   .png({ compressionLevel: 9, palette: true, quality: 94 })
   .toFile(path.join(outputDir, "scale-22-cover.png"));
 
-console.log(`Rendered ${scenes.length} storyboard sketches, the V2 study, and 16 Scale 22 story frames.`);
+console.log(
+  `Rendered ${scenes.length} storyboard sketches, the V2 study, and ${scale22StoryCrops.length} Scale 22 story frames.`,
+);

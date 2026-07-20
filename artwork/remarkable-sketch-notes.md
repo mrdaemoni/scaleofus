@@ -6,6 +6,11 @@ Chapter 1 V2 addition: `incoming/chapter-01-v2-page-09.svg`, downloaded from the
 
 Scale 22 replacement: `incoming/scale-22-page-01.svg`, downloaded from the Gmail message “Document from my reMarkable: Scale 22” on July 18, 2026. The attachment is one long SVG containing sixteen landscape source pages. Page 1 supplies the cover wind, page 2 supplies the small cover boy and drawing 1, pages 3–10 map to drawings 2–9, page 11 is divided into drawings 10 and 11, and pages 12–16 map to drawings 12–16. All are rendered on transparent 1200×800 canvases in the pale plum-gray ink treatment.
 
+July 19 continuation: `incoming/scale-22-latest-jul19.svg` replaces the July 18
+sheet as the rendering source. It retains the first sixteen story drawings and
+adds ten more, continuing from the fire and meal into the bowl and water
+sequence. The renderer now exports drawings 1–26 plus the separate cover.
+
 ## What already works
 
 - The line is immediate and alive. It fits the story better than polished realism would.

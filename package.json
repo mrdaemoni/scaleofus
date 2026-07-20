@@ -9,6 +9,7 @@
     "start": "astro dev",
     "build": "astro build",
     "build:pages": "astro build && mkdir -p docs && cp -R dist/. docs/",
+    "render:sketches": "node scripts/render-remarkable-sketches.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -16,5 +17,8 @@
     "@fontsource-variable/newsreader": "^5.2.10",
     "@fontsource-variable/playwrite-ie": "^5.2.7",
     "astro": "^6.2.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }

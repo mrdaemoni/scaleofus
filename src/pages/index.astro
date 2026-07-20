@@ -74,19 +74,6 @@ const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.numb
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
-// Opt-in animation study. Keep this explicit: Scale 22 currently covers
-// drawing slots 1-26, while the reader contains 59 authored story beats.
-const scale22LoopTestByBeat = new Map<number, string>([
-  [1, "01"],
-  [14, "14"],
-  [17, "17"],
-  [20, "20"],
-  [25, "25"],
-]);
-const scale22LoopSrc = (id: string) => `/images/wind-story/loops/scale-22-${id}.webp`;
-const scale22StillSrc = (id: string) => id === "cover"
-  ? "/images/wind-story/sketches/scale-22-cover.png"
-  : `/images/wind-story/sketches/scale-22-beat-${id}.png`;
 const mobileArtworkSrc = (src: string) => src.replace(
   "/images/wind-story/",
   "/images/wind-story/mobile/",
@@ -127,12 +114,7 @@ const resolvedSpeaker = (
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-art" aria-hidden="true">
-        <picture
-          data-scale22-animation="cover"
-          data-scale22-id="cover"
-          data-scale22-loop-src={scale22LoopSrc("cover")}
-          data-scale22-still-src={scale22StillSrc("cover")}
-        >
+        <picture>
           <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
           <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
         </picture>
@@ -176,7 +158,7 @@ const resolvedSpeaker = (
         </div>
       </div>
 
-      <p class="cover-note">16 original reMarkable scenes · 27 rose-gray studies · 16 drawings to come</p>
+      <p class="cover-note">26 original reMarkable scenes · 21 rose-gray studies · 12 drawings to come</p>
       <a class="scroll-cue" href="#story" aria-label="Scroll into the story" data-reader-read><span></span></a>
     </section>
 
@@ -276,7 +258,6 @@ const resolvedSpeaker = (
                 const artworkSrc = artForBeat(beat.number);
                 const artworkKind = artKindForBeat(beat.number);
                 const isOriginalArtwork = artworkKind === "original";
-                const scale22LoopId = scale22LoopTestByBeat.get(beat.number);
                 return (
                   <article
                     class="story-beat has-featured-art"
@@ -305,13 +286,7 @@ const resolvedSpeaker = (
                           <small>{beat.prompt}</small>
                         </div>
                         {artworkSrc && (
-                          <picture
-                            data-scale22-animation={scale22LoopId ? "beat" : undefined}
-                            data-scale22-id={scale22LoopId}
-                            data-scale22-story-beat={scale22LoopId ? beat.number : undefined}
-                            data-scale22-loop-src={scale22LoopId ? scale22LoopSrc(scale22LoopId) : undefined}
-                            data-scale22-still-src={scale22LoopId ? scale22StillSrc(scale22LoopId) : undefined}
-                          >
+                          <picture>
                             <source media="(max-width: 760px)" srcset={mobileArtworkSrc(artworkSrc)} />
                             <img
                               class={isOriginalArtwork ? "is-hand-sketch" : undefined}
@@ -427,6 +402,13 @@ const resolvedSpeaker = (
       <button class="dock-collapse" type="button" data-collapse aria-label="Expand story controls" aria-expanded="false">⌃</button>
     </div>
   </div>
+
+  <nav class="reading-compass" data-reading-compass aria-label="Reading navigation" aria-hidden="true">
+    <button type="button" data-reader-previous aria-label="Previous chapter">←</button>
+    <a href="#top" data-reader-home>Home</a>
+    <span data-reader-chapter-position>Chapter 1</span>
+    <button type="button" data-reader-next aria-label="Next chapter">→</button>
+  </nav>
 
   <script src="../scripts/story-player.ts"></script>
 </Base>
