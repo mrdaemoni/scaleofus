@@ -4,13 +4,13 @@ Small books about big machines and the humans trying not to forget themselves.
 
 This is the standalone site for `scaleofus.com`, built as a sibling project to At the Human Scale.
 
-The current experience is the v7 reading edition of *The Boy Who Tried to Catch
-the Wind*. The nine-chapter climb holds 60 image-and-paragraph story beats: 26
-original reMarkable scenes, 21 rose-gray studies, and 13 intentional drawing
+The current experience is the v8 reading edition of *The Boy Who Tried to Catch
+the Wind*. The seven-chapter climb holds 56 image-and-paragraph story beats: 21
+original reMarkable scenes, 16 rose-gray studies, and 19 intentional drawing
 placeholders. Scroll-responsive cinematic layers and a separate grown-ups room
 carry the story through a shell-pink reading ground and clouded mountain rail.
 The prior full-cast narration remains in the project and will return to the site
-after it is re-recorded or re-aligned to v7.
+after it is re-recorded or re-aligned to v8.
 
 Read `scaleofus-context.md` first when opening this as a fresh Codex sidebar project.
 

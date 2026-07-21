@@ -21,9 +21,26 @@ if (narrationAvailable) {
   validateVoicePassages(chapters, windStoryReader.voices);
   validateStoryWordTimings(chapters, storyWordTimings.beats, duration);
 }
-const headingTimingByChapter = new Map(storyHeadingTimings.chapters.map((heading) => [heading.number, heading]));
+const staticWordCues = (value: string, time: number) => value.trim().split(/\s+/).map(() => ({
+  start: time,
+  end: time,
+}));
+const activeCoverHeadingTiming = narrationAvailable ? storyHeadingTimings.cover : {
+  start: 0,
+  end: 0,
+  words: staticWordCues(windStoryReader.title, 0),
+};
+const activeChapterHeadingTimings = narrationAvailable ? storyHeadingTimings.chapters : chapters.map((chapter) => ({
+  number: chapter.number,
+  transitionStart: chapter.start,
+  start: chapter.start,
+  end: chapter.start,
+  labelWords: staticWordCues(`Chapter ${chapter.numeral}`, chapter.start),
+  titleWords: staticWordCues(chapter.title, chapter.start),
+}));
+const headingTimingByChapter = new Map(activeChapterHeadingTimings.map((heading) => [heading.number, heading]));
 if (
-  headingTimingByChapter.size !== storyHeadingTimings.chapters.length
+  headingTimingByChapter.size !== activeChapterHeadingTimings.length
   || headingTimingByChapter.size !== chapters.length
 ) throw new Error("Chapter heading timings must contain each story chapter exactly once.");
 const timedTokens = (
@@ -48,7 +65,7 @@ const timedTokens = (
   });
   return tokens.map((token, index) => ({ text: token, ...cues[index] }));
 };
-const coverHeadingWords = timedTokens(windStoryReader.title, storyHeadingTimings.cover.words, "Cover title");
+const coverHeadingWords = timedTokens(windStoryReader.title, activeCoverHeadingTiming.words, "Cover title");
 const chapterHeadingWords = new Map(chapters.map((chapter) => {
   const timing = headingTimingByChapter.get(chapter.number);
   if (!timing) throw new Error(`Chapter ${chapter.number} has no heading timing.`);
@@ -132,8 +149,8 @@ const resolvedSpeaker = (
           id="story-title"
           class="spoken-heading"
           data-cover-heading
-          data-heading-start={storyHeadingTimings.cover.start}
-          data-heading-end={storyHeadingTimings.cover.end}
+          data-heading-start={activeCoverHeadingTiming.start}
+          data-heading-end={activeCoverHeadingTiming.end}
         >
           {coverHeadingWords.map((word, index) => (
             <>
@@ -162,7 +179,7 @@ const resolvedSpeaker = (
           ) : (
             <span class="entry-listen is-unavailable" role="status">
               <span class="round-play" aria-hidden="true">○</span>
-              <span><strong>Listen</strong><small>V7 narration to come</small></span>
+              <span><strong>Listen</strong><small>V8 narration to come</small></span>
             </span>
           )}
         </div>
