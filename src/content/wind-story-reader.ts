@@ -89,6 +89,6 @@ export const windStoryReader: StoryReaderConfig = {
     5: "house",
   },
   // The existing full-cast audio belongs to the prior draft. Speaker passages
-  // will return when narration is re-aligned to v8.
+  // will return when narration is re-aligned to v9.
   voices: [],
 };
