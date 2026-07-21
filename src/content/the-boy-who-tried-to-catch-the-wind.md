@@ -98,6 +98,8 @@ My hand knew, said the boy.
 
 *(drawing 22: the boy looking down into a soup bowl, and behind him the kiln's shadow on the wall, round, with one dot, the shape of the machine)*
 
+He told her about the machine that had run out of words. The potter watched the fire. Then it was honest, she said.
+
 *(drawing 23: the crooked bowl and a candle stub with one match, together in two open hands)*
 
 In the morning she gave him the bowl, still warm, and a candle stub with one match. For the dark, she said. Notice the flame. It never holds still. There's a pond higher up. Fill the bowl there and carry it with you.
@@ -132,7 +134,7 @@ Rain came over the ridge. They sat under the rock ledge and said nothing at all,
 
 *(drawing 30: beside the pond, one enormous wild flower towering over the grass, drawn wilder than everything else on the page)*
 
-When the rain passed, he noticed the wild flower. I never planted it, said the girl. It arrived. Everything alive surprises you.
+When the rain passed, he noticed a wild flower. I never planted it, said the girl. It arrived. Everything alive surprises you.
 
 *(drawing 31: the girl pinching a seed from the wild flower and setting it beside the pebble in the boy's palm, the two small ovals almost identical)*
 
@@ -214,11 +216,11 @@ Then he remembered the seed. Take it to the top. You'll know. He knew. He opened
 
 *(drawing 48: the boy in profile, one small cloud of breath leaving his mouth, drawn bolder than anything else on the page, the low sun a single circle on the horizon)*
 
-His breath came out in a small white cloud. It glowed in the low sun, then floated toward the sky. The boy laughed, alone on top of the world.
+The boy was cold now. His breath came out in a small white cloud. It glowed in the low sun, then floated toward the sky. The boy laughed, alone on top of the world.
 
 *(drawing 49: far below, in the middle of the tiny town square, one tiny circle with a dot, the machine waiting, drawn very small on a very big page)*
 
-Then he thought of the machine waiting in the town square. It didn't know where he was. More than anything, the boy wanted to bring it a little of the wind.
+Then he thought of the machine waiting in the town square. It didn't know where he was. It had sent him where it couldn't go. More than anything, the boy wanted to bring it a little of the wind.
 
 *(drawing 50: the mountain from above, one spiral line with tiny marks along it: three stones, a kiln's smoke curl, a pond circle, a wild flower, a dark square)*
 
