@@ -14,10 +14,13 @@ import {
   voiceWords,
 } from "../lib/story-reader";
 
+const narrationAvailable = windStoryReader.narrationAvailable !== false;
 const duration = windStoryReader.audio.duration;
-const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
-validateVoicePassages(chapters, windStoryReader.voices);
-validateStoryWordTimings(chapters, storyWordTimings.beats, duration);
+const chapters = parseStoryMarkdown(storyMarkdown, duration, narrationAvailable ? storyTimings : []);
+if (narrationAvailable) {
+  validateVoicePassages(chapters, windStoryReader.voices);
+  validateStoryWordTimings(chapters, storyWordTimings.beats, duration);
+}
 const headingTimingByChapter = new Map(storyHeadingTimings.chapters.map((heading) => [heading.number, heading]));
 if (
   headingTimingByChapter.size !== storyHeadingTimings.chapters.length
@@ -67,12 +70,18 @@ const chapterData = chapters.map(({ number, title, id, beats }) => {
     firstWordStart: beats[0]?.start ?? heading.end,
   };
 });
+const allBeats = chapters.flatMap((chapter) => chapter.beats);
 const beatData = chapters.flatMap((chapter) =>
   chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
 );
-const wordTimingByBeat = new Map(storyWordTimings.beats.map((beat) => [beat.number, beat]));
+const wordTimingByBeat = new Map(
+  narrationAvailable ? storyWordTimings.beats.map((beat) => [beat.number, beat] as const) : [],
+);
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
+const missingArtwork = allBeats.filter((beat) => !artForBeat(beat.number));
+const placedArtworkCount = allBeats.length - missingArtwork.length;
+const firstMissingArtwork = missingArtwork[0];
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
 const mobileArtworkSrc = (src: string) => src.replace(
   "/images/wind-story/",
@@ -91,7 +100,7 @@ const resolvedSpeaker = (
 
 <Base
   title={`${windStoryReader.title} — Scale of Us`}
-  description={`An immersive reading and listening experience. ${windStoryReader.intro}`}
+  description={`${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`}
   bodyClass="story-page"
 >
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
@@ -145,11 +154,26 @@ const resolvedSpeaker = (
             <span class="round-book" aria-hidden="true"></span>
             <span><strong>Read</strong><small>At your pace</small></span>
           </a>
-          <button class="entry-listen" type="button" data-hero-play>
-            <span class="round-play" aria-hidden="true">▶</span>
-            <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
-          </button>
+          {narrationAvailable ? (
+            <button class="entry-listen" type="button" data-hero-play>
+              <span class="round-play" aria-hidden="true">▶</span>
+              <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
+            </button>
+          ) : (
+            <span class="entry-listen is-unavailable" role="status">
+              <span class="round-play" aria-hidden="true">○</span>
+              <span><strong>Listen</strong><small>V7 narration to come</small></span>
+            </span>
+          )}
         </div>
+        <a
+          class="cover-art-status"
+          href={firstMissingArtwork ? `#beat-${firstMissingArtwork.number}` : "#story"}
+          aria-label={`${placedArtworkCount} of ${allBeats.length} drawings placed. ${missingArtwork.length} drawings still needed.`}
+        >
+          <strong>{placedArtworkCount} of {allBeats.length} drawings placed</strong>
+          <small>{missingArtwork.length} placeholders show what remains</small>
+        </a>
         <div class="cover-invitation-art" aria-hidden="true">
           <picture>
             <source media="(max-width: 760px)" srcset={mobileArtworkSrc(coverArt)} />
@@ -249,7 +273,9 @@ const resolvedSpeaker = (
             <div class="chapter-beats">
               {chapter.beats.map((beat, beatIndex) => {
                 const alignedBeat = wordTimingByBeat.get(beat.number);
-                const passages = windStoryReader.voices.filter((passage) => passage.beat === beat.number);
+                const passages = narrationAvailable
+                  ? windStoryReader.voices.filter((passage) => passage.beat === beat.number)
+                  : [];
                 const words = beat.paragraphs.flatMap((paragraph) => voiceWords(paragraph, passages));
                 const alignedWords = alignedBeat?.paragraphs.flatMap((paragraph) => paragraph.words) ?? [];
                 const paragraphStart = alignedWords[0]?.start ?? beat.start;
@@ -278,7 +304,12 @@ const resolvedSpeaker = (
                           height="1"
                           aria-hidden="true"
                         ></canvas>
-                        <div class="art-placeholder" aria-hidden="true">
+                        <div
+                          class="art-placeholder"
+                          role="img"
+                          aria-hidden={artworkSrc ? "true" : "false"}
+                          aria-label={`Drawing ${beat.number} needed: ${beat.prompt}`}
+                        >
                           <span>{String(beat.number).padStart(2, "0")}</span>
                           <div class="placeholder-wind"><i></i><i></i><i></i></div>
                           <strong>Drawing to come</strong>
@@ -348,6 +379,7 @@ const resolvedSpeaker = (
     </div>
   </main>
 
+  {narrationAvailable && (
   <div class="audio-dock is-compact" data-audio-dock>
     <audio
       data-audio
@@ -404,6 +436,7 @@ const resolvedSpeaker = (
       <button class="dock-collapse" type="button" data-collapse aria-label="Expand story controls" aria-expanded="false">⌃</button>
     </div>
   </div>
+  )}
 
   <nav class="reading-compass" data-reading-compass aria-label="Reading navigation" aria-hidden="true">
     <button type="button" data-reader-previous aria-label="Previous chapter">←</button>

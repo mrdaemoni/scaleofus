@@ -402,6 +402,43 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
   outline: none;
 }
 
+.entry-listen.is-unavailable {
+  cursor: default;
+  opacity: 0.46;
+}
+
+.entry-listen.is-unavailable:hover {
+  opacity: 0.46;
+}
+
+.cover-art-status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 18px;
+  color: var(--night);
+  opacity: 0.62;
+  transition: opacity 180ms ease;
+}
+
+.cover-art-status:hover,
+.cover-art-status:focus-visible {
+  opacity: 1;
+}
+
+.cover-art-status strong {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cover-art-status small {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-style: italic;
+}
+
 .entry-read strong,
 .entry-read small,
 .entry-listen strong,

@@ -23,6 +23,7 @@ export type StoryReaderConfig = {
   id: string;
   title: string;
   intro: string;
+  narrationAvailable?: boolean;
   audio: {
     src: string;
     sources?: ReadonlyArray<{
