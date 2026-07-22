@@ -1,9 +1,10 @@
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-const compactReader = matchMedia("(max-width: 760px)");
+const compactReader = matchMedia("(max-width: 760px), (pointer: coarse)");
 const drawings = [...document.querySelectorAll<HTMLElement>("[data-live-drawing]")];
 
 const svgCache = new Map<string, Promise<string>>();
 const drawingLoads = new WeakMap<HTMLElement, Promise<void>>();
+const drawingUnloadTimers = new WeakMap<HTMLElement, number>();
 const visibleDrawings = new Set<HTMLElement>();
 let phase = 0;
 let boilTimer = 0;
@@ -18,6 +19,19 @@ const fetchSvg = (source: string) => {
   svgCache.set(source, request);
   return request;
 };
+
+const fetchSvgMarkup = async (source: string) => {
+  const response = await fetch(source, { credentials: "same-origin" });
+  if (!response.ok) throw new Error(`Unable to load drawing ${source}: ${response.status}`);
+  return response.text();
+};
+
+const makeLightweightSvg = (markup: string) => markup
+  .replace(/\sdata-r(?=\s|>)/g, ' data-r=""')
+  .replace(/<path class="grain"[^>]*\/>/g, "")
+  .replace(/<g class="f(?: jolt-f)? live" data-f="[123]"[^>]*>.*?<\/g>/g, "")
+  .replaceAll("var(--live,#000)", "#6f6165")
+  .replaceAll('fill="#000"', 'fill="#6f6165"');
 
 const stopBoilIfIdle = () => {
   if (visibleDrawings.size || !boilTimer) return;
@@ -68,6 +82,66 @@ const showLightweightDrawing = (drawing: HTMLElement) => {
   });
 };
 
+const releaseLightweightDrawing = (drawing: HTMLElement) => {
+  if (drawing.dataset.liveRenderMode !== "image" || visibleDrawings.has(drawing)) return;
+  const objectUrl = drawing.dataset.liveObjectUrl;
+  if (objectUrl) URL.revokeObjectURL(objectUrl);
+  drawing.replaceChildren();
+  drawing.classList.remove("is-boil-0", "is-boil-1", "is-boil-2", "is-drawn");
+  delete drawing.dataset.liveLoaded;
+  delete drawing.dataset.liveRevealed;
+  delete drawing.dataset.liveRenderMode;
+  delete drawing.dataset.liveObjectUrl;
+};
+
+const cancelDrawingRelease = (drawing: HTMLElement) => {
+  const timer = drawingUnloadTimers.get(drawing);
+  if (!timer) return;
+  window.clearTimeout(timer);
+  drawingUnloadTimers.delete(drawing);
+};
+
+const scheduleDrawingRelease = (drawing: HTMLElement) => {
+  if (
+    !compactReader.matches
+    || drawingUnloadTimers.has(drawing)
+    || (drawing.dataset.liveRenderMode !== "image" && !drawingLoads.has(drawing))
+  ) return;
+  const timer = window.setTimeout(() => {
+    drawingUnloadTimers.delete(drawing);
+    releaseLightweightDrawing(drawing);
+  }, 2500);
+  drawingUnloadTimers.set(drawing, timer);
+};
+
+const mountLightweightDrawing = async (drawing: HTMLElement, source: string) => {
+  const markup = makeLightweightSvg(await fetchSvgMarkup(source));
+  const objectUrl = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml" }));
+  return new Promise<void>((resolve, reject) => {
+    const image = document.createElement("img");
+    image.className = "live-drawing-image";
+    image.alt = "";
+    image.decoding = "async";
+    image.loading = "eager";
+    image.setAttribute("aria-hidden", "true");
+    image.addEventListener("load", () => {
+      drawing.replaceChildren(image);
+      drawing.classList.add("is-boil-0", "is-drawn");
+      drawing.dataset.liveLoaded = "true";
+      drawing.dataset.liveRevealed = "true";
+      drawing.dataset.liveRenderMode = "image";
+      drawing.dataset.liveObjectUrl = objectUrl;
+      if (!visibleDrawings.has(drawing)) scheduleDrawingRelease(drawing);
+      resolve();
+    }, { once: true });
+    image.addEventListener("error", () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error(`Unable to load drawing ${source}.`));
+    }, { once: true });
+    image.src = objectUrl;
+  });
+};
+
 const injectDrawing = async (drawing: HTMLElement) => {
   if (drawing.dataset.liveLoaded === "true") return;
   const pending = drawingLoads.get(drawing);
@@ -76,6 +150,10 @@ const injectDrawing = async (drawing: HTMLElement) => {
   if (!source) return;
   const request = (async () => {
     try {
+      if (compactReader.matches) {
+        await mountLightweightDrawing(drawing, source);
+        return;
+      }
       const markup = await fetchSvg(source);
       drawing.innerHTML = markup;
       const svg = drawing.querySelector<SVGSVGElement>("svg");
@@ -86,6 +164,7 @@ const injectDrawing = async (drawing: HTMLElement) => {
       svg.style.aspectRatio = `${viewBox[2]} / ${viewBox[3]}`;
       drawing.classList.add("is-boil-0");
       drawing.dataset.liveLoaded = "true";
+      drawing.dataset.liveRenderMode = "inline";
       drawing.addEventListener("pointerdown", () => jolt(drawing), { passive: true });
       if (reducedMotion.matches) showStaticDrawing(drawing);
     } catch (error) {
@@ -132,10 +211,12 @@ const visibilityObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     const drawing = entry.target as HTMLElement;
     if (entry.isIntersecting) {
+      cancelDrawingRelease(drawing);
       visibleDrawings.add(drawing);
       void revealDrawing(drawing).then(startBoil);
     } else {
       visibleDrawings.delete(drawing);
+      scheduleDrawingRelease(drawing);
       stopBoilIfIdle();
     }
   });

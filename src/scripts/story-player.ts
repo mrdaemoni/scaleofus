@@ -1637,6 +1637,13 @@ if (matchMedia("(pointer: fine)").matches) {
 
 const installReaderDiagnostics = () => {
   if (!audio || !new URLSearchParams(location.search).has("readerDiagnostics")) return;
+  const diagnosticsBootKey = "scaleofus-reader-diagnostic-boots";
+  let diagnosticsBoot = 1;
+  try {
+    diagnosticsBoot = Number(sessionStorage.getItem(diagnosticsBootKey) ?? 0) + 1;
+    sessionStorage.setItem(diagnosticsBootKey, String(diagnosticsBoot));
+  } catch {}
+  const navigationType = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type ?? "unknown";
   document.body.dataset.readerDiagnostics = "true";
   const panel = document.createElement("output");
   panel.className = "reader-diagnostics";
@@ -1677,13 +1684,14 @@ const installReaderDiagnostics = () => {
       ? paragraphs[activeParagraph]?.dataset.beatNumber ?? "-"
       : document.body.dataset.readingStage ?? "-";
     panel.textContent = [
-      `DIAGNOSTIC · page ${activeBeatNumber} / expected ${expectedBeat}`,
+      `DIAGNOSTIC · page ${activeBeatNumber} / expected ${expectedBeat} · boot ${diagnosticsBoot}`,
+      `nav ${navigationType} · drawing ${document.querySelector("[data-live-render-mode='inline']") ? "inline" : "image"}`,
       `audio ${audio.currentTime.toFixed(2)}s · ${audio.paused ? "PAUSED" : "playing"} · clock age ${Math.round(now - lastClockAdvanceAt)}ms`,
       `ready ${audio.readyState} · network ${audio.networkState} · buffered ${bufferedAhead.toFixed(1)}s`,
       `last ${lastEvent} · ${Math.round(now - lastEventAt)}ms ago · error ${document.body.dataset.playbackError ?? "none"}`,
       `mode ${readerMode} · follow ${followNarration} · manual ${manualScrollActive} · auto ${autoScrollActive}`,
       `timer ${mobileNarrationTimer ? "on" : "off"} · seek ${chapterSeekInProgress} · visible ${document.visibilityState}`,
-      `wake ${document.body.dataset.wakeLock ?? "unknown"} · SVG ${document.querySelectorAll("[data-live-loaded='true']").length}`,
+      `wake ${document.body.dataset.wakeLock ?? "unknown"} · drawings ${document.querySelectorAll("[data-live-loaded='true']").length}`,
     ].join("\n");
   };
   updateDiagnostics();

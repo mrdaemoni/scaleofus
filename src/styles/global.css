@@ -400,6 +400,15 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
   overflow: visible;
 }
 
+.living-drawing > .live-drawing-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
 .living-drawing svg .s {
   visibility: visible;
   fill: var(--live-ink) !important;
