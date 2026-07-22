@@ -53,6 +53,13 @@ const readingNext = document.querySelector<HTMLButtonElement>("[data-reader-next
 const readingChapterPosition = document.querySelector<HTMLElement>("[data-reader-chapter-position]");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
+const mobileSafeReader = matchMedia("(max-width: 760px), (pointer: coarse)");
+
+const syncMobileSafeReader = () => {
+  document.body.toggleAttribute("data-mobile-safe-reader", mobileSafeReader.matches);
+};
+
+syncMobileSafeReader();
 
 let activeChapter = -1;
 let activeBeat = -1;
@@ -119,14 +126,13 @@ const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, v
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
 
 const shapeWindWake = (word: HTMLElement) => {
-  if (!desktopReader.matches) {
-    const releaseDuration = Math.round(randomBetween(620, 900));
+  if (mobileSafeReader.matches) {
+    // Mobile listening deliberately uses one simple text-state transition.
+    // Avoid writing fresh custom properties for every spoken word: on long
+    // reads those inline styles and pseudo-element animations put unnecessary
+    // pressure on the browser's rendering process.
+    const releaseDuration = 260;
     word.dataset.windRelease = String(releaseDuration);
-    word.style.setProperty("--wind-arrival-duration", `${Math.round(randomBetween(360, 520))}ms`);
-    word.style.setProperty("--wind-release-duration", `${releaseDuration}ms`);
-    word.style.setProperty("--wind-settle-x", `${randomBetween(0.08, 0.28).toFixed(2)}em`);
-    word.style.setProperty("--wind-release-x", `${randomBetween(1.1, 2.1).toFixed(2)}em`);
-    word.style.setProperty("--wind-lift", `${randomBetween(-0.1, 0.08).toFixed(2)}em`);
     return releaseDuration;
   }
 
@@ -315,15 +321,22 @@ const setWord = (index: number) => {
   const previousWord = narrationWords[activeWord];
   if (previousWord) {
     previousWord.classList.remove("is-current-word");
-    previousWord.classList.add("is-wind-trail");
     const existingTimer = windTrailTimers.get(previousWord);
     if (existingTimer) window.clearTimeout(existingTimer);
-    const releaseDuration = Number(previousWord.dataset.windRelease) || 1920;
-    const timer = window.setTimeout(() => {
+    windTrailTimers.delete(previousWord);
+    if (mobileSafeReader.matches) {
       previousWord.classList.remove("is-wind-trail");
-      windTrailTimers.delete(previousWord);
-    }, releaseDuration);
-    windTrailTimers.set(previousWord, timer);
+    } else {
+      previousWord.classList.add("is-wind-trail");
+    }
+    const releaseDuration = Number(previousWord.dataset.windRelease) || 1920;
+    if (!mobileSafeReader.matches) {
+      const timer = window.setTimeout(() => {
+        previousWord.classList.remove("is-wind-trail");
+        windTrailTimers.delete(previousWord);
+      }, releaseDuration);
+      windTrailTimers.set(previousWord, timer);
+    }
   }
   if (index < 0 || !narrationWords[index]) {
     activeWord = -1;
@@ -1622,6 +1635,8 @@ addEventListener("resize", () => {
   if (readerMode === "listen") queueViewportFit(160);
 }, { passive: true });
 
+mobileSafeReader.addEventListener("change", syncMobileSafeReader);
+
 if (matchMedia("(pointer: fine)").matches) {
   addEventListener("pointermove", (event) => {
     if (pointerFrame) return;
@@ -1696,11 +1711,11 @@ const installReaderDiagnostics = () => {
       `last ${lastEvent} · ${Math.round(now - lastEventAt)}ms ago · error ${document.body.dataset.playbackError ?? "none"}`,
       `mode ${readerMode} · follow ${followNarration} · manual ${manualScrollActive} · auto ${autoScrollActive}`,
       `timer ${mobileNarrationTimer ? "on" : "off"} · seek ${chapterSeekInProgress} · visible ${document.visibilityState}`,
-      `wake ${document.body.dataset.wakeLock ?? "unknown"} · drawings ${document.querySelectorAll("[data-live-loaded='true']").length}`,
+      `wake ${document.body.dataset.wakeLock ?? "unknown"} · drawings ${document.querySelectorAll("[data-live-loaded='true']").length} · effects ${mobileSafeReader.matches ? "basic" : "full"}`,
     ].join("\n");
   };
   updateDiagnostics();
-  window.setInterval(updateDiagnostics, 250);
+  window.setInterval(updateDiagnostics, 1000);
 };
 
 const restorePosition = () => {

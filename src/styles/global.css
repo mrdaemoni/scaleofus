@@ -3920,6 +3920,52 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   }
 }
 
+/*
+ * Mobile listening is a deliberately quiet rendering path. The full wind,
+ * watercolor and cinematic layers remain on desktop; phones keep the voice,
+ * speaker colors and fitted page without maintaining filtered compositor
+ * surfaces for the whole seventeen-minute story.
+ */
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .watercolor-wash,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .cinematic-layer {
+  display: none !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::before,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::after {
+  display: none !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word] {
+  isolation: auto;
+  text-shadow: none;
+  transform: none;
+  animation: none;
+  transition: color 120ms linear, font-variation-settings 140ms linear;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::before,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::after {
+  content: none !important;
+  display: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word {
+  --word-weight: 540;
+  text-shadow: none;
+  animation: none;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail {
+  animation: none;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-heading.is-current-heading .chapter-mark {
+  animation: none;
+}
+
 @media (max-width: 420px) {
   .cover-story-entry {
     grid-template-columns: 0.78fr 1.42fr;

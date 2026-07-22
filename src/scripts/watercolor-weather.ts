@@ -343,12 +343,22 @@ const watercolorObserver = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: "12% 0px 12%", threshold: 0.01 });
 
-if (!compactWatercolor.matches) {
+if (compactWatercolor.matches) {
+  // The chapter background already carries the palette on phones. Keeping
+  // dozens of canvas backing stores around adds memory without improving the
+  // fitted listening page, so collapse them completely.
+  watercolorCanvases.forEach((canvas) => {
+    canvas.hidden = true;
+    canvas.width = 1;
+    canvas.height = 1;
+  });
+} else {
   watercolorCanvases.forEach((canvas) => watercolorObserver.observe(canvas));
 }
 
 let resizeTimer = 0;
 addEventListener("resize", () => {
+  if (compactWatercolor.matches) return;
   if (resizeTimer) window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     resizeTimer = 0;
