@@ -85,6 +85,8 @@ let lastMediaAdvanceAt = 0;
 let lastObservedMediaTime = 0;
 let mediaRecoveryStage = 0;
 let mediaReloadInFlight = false;
+let bufferedNarrationUrl = "";
+let bufferedNarrationPromise: Promise<string | null> | null = null;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
@@ -999,6 +1001,7 @@ const togglePlayback = async (event?: Event) => {
     return;
   }
   if (audio.paused) {
+    selectBufferedNarration();
     const startsFromCover = Boolean(
       trigger?.hasAttribute("data-hero-play")
       || scrollY <= Math.min(innerHeight * 0.3, 240),
@@ -1326,6 +1329,41 @@ const shouldHoldScreenAwake = () => Boolean(
   && document.visibilityState === "visible"
 );
 
+const prepareBufferedNarration = () => {
+  if (!audio || bufferedNarrationUrl || bufferedNarrationPromise) return;
+  const sourceUrl = audio.querySelector<HTMLSourceElement>("source")?.src || audio.currentSrc;
+  if (!sourceUrl || sourceUrl.startsWith("blob:")) return;
+  document.body.dataset.audioBuffer = "loading";
+  bufferedNarrationPromise = fetch(sourceUrl, {
+    cache: "force-cache",
+    credentials: "same-origin",
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Unable to buffer narration: ${response.status}`);
+      return response.blob();
+    })
+    .then((blob) => {
+      if (blob.size < 1024) throw new Error("Buffered narration response was empty.");
+      bufferedNarrationUrl = URL.createObjectURL(blob);
+      document.body.dataset.audioBuffer = "ready";
+      if (audio && playbackRequested && !audio.paused && !mediaReloadInFlight) {
+        reloadMediaAt(audio.currentTime);
+      }
+      return bufferedNarrationUrl;
+    })
+    .catch(() => {
+      document.body.dataset.audioBuffer = "network";
+      return null;
+    });
+};
+
+const selectBufferedNarration = () => {
+  if (!audio || !bufferedNarrationUrl || audio.currentSrc === bufferedNarrationUrl) return;
+  audio.src = bufferedNarrationUrl;
+  document.body.dataset.audioSource = "local";
+  audio.load();
+};
+
 const releaseScreenWakeLock = () => {
   const lock = screenWakeLock;
   screenWakeLock = null;
@@ -1478,6 +1516,7 @@ const reloadMediaAt = (resumeAt: number) => {
   if (!audio || mediaReloadInFlight || !playbackRequested || audio.ended) return;
   mediaReloadInFlight = true;
   clearPendingMediaSeek();
+  selectBufferedNarration();
   let resumed = false;
   const resume = () => {
     if (resumed) return;
@@ -1784,3 +1823,4 @@ restorePosition();
 syncDockFootprint();
 updateCinematicMotion();
 updatePlayState();
+if (!desktopReader.matches) window.setTimeout(prepareBufferedNarration, 350);
