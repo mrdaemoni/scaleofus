@@ -20,18 +20,9 @@ const fetchSvg = (source: string) => {
   return request;
 };
 
-const fetchSvgMarkup = async (source: string) => {
-  const response = await fetch(source, { credentials: "same-origin" });
-  if (!response.ok) throw new Error(`Unable to load drawing ${source}: ${response.status}`);
-  return response.text();
-};
-
-const makeLightweightSvg = (markup: string) => markup
-  .replace(/\sdata-r(?=\s|>)/g, ' data-r=""')
-  .replace(/<path class="grain"[^>]*\/>/g, "")
-  .replace(/<g class="f(?: jolt-f)? live" data-f="[123]"[^>]*>.*?<\/g>/g, "")
-  .replaceAll("var(--live,#000)", "#6f6165")
-  .replaceAll('fill="#000"', 'fill="#6f6165"');
+const mobileSourceFor = (source: string) => source
+  .replace("/wind-story/live/", "/wind-story/mobile/")
+  .replace(/\.svg$/, ".webp");
 
 const stopBoilIfIdle = () => {
   if (visibleDrawings.size || !boilTimer) return;
@@ -83,15 +74,12 @@ const showLightweightDrawing = (drawing: HTMLElement) => {
 };
 
 const releaseLightweightDrawing = (drawing: HTMLElement) => {
-  if (drawing.dataset.liveRenderMode !== "image" || visibleDrawings.has(drawing)) return;
-  const objectUrl = drawing.dataset.liveObjectUrl;
-  if (objectUrl) URL.revokeObjectURL(objectUrl);
+  if (drawing.dataset.liveRenderMode !== "raster" || visibleDrawings.has(drawing)) return;
   drawing.replaceChildren();
   drawing.classList.remove("is-boil-0", "is-boil-1", "is-boil-2", "is-drawn");
   delete drawing.dataset.liveLoaded;
   delete drawing.dataset.liveRevealed;
   delete drawing.dataset.liveRenderMode;
-  delete drawing.dataset.liveObjectUrl;
 };
 
 const cancelDrawingRelease = (drawing: HTMLElement) => {
@@ -105,7 +93,7 @@ const scheduleDrawingRelease = (drawing: HTMLElement) => {
   if (
     !compactReader.matches
     || drawingUnloadTimers.has(drawing)
-    || (drawing.dataset.liveRenderMode !== "image" && !drawingLoads.has(drawing))
+    || (drawing.dataset.liveRenderMode !== "raster" && !drawingLoads.has(drawing))
   ) return;
   const timer = window.setTimeout(() => {
     drawingUnloadTimers.delete(drawing);
@@ -114,33 +102,26 @@ const scheduleDrawingRelease = (drawing: HTMLElement) => {
   drawingUnloadTimers.set(drawing, timer);
 };
 
-const mountLightweightDrawing = async (drawing: HTMLElement, source: string) => {
-  const markup = makeLightweightSvg(await fetchSvgMarkup(source));
-  const objectUrl = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml" }));
-  return new Promise<void>((resolve, reject) => {
-    const image = document.createElement("img");
-    image.className = "live-drawing-image";
-    image.alt = "";
-    image.decoding = "async";
-    image.loading = "eager";
-    image.setAttribute("aria-hidden", "true");
-    image.addEventListener("load", () => {
-      drawing.replaceChildren(image);
-      drawing.classList.add("is-boil-0", "is-drawn");
-      drawing.dataset.liveLoaded = "true";
-      drawing.dataset.liveRevealed = "true";
-      drawing.dataset.liveRenderMode = "image";
-      drawing.dataset.liveObjectUrl = objectUrl;
-      if (!visibleDrawings.has(drawing)) scheduleDrawingRelease(drawing);
-      resolve();
-    }, { once: true });
-    image.addEventListener("error", () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error(`Unable to load drawing ${source}.`));
-    }, { once: true });
-    image.src = objectUrl;
-  });
-};
+const mountLightweightDrawing = (drawing: HTMLElement, source: string) => new Promise<void>((resolve, reject) => {
+  const mobileSource = mobileSourceFor(source);
+  const image = document.createElement("img");
+  image.className = "live-drawing-image";
+  image.alt = "";
+  image.decoding = "async";
+  image.loading = "eager";
+  image.setAttribute("aria-hidden", "true");
+  image.addEventListener("load", () => {
+    drawing.replaceChildren(image);
+    drawing.classList.add("is-boil-0", "is-drawn");
+    drawing.dataset.liveLoaded = "true";
+    drawing.dataset.liveRevealed = "true";
+    drawing.dataset.liveRenderMode = "raster";
+    if (!visibleDrawings.has(drawing)) scheduleDrawingRelease(drawing);
+    resolve();
+  }, { once: true });
+  image.addEventListener("error", () => reject(new Error(`Unable to load drawing ${mobileSource}.`)), { once: true });
+  image.src = mobileSource;
+});
 
 const injectDrawing = async (drawing: HTMLElement) => {
   if (drawing.dataset.liveLoaded === "true") return;

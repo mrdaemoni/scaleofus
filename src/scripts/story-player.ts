@@ -1683,9 +1683,12 @@ const installReaderDiagnostics = () => {
     const activeBeatNumber = activeParagraph >= 0
       ? paragraphs[activeParagraph]?.dataset.beatNumber ?? "-"
       : document.body.dataset.readingStage ?? "-";
+    const drawingMode = document.querySelector("[data-live-render-mode='inline']")
+      ? "inline"
+      : document.querySelector("[data-live-render-mode='raster']") ? "raster" : "none";
     panel.textContent = [
       `DIAGNOSTIC · page ${activeBeatNumber} / expected ${expectedBeat} · boot ${diagnosticsBoot}`,
-      `nav ${navigationType} · drawing ${document.querySelector("[data-live-render-mode='inline']") ? "inline" : "image"}`,
+      `nav ${navigationType} · drawing ${drawingMode}`,
       `audio ${audio.currentTime.toFixed(2)}s · ${audio.paused ? "PAUSED" : "playing"} · clock age ${Math.round(now - lastClockAdvanceAt)}ms`,
       `ready ${audio.readyState} · network ${audio.networkState} · buffered ${bufferedAhead.toFixed(1)}s`,
       `last ${lastEvent} · ${Math.round(now - lastEventAt)}ms ago · error ${document.body.dataset.playbackError ?? "none"}`,

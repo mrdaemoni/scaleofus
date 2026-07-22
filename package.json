@@ -10,6 +10,7 @@
     "build": "astro build",
     "build:pages": "astro build && mkdir -p docs && cp -R dist/. docs/",
     "render:sketches": "node scripts/render-remarkable-sketches.mjs",
+    "render:mobile-drawings": "node scripts/generate-mobile-drawings.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
