@@ -805,6 +805,21 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
   animation-delay: -11s;
 }
 
+.mountain-face {
+  position: absolute;
+  z-index: 1;
+  inset: 5% 0 0;
+  display: block;
+  background: linear-gradient(
+    154deg,
+    rgba(246, 231, 233, 0.62),
+    rgba(210, 190, 195, 0.42) 68%,
+    rgba(201, 171, 180, 0.34)
+  );
+  clip-path: polygon(0 100%, 8% 92%, 18% 84%, 28% 71%, 38% 58%, 47% 36%, 52% 8%, 59% 32%, 68% 49%, 78% 66%, 89% 84%, 100% 100%);
+  box-shadow: inset 0 -24px 40px rgba(178, 141, 151, 0.08);
+}
+
 .mountain-climber {
   position: absolute;
   z-index: 5;

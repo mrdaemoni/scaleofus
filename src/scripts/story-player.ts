@@ -98,6 +98,7 @@ let coverWindResponseTimer = 0;
 let chapterSeekMinimumTimer = 0;
 let lastReadingScrollY = scrollY;
 let lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+let lastMobileStageSecond = Number.NEGATIVE_INFINITY;
 let lastSavedProgressSecond = -1;
 let mountainAnchors: Array<{ x: number; y: number }> = [];
 const windTrailTimers = new Map<HTMLElement, number>();
@@ -370,15 +371,24 @@ const runMobileNarrationLoop = () => {
   mobileNarrationTimer = 0;
   if (!audio || !playbackRequested || audio.ended) return;
   if (!audio.paused && !chapterSeekInProgress) {
-    // Native timeupdate owns page movement and the player UI. This smaller
-    // clock only keeps word highlighting fluid between those native events.
+    const seconds = audio.currentTime;
     syncNarrationWord();
+    // Mobile WebKit and Chromium can reduce `timeupdate` delivery while a
+    // smooth page transition is running. Keep the reading stage tied directly
+    // to the media clock so a sparse native event cannot strand the page.
+    if (Math.abs(seconds - lastMobileStageSecond) >= 0.18) {
+      updateStoryProgress(seconds);
+      syncReadingStage(seconds, "audio");
+      auditPlaybackFollow();
+      lastMobileStageSecond = seconds;
+    }
   }
   mobileNarrationTimer = window.setTimeout(runMobileNarrationLoop, 160);
 };
 
 const startNarrationLoop = () => {
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+  lastMobileStageSecond = Number.NEGATIVE_INFINITY;
   if (desktopReader.matches) {
     if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
   } else if (!mobileNarrationTimer) {
@@ -392,6 +402,7 @@ const stopNarrationLoop = () => {
   if (mobileNarrationTimer) window.clearTimeout(mobileNarrationTimer);
   mobileNarrationTimer = 0;
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
+  lastMobileStageSecond = Number.NEGATIVE_INFINITY;
   syncNarrationWord(true);
 };
 
