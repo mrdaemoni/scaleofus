@@ -409,7 +409,7 @@ const resolvedSpeaker = (
   <div class="audio-dock is-compact" data-audio-dock>
     <audio
       data-audio
-      preload="metadata"
+      preload="auto"
       playsinline
     >
       {(windStoryReader.audio.sources ?? [{ src: windStoryReader.audio.src, type: "audio/mpeg" }]).map((source) => (

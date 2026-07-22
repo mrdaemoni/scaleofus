@@ -17,18 +17,18 @@ export const windStoryReader: StoryReaderConfig = {
   intro: "A story about a boy, a machine, and the part of us no answer can hold.",
   narrationAvailable: true,
   audio: {
-    // Keep playback on one progressive file. Native HLS introduced segment
-    // handoff stalls on iOS around the second story page; this fast-start M4A
-    // can be streamed and sought with ordinary byte-range requests instead.
-    src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=story-v15-progressive-20260722",
+    // Keep playback on one progressive MP3. It has no container handoffs or
+    // MP4 index dependency, and every mobile browser can resume it with an
+    // ordinary byte-range request if the connection briefly goes quiet.
+    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v15-mp3-20260722",
     sources: [
       {
-        src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=story-v15-progressive-20260722",
-        type: 'audio/mp4; codecs="mp4a.40.2"',
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v15-mp3-20260722",
+        type: "audio/mpeg",
       },
       {
-        src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v15-progressive-20260722",
-        type: "audio/mpeg",
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=story-v15-mp3-20260722",
+        type: 'audio/mp4; codecs="mp4a.40.2"',
       },
     ],
     duration: 1020.074,

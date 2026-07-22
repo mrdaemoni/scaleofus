@@ -78,8 +78,12 @@ let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let autoScrollTarget = -1;
 let playbackRecoveryTimer = 0;
+let playbackHealthTimer = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
+let lastObservedMediaTime = 0;
+let lastMediaAdvanceAt = 0;
+let lastMediaRecoveryAt = 0;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
@@ -444,6 +448,7 @@ const setReaderMode = (mode: ReaderMode) => {
     }
     playbackRequested = false;
     mediaIsBuffering = false;
+    stopPlaybackHealthCheck();
     releaseScreenWakeLock();
     audio?.pause();
     stopNarrationLoop();
@@ -1039,6 +1044,7 @@ const togglePlayback = async (event?: Event) => {
     } catch (error) {
       recordPlaybackError(error);
       playbackRequested = false;
+      stopPlaybackHealthCheck();
       releaseScreenWakeLock();
       stopNarrationLoop();
       updatePlayState();
@@ -1046,6 +1052,7 @@ const togglePlayback = async (event?: Event) => {
     }
   } else {
     playbackRequested = false;
+    stopPlaybackHealthCheck();
     releaseScreenWakeLock();
     audio.pause();
   }
@@ -1374,6 +1381,8 @@ const requestScreenWakeLock = () => {
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
+  noteMediaProgress(true);
+  armPlaybackHealthCheck();
   requestScreenWakeLock();
   updatePlayState();
   if (chapterSeekInProgress) {
@@ -1400,6 +1409,7 @@ audio?.addEventListener("pause", () => {
     // the lightweight visual clock alive so a successful resume cannot leave
     // the read-along frozen on the previous page.
     startNarrationLoop();
+    armPlaybackHealthCheck(900);
     audio.play().catch((error) => {
       recordPlaybackError(error);
       playbackRecoveryTimer = window.setTimeout(() => {
@@ -1410,6 +1420,7 @@ audio?.addEventListener("pause", () => {
       }, 600);
     });
   } else {
+    stopPlaybackHealthCheck();
     stopNarrationLoop();
   }
 });
@@ -1418,6 +1429,7 @@ audio?.addEventListener("ended", () => {
   mediaIsBuffering = false;
   releaseScreenWakeLock();
   clearPendingMediaSeek();
+  stopPlaybackHealthCheck();
   updatePlayState();
   stopNarrationLoop();
 });
@@ -1428,11 +1440,79 @@ const setMediaBuffering = (buffering: boolean) => {
   updatePlayState();
 };
 
+const stopPlaybackHealthCheck = () => {
+  if (playbackHealthTimer) window.clearTimeout(playbackHealthTimer);
+  playbackHealthTimer = 0;
+  delete document.body.dataset.audioHealth;
+};
+
+const armPlaybackHealthCheck = (delay = 1100) => {
+  if (playbackHealthTimer) window.clearTimeout(playbackHealthTimer);
+  playbackHealthTimer = 0;
+  if (!audio || !playbackRequested || audio.ended || document.visibilityState !== "visible") return;
+  playbackHealthTimer = window.setTimeout(auditPlaybackHealth, delay);
+};
+
+const noteMediaProgress = (force = false) => {
+  if (!audio) return;
+  const observedTime = audio.currentTime;
+  if (!force && Math.abs(observedTime - lastObservedMediaTime) < 0.035) return;
+  lastObservedMediaTime = observedTime;
+  lastMediaAdvanceAt = Date.now();
+  document.body.dataset.audioHealth = "playing";
+  if (mediaIsBuffering && !chapterSeekInProgress) setMediaBuffering(false);
+};
+
+const auditPlaybackHealth = () => {
+  playbackHealthTimer = 0;
+  if (!audio || !playbackRequested || audio.ended || document.visibilityState !== "visible") return;
+  if (chapterSeekInProgress || audio.seeking) {
+    armPlaybackHealthCheck(900);
+    return;
+  }
+
+  if (Math.abs(audio.currentTime - lastObservedMediaTime) >= 0.035) {
+    noteMediaProgress(true);
+    armPlaybackHealthCheck();
+    return;
+  }
+
+  const now = Date.now();
+  const stalledFor = now - lastMediaAdvanceAt;
+  if (stalledFor < 3200) {
+    armPlaybackHealthCheck(Math.max(700, 3200 - stalledFor));
+    return;
+  }
+
+  document.body.dataset.audioHealth = "recovering";
+  setMediaBuffering(true);
+  if (audio.paused) {
+    audio.play().catch(recordPlaybackError);
+    armPlaybackHealthCheck(1200);
+    return;
+  }
+
+  // Keep the same media element and the same source. A nearly invisible seek
+  // asks iOS for a fresh byte range when its decoder has stopped consuming an
+  // otherwise healthy progressive stream.
+  if (now - lastMediaRecoveryAt >= 2400) {
+    lastMediaRecoveryAt = now;
+    const resumeAt = audio.currentTime;
+    try {
+      audio.currentTime = Math.min(resumeAt + 0.025, Math.max(0, mediaDuration() - 0.05));
+    } catch {}
+    audio.play().catch(recordPlaybackError);
+  }
+  armPlaybackHealthCheck(1200);
+};
+
 audio?.addEventListener("waiting", () => {
   setMediaBuffering(true);
+  armPlaybackHealthCheck(900);
 });
 audio?.addEventListener("stalled", () => {
   setMediaBuffering(true);
+  armPlaybackHealthCheck(900);
 });
 audio?.addEventListener("error", () => {
   if (playbackRequested && !audio.ended) setMediaBuffering(true);
@@ -1440,6 +1520,7 @@ audio?.addEventListener("error", () => {
 audio?.addEventListener("playing", () => {
   delete document.body.dataset.playbackError;
   if (!chapterSeekInProgress) setMediaBuffering(false);
+  noteMediaProgress(true);
   handlePlaybackStarted();
 });
 audio?.addEventListener("loadedmetadata", retryPendingMediaSeek);
@@ -1449,6 +1530,7 @@ audio?.addEventListener("seeked", retryPendingMediaSeek);
 audio?.addEventListener("canplay", () => {
   retryPendingMediaSeek();
   if (!chapterSeekInProgress) setMediaBuffering(false);
+  if (playbackRequested) armPlaybackHealthCheck();
 });
 audio?.addEventListener("timeupdate", () => {
   if (chapterSeekInProgress) {
@@ -1456,6 +1538,7 @@ audio?.addEventListener("timeupdate", () => {
     return;
   }
   if (mediaIsBuffering) setMediaBuffering(false);
+  noteMediaProgress();
   updateStoryProgress(audio.currentTime);
   syncNarrationWord();
   syncReadingStage(audio.currentTime, "audio");
@@ -1570,6 +1653,7 @@ document.addEventListener("visibilitychange", () => {
     || audio.ended
   ) {
     if (document.visibilityState !== "visible") {
+      stopPlaybackHealthCheck();
       releaseScreenWakeLock();
     }
     return;
@@ -1578,7 +1662,10 @@ document.addEventListener("visibilitychange", () => {
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });
-addEventListener("pagehide", releaseScreenWakeLock);
+addEventListener("pagehide", () => {
+  stopPlaybackHealthCheck();
+  releaseScreenWakeLock();
+});
 addEventListener("pageshow", () => {
   if (playbackRequested && !chapterSeekInProgress && audio && !audio.paused && !audio.ended) {
     handlePlaybackStarted();
