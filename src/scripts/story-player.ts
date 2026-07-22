@@ -61,6 +61,8 @@ const syncMobileSafeReader = () => {
 
 syncMobileSafeReader();
 
+const usesMobileListeningStage = () => readerMode === "listen" && mobileSafeReader.matches;
+
 let activeChapter = -1;
 let activeBeat = -1;
 let activeParagraph = -1;
@@ -447,6 +449,10 @@ const setReaderMode = (mode: ReaderMode) => {
   if (mode === "listen") {
     followNarration = true;
     follow?.setAttribute("aria-pressed", "true");
+    if (mobileSafeReader.matches) {
+      releaseScrollToNarration();
+      window.scrollTo(0, 0);
+    }
   } else {
     if (chapterSeekInProgress) {
       chapterSeekToken += 1;
@@ -494,7 +500,10 @@ const setChapter = (index: number) => {
     const activeLink = dockChapterLinks.find((link) => Number(link.dataset.chapterIndex) === index);
     if (activeLink) {
       const left = activeLink.offsetLeft - dockChapterNav.clientWidth / 2 + activeLink.offsetWidth / 2;
-      dockChapterNav.scrollTo({ left: Math.max(0, left), behavior: reducedMotion.matches ? "auto" : "smooth" });
+      dockChapterNav.scrollTo({
+        left: Math.max(0, left),
+        behavior: reducedMotion.matches || mobileSafeReader.matches ? "auto" : "smooth",
+      });
     }
   }
 };
@@ -615,6 +624,14 @@ const readingFocus = () => {
 };
 
 const scrollForNarration = (desiredTop: number, behavior: ScrollBehavior = "smooth") => {
+  if (usesMobileListeningStage()) {
+    if (autoScrollTimer) window.clearTimeout(autoScrollTimer);
+    autoScrollTimer = 0;
+    autoScrollActive = false;
+    autoScrollTarget = -1;
+    if (scrollY !== 0) window.scrollTo(0, 0);
+    return;
+  }
   const maximumTop = Math.max(0, document.documentElement.scrollHeight - innerHeight);
   const targetTop = clamp(desiredTop, 0, maximumTop);
   const distance = Math.abs(targetTop - scrollY);
@@ -737,6 +754,10 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
   const paragraph = paragraphs[index];
   if (!paragraph || !followNarration || manualScrollActive) return;
   const fittedElement = fitBeatToViewport(index);
+  if (usesMobileListeningStage()) {
+    lastCenteredParagraph = index;
+    return;
+  }
   const bounds = readingBounds();
   const rect = paragraph.getBoundingClientRect();
   const desiredTop = fittedElement
@@ -749,6 +770,10 @@ const centerParagraph = (index: number, behavior: ScrollBehavior = "smooth") => 
 const centerHeading = (index: number, behavior: ScrollBehavior = "smooth", force = false) => {
   const heading = chapterHeadings[index];
   if (!heading || (!followNarration && !force) || manualScrollActive) return;
+  if (usesMobileListeningStage()) {
+    lastCenteredHeading = index;
+    return;
+  }
   const bounds = readingBounds();
   const rect = heading.getBoundingClientRect();
   const viewportCenter = bounds.top + bounds.height / 2;
@@ -759,6 +784,10 @@ const centerHeading = (index: number, behavior: ScrollBehavior = "smooth", force
 const centerCover = (behavior: ScrollBehavior = "smooth") => {
   if (!followNarration || manualScrollActive) return;
   lastCenteredHeading = -2;
+  if (usesMobileListeningStage()) {
+    if (scrollY !== 0) window.scrollTo(0, 0);
+    return;
+  }
   scrollForNarration(0, behavior);
 };
 
@@ -899,6 +928,7 @@ const centerReadingStage = (seconds: number, behavior: ScrollBehavior = "smooth"
 };
 
 const playbackStageIsAligned = (seconds: number) => {
+  if (usesMobileListeningStage()) return true;
   if (isCoverTime(seconds)) return scrollY < 48;
   const bounds = readingBounds();
   const headingIndex = headingForTime(seconds);
@@ -1157,6 +1187,7 @@ const queueViewportSync = (delay = 140) => {
 };
 
 const beginManualScroll = (event: Event) => {
+  if (usesMobileListeningStage()) return;
   const target = event.target as Element | null;
   if (target?.closest("[data-audio-dock]")) return;
   manualScrollActive = true;
@@ -1373,7 +1404,6 @@ const requestScreenWakeLock = () => {
       lock.addEventListener("release", () => {
         if (screenWakeLock === lock) screenWakeLock = null;
         document.body.dataset.wakeLock = "released";
-        if (shouldHoldScreenAwake()) window.setTimeout(requestScreenWakeLock, 250);
       }, { once: true });
     })
     .catch(() => {
@@ -1655,12 +1685,28 @@ const installReaderDiagnostics = () => {
   if (!audio || !diagnosticParameters.has("readerDiagnostics")) return;
   const diagnosticsVersion = diagnosticParameters.get("v") ?? "default";
   const diagnosticsBootKey = `scaleofus-reader-diagnostic-boots:${diagnosticsVersion}`;
+  const diagnosticsStateKey = `scaleofus-reader-diagnostic-state:${diagnosticsVersion}`;
+  type DiagnosticSnapshot = {
+    capturedAt: number;
+    audioTime: number;
+    page: string;
+    event: string;
+    mode: ReaderMode;
+    paused: boolean;
+    ready: number;
+    network: number;
+    wake: string;
+  };
   let diagnosticsBoot = 1;
+  let previousSnapshot: DiagnosticSnapshot | null = null;
   try {
+    const storedSnapshot = sessionStorage.getItem(diagnosticsStateKey);
+    if (storedSnapshot) previousSnapshot = JSON.parse(storedSnapshot) as DiagnosticSnapshot;
     diagnosticsBoot = Number(sessionStorage.getItem(diagnosticsBootKey) ?? 0) + 1;
     sessionStorage.setItem(diagnosticsBootKey, String(diagnosticsBoot));
   } catch {}
   const navigationType = (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type ?? "unknown";
+  const wasDiscarded = Boolean((document as Document & { wasDiscarded?: boolean }).wasDiscarded);
   document.body.dataset.readerDiagnostics = "true";
   const panel = document.createElement("output");
   panel.className = "reader-diagnostics";
@@ -1703,16 +1749,34 @@ const installReaderDiagnostics = () => {
     const drawingMode = document.querySelector("[data-live-render-mode='inline']")
       ? "inline"
       : document.querySelector("[data-live-render-mode='raster']") ? "raster" : "none";
+    const previousLines = previousSnapshot && diagnosticsBoot > 1 ? [
+      `BEFORE RESTART · page ${previousSnapshot.page} · audio ${previousSnapshot.audioTime.toFixed(2)}s · ${previousSnapshot.paused ? "PAUSED" : "playing"}`,
+      `event ${previousSnapshot.event} · ready ${previousSnapshot.ready} · network ${previousSnapshot.network} · wake ${previousSnapshot.wake} · saved ${Math.round((Date.now() - previousSnapshot.capturedAt) / 1000)}s ago`,
+    ] : [];
     panel.textContent = [
       `DIAGNOSTIC · page ${activeBeatNumber} / expected ${expectedBeat} · boot ${diagnosticsBoot}`,
-      `nav ${navigationType} · drawing ${drawingMode}`,
+      `nav ${navigationType} · discarded ${wasDiscarded} · drawing ${drawingMode}`,
       `audio ${audio.currentTime.toFixed(2)}s · ${audio.paused ? "PAUSED" : "playing"} · clock age ${Math.round(now - lastClockAdvanceAt)}ms`,
       `ready ${audio.readyState} · network ${audio.networkState} · buffered ${bufferedAhead.toFixed(1)}s`,
       `last ${lastEvent} · ${Math.round(now - lastEventAt)}ms ago · error ${document.body.dataset.playbackError ?? "none"}`,
       `mode ${readerMode} · follow ${followNarration} · manual ${manualScrollActive} · auto ${autoScrollActive}`,
       `timer ${mobileNarrationTimer ? "on" : "off"} · seek ${chapterSeekInProgress} · visible ${document.visibilityState}`,
-      `wake ${document.body.dataset.wakeLock ?? "unknown"} · drawings ${document.querySelectorAll("[data-live-loaded='true']").length} · effects ${mobileSafeReader.matches ? "basic" : "full"}`,
+      `wake ${document.body.dataset.wakeLock ?? "unknown"} · drawings ${document.querySelectorAll("[data-live-loaded='true']").length} · stage ${usesMobileListeningStage() ? "single" : "scroll"}`,
+      ...previousLines,
     ].join("\n");
+    try {
+      sessionStorage.setItem(diagnosticsStateKey, JSON.stringify({
+        capturedAt: Date.now(),
+        audioTime: audio.currentTime,
+        page: String(activeBeatNumber),
+        event: lastEvent,
+        mode: readerMode,
+        paused: audio.paused,
+        ready: audio.readyState,
+        network: audio.networkState,
+        wake: document.body.dataset.wakeLock ?? "unknown",
+      } satisfies DiagnosticSnapshot));
+    } catch {}
   };
   updateDiagnostics();
   window.setInterval(updateDiagnostics, 1000);

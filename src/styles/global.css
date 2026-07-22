@@ -3966,6 +3966,63 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-hea
   animation: none;
 }
 
+/*
+ * Listening on a phone is a single-frame stage, not a 56-page scrolling
+ * document. Only the spoken cover, chapter heading, or story beat participates
+ * in layout. Reading mode remains the ordinary continuous page.
+ */
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] {
+  height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-cover,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .reader-shell,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-heading,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-after {
+  display: none;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading-stage="cover"] .story-cover {
+  display: grid;
+  height: 100svh;
+  min-height: 0;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .reader-shell {
+  width: 100%;
+  height: 100svh;
+  min-height: 0;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"]:not([data-reading-stage="cover"]) .reader-shell,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter.is-current-chapter {
+  display: block;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter.is-current-chapter {
+  width: 100%;
+  height: 100svh;
+  min-height: 0;
+  padding: 0 16px 102px;
+  overflow: hidden;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading-stage="heading"] .chapter-heading.is-current-heading {
+  display: grid;
+  height: calc(100svh - 102px);
+  min-height: 0;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading-stage="paragraph"] .story-beat.is-current-beat {
+  display: grid;
+  margin: 0;
+  contain: layout paint style;
+}
+
 @media (max-width: 420px) {
   .cover-story-entry {
     grid-template-columns: 0.78fr 1.42fr;
