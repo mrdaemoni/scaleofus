@@ -3700,6 +3700,10 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     mix-blend-mode: normal;
   }
 
+  .living-drawing svg .grain {
+    display: none !important;
+  }
+
   .beat-copy {
     min-height: 0;
     align-self: start;

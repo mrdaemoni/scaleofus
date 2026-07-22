@@ -1,4 +1,5 @@
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const compactReader = matchMedia("(max-width: 760px)");
 const drawings = [...document.querySelectorAll<HTMLElement>("[data-live-drawing]")];
 
 const svgCache = new Map<string, Promise<string>>();
@@ -25,7 +26,7 @@ const stopBoilIfIdle = () => {
 };
 
 const startBoil = () => {
-  if (reducedMotion.matches || boilTimer || !visibleDrawings.size || document.hidden) return;
+  if (compactReader.matches || reducedMotion.matches || boilTimer || !visibleDrawings.size || document.hidden) return;
   boilTimer = window.setInterval(() => {
     phase = (phase + 1) % 3;
     visibleDrawings.forEach((drawing) => {
@@ -37,7 +38,7 @@ const startBoil = () => {
 };
 
 const jolt = (drawing: HTMLElement) => {
-  if (reducedMotion.matches || !drawing.classList.contains("is-drawn")) return;
+  if (compactReader.matches || reducedMotion.matches || !drawing.classList.contains("is-drawn")) return;
   drawing.classList.add("is-jolt-frame");
   drawing.classList.remove("is-drawing-jolt");
   void drawing.offsetWidth;
@@ -54,6 +55,14 @@ const jolt = (drawing: HTMLElement) => {
 
 const showStaticDrawing = (drawing: HTMLElement) => {
   drawing.classList.add("is-boil-0", "is-drawn", "is-grained");
+  drawing.querySelectorAll<HTMLElement>("[data-r] .chunk").forEach((chunk) => {
+    chunk.style.opacity = "1";
+  });
+};
+
+const showLightweightDrawing = (drawing: HTMLElement) => {
+  drawing.classList.remove("is-grained", "is-jolt-frame", "is-drawing-jolt");
+  drawing.classList.add("is-boil-0", "is-drawn");
   drawing.querySelectorAll<HTMLElement>("[data-r] .chunk").forEach((chunk) => {
     chunk.style.opacity = "1";
   });
@@ -101,6 +110,10 @@ const revealDrawing = async (drawing: HTMLElement) => {
     showStaticDrawing(drawing);
     return;
   }
+  if (compactReader.matches) {
+    showLightweightDrawing(drawing);
+    return;
+  }
 
   const chunks = [...drawing.querySelectorAll<HTMLElement>("[data-r] .chunk")];
   const lastChunk = chunks.reduce((maximum, chunk) => Math.max(maximum, Number(chunk.dataset.i ?? 0)), 0);
@@ -139,7 +152,7 @@ const preloadObserver = new IntersectionObserver((entries, observer) => {
 
 drawings.forEach((drawing) => {
   visibilityObserver.observe(drawing);
-  preloadObserver.observe(drawing);
+  if (!compactReader.matches) preloadObserver.observe(drawing);
 });
 
 document.addEventListener("visibilitychange", () => {
@@ -166,5 +179,21 @@ reducedMotion.addEventListener("change", () => {
   boilTimer = 0;
   drawings.forEach((drawing) => {
     if (drawing.dataset.liveLoaded === "true") showStaticDrawing(drawing);
+  });
+});
+
+compactReader.addEventListener("change", () => {
+  if (!compactReader.matches) {
+    drawings.forEach((drawing) => {
+      if (drawing.dataset.liveLoaded !== "true") preloadObserver.observe(drawing);
+    });
+    startBoil();
+    return;
+  }
+  if (boilTimer) window.clearInterval(boilTimer);
+  boilTimer = 0;
+  drawings.forEach((drawing) => {
+    preloadObserver.unobserve(drawing);
+    if (drawing.dataset.liveLoaded === "true") showLightweightDrawing(drawing);
   });
 });
