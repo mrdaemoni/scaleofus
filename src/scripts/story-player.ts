@@ -81,10 +81,13 @@ let playbackRecoveryTimer = 0;
 let playbackHealthTimer = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
+let bufferedNarrationTimer = 0;
 let lastMediaAdvanceAt = 0;
 let lastObservedMediaTime = 0;
 let mediaRecoveryStage = 0;
 let mediaReloadInFlight = false;
+let bufferedNarrationUrl = "";
+let bufferedNarrationPromise: Promise<string | null> | null = null;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
@@ -1308,9 +1311,44 @@ playButtons.forEach((button) => {
   });
 });
 
+const prepareBufferedNarration = () => {
+  if (!audio || bufferedNarrationUrl || bufferedNarrationPromise) return;
+  const sourceUrl = audio.querySelector<HTMLSourceElement>("source")?.src || audio.currentSrc;
+  if (!sourceUrl || sourceUrl.startsWith("blob:")) return;
+  document.body.dataset.audioBuffer = "loading";
+  bufferedNarrationPromise = fetch(sourceUrl, {
+    cache: "force-cache",
+    credentials: "same-origin",
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Unable to buffer narration: ${response.status}`);
+      return response.blob();
+    })
+    .then((blob) => {
+      if (blob.size < 1024) throw new Error("Buffered narration response was empty.");
+      bufferedNarrationUrl = URL.createObjectURL(blob);
+      document.body.dataset.audioBuffer = "ready";
+      return bufferedNarrationUrl;
+    })
+    .catch((error) => {
+      document.body.dataset.audioBuffer = "network";
+      console.warn(error);
+      return null;
+    });
+};
+
+const scheduleBufferedNarration = () => {
+  if (bufferedNarrationUrl || bufferedNarrationPromise || bufferedNarrationTimer) return;
+  bufferedNarrationTimer = window.setTimeout(() => {
+    bufferedNarrationTimer = 0;
+    prepareBufferedNarration();
+  }, 1200);
+};
+
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
+  scheduleBufferedNarration();
   noteMediaProgress(true);
   updatePlayState();
   if (chapterSeekInProgress) {
@@ -1375,7 +1413,8 @@ const armPlaybackHealthCheck = (delay = 3600) => {
   if (playbackHealthTimer) window.clearTimeout(playbackHealthTimer);
   playbackHealthTimer = 0;
   if (!audio || !playbackRequested || audio.ended || document.visibilityState !== "visible") return;
-  playbackHealthTimer = window.setTimeout(auditMediaClock, delay);
+  const healthDelay = bufferedNarrationUrl ? Math.min(delay, 2200) : delay;
+  playbackHealthTimer = window.setTimeout(auditMediaClock, healthDelay);
 };
 
 const noteMediaProgress = (force = false) => {
@@ -1416,6 +1455,10 @@ const reloadMediaAt = (resumeAt: number) => {
   if (!audio || mediaReloadInFlight || !playbackRequested || audio.ended) return;
   mediaReloadInFlight = true;
   clearPendingMediaSeek();
+  if (bufferedNarrationUrl && audio.currentSrc !== bufferedNarrationUrl) {
+    audio.src = bufferedNarrationUrl;
+    document.body.dataset.audioSource = "local";
+  }
   let resumed = false;
   const resume = () => {
     if (resumed) return;
@@ -1452,8 +1495,9 @@ const auditMediaClock = () => {
     return;
   }
 
-  if (stalledFor < 3200) {
-    armPlaybackHealthCheck(3200 - stalledFor);
+  const frozenClockThreshold = bufferedNarrationUrl ? 2200 : 3200;
+  if (stalledFor < frozenClockThreshold) {
+    armPlaybackHealthCheck(frozenClockThreshold - stalledFor);
     return;
   }
 
@@ -1462,6 +1506,12 @@ const auditMediaClock = () => {
   if (audio.paused) {
     audio.play().catch(recordPlaybackError);
     armPlaybackHealthCheck(2200);
+    return;
+  }
+
+  if (bufferedNarrationUrl && audio.currentSrc !== bufferedNarrationUrl) {
+    mediaRecoveryStage = 2;
+    reloadMediaAt(resumeAt);
     return;
   }
 
