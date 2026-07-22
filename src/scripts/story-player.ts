@@ -81,13 +81,10 @@ let playbackRecoveryTimer = 0;
 let playbackHealthTimer = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
-let bufferedNarrationTimer = 0;
 let lastMediaAdvanceAt = 0;
 let lastObservedMediaTime = 0;
 let mediaRecoveryStage = 0;
 let mediaReloadInFlight = false;
-let bufferedNarrationUrl = "";
-let bufferedNarrationPromise: Promise<string | null> | null = null;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
 let cinematicFrame = 0;
 let narrationFrame = 0;
@@ -115,6 +112,12 @@ let pendingMediaSeek: PendingMediaSeek | null = null;
 let mediaSeekToken = 0;
 let chapterSeekToken = 0;
 let chapterSeekInProgress = false;
+type ScreenWakeLock = EventTarget & {
+  released: boolean;
+  release: () => Promise<void>;
+};
+let screenWakeLock: ScreenWakeLock | null = null;
+let screenWakeLockRequest: Promise<void> | null = null;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
@@ -436,6 +439,7 @@ const setReaderMode = (mode: ReaderMode) => {
     playbackRequested = false;
     mediaIsBuffering = false;
     stopPlaybackHealthCheck();
+    releaseScreenWakeLock();
     audio?.pause();
     stopNarrationLoop();
     setWord(-1);
@@ -1030,6 +1034,7 @@ const togglePlayback = async (event?: Event) => {
     } catch (error) {
       recordPlaybackError(error);
       playbackRequested = false;
+      releaseScreenWakeLock();
       stopNarrationLoop();
       updatePlayState();
       return;
@@ -1037,6 +1042,7 @@ const togglePlayback = async (event?: Event) => {
   } else {
     playbackRequested = false;
     stopPlaybackHealthCheck();
+    releaseScreenWakeLock();
     audio.pause();
   }
   updatePlayState();
@@ -1311,44 +1317,60 @@ playButtons.forEach((button) => {
   });
 });
 
-const prepareBufferedNarration = () => {
-  if (!audio || bufferedNarrationUrl || bufferedNarrationPromise) return;
-  const sourceUrl = audio.querySelector<HTMLSourceElement>("source")?.src || audio.currentSrc;
-  if (!sourceUrl || sourceUrl.startsWith("blob:")) return;
-  document.body.dataset.audioBuffer = "loading";
-  bufferedNarrationPromise = fetch(sourceUrl, {
-    cache: "force-cache",
-    credentials: "same-origin",
-  })
-    .then((response) => {
-      if (!response.ok) throw new Error(`Unable to buffer narration: ${response.status}`);
-      return response.blob();
-    })
-    .then((blob) => {
-      if (blob.size < 1024) throw new Error("Buffered narration response was empty.");
-      bufferedNarrationUrl = URL.createObjectURL(blob);
-      document.body.dataset.audioBuffer = "ready";
-      return bufferedNarrationUrl;
-    })
-    .catch((error) => {
-      document.body.dataset.audioBuffer = "network";
-      console.warn(error);
-      return null;
-    });
+const shouldHoldScreenAwake = () => Boolean(
+  readerMode === "listen"
+  && playbackRequested
+  && audio
+  && !audio.paused
+  && !audio.ended
+  && document.visibilityState === "visible"
+);
+
+const releaseScreenWakeLock = () => {
+  const lock = screenWakeLock;
+  screenWakeLock = null;
+  if (lock && !lock.released) lock.release().catch(() => {});
+  if (document.body.dataset.wakeLock !== "unsupported") {
+    document.body.dataset.wakeLock = "released";
+  }
 };
 
-const scheduleBufferedNarration = () => {
-  if (bufferedNarrationUrl || bufferedNarrationPromise || bufferedNarrationTimer) return;
-  bufferedNarrationTimer = window.setTimeout(() => {
-    bufferedNarrationTimer = 0;
-    prepareBufferedNarration();
-  }, 1200);
+const requestScreenWakeLock = () => {
+  if (!shouldHoldScreenAwake() || screenWakeLock || screenWakeLockRequest) return;
+  const wakeLock = (navigator as Navigator & {
+    wakeLock?: { request: (type: "screen") => Promise<ScreenWakeLock> };
+  }).wakeLock;
+  if (!wakeLock) {
+    document.body.dataset.wakeLock = "unsupported";
+    return;
+  }
+  document.body.dataset.wakeLock = "requesting";
+  screenWakeLockRequest = wakeLock.request("screen")
+    .then((lock) => {
+      if (!shouldHoldScreenAwake()) {
+        lock.release().catch(() => {});
+        return;
+      }
+      screenWakeLock = lock;
+      document.body.dataset.wakeLock = "active";
+      lock.addEventListener("release", () => {
+        if (screenWakeLock === lock) screenWakeLock = null;
+        document.body.dataset.wakeLock = "released";
+        if (shouldHoldScreenAwake()) window.setTimeout(requestScreenWakeLock, 250);
+      }, { once: true });
+    })
+    .catch(() => {
+      document.body.dataset.wakeLock = "blocked";
+    })
+    .finally(() => {
+      screenWakeLockRequest = null;
+    });
 };
 
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
-  scheduleBufferedNarration();
+  requestScreenWakeLock();
   noteMediaProgress(true);
   updatePlayState();
   if (chapterSeekInProgress) {
@@ -1369,6 +1391,7 @@ audio?.addEventListener("pause", () => {
     startNarrationLoop();
     return;
   }
+  if (!playbackRequested || audio.ended) releaseScreenWakeLock();
   if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
     // iOS may briefly pause a media element while it changes buffers. Keep
     // the lightweight visual clock alive so a successful resume cannot leave
@@ -1390,6 +1413,7 @@ audio?.addEventListener("pause", () => {
 audio?.addEventListener("ended", () => {
   playbackRequested = false;
   mediaIsBuffering = false;
+  releaseScreenWakeLock();
   clearPendingMediaSeek();
   stopPlaybackHealthCheck();
   updatePlayState();
@@ -1413,8 +1437,7 @@ const armPlaybackHealthCheck = (delay = 3600) => {
   if (playbackHealthTimer) window.clearTimeout(playbackHealthTimer);
   playbackHealthTimer = 0;
   if (!audio || !playbackRequested || audio.ended || document.visibilityState !== "visible") return;
-  const healthDelay = bufferedNarrationUrl ? Math.min(delay, 2200) : delay;
-  playbackHealthTimer = window.setTimeout(auditMediaClock, healthDelay);
+  playbackHealthTimer = window.setTimeout(auditMediaClock, delay);
 };
 
 const noteMediaProgress = (force = false) => {
@@ -1455,10 +1478,6 @@ const reloadMediaAt = (resumeAt: number) => {
   if (!audio || mediaReloadInFlight || !playbackRequested || audio.ended) return;
   mediaReloadInFlight = true;
   clearPendingMediaSeek();
-  if (bufferedNarrationUrl && audio.currentSrc !== bufferedNarrationUrl) {
-    audio.src = bufferedNarrationUrl;
-    document.body.dataset.audioSource = "local";
-  }
   let resumed = false;
   const resume = () => {
     if (resumed) return;
@@ -1495,9 +1514,8 @@ const auditMediaClock = () => {
     return;
   }
 
-  const frozenClockThreshold = bufferedNarrationUrl ? 2200 : 3200;
-  if (stalledFor < frozenClockThreshold) {
-    armPlaybackHealthCheck(frozenClockThreshold - stalledFor);
+  if (stalledFor < 3200) {
+    armPlaybackHealthCheck(3200 - stalledFor);
     return;
   }
 
@@ -1506,12 +1524,6 @@ const auditMediaClock = () => {
   if (audio.paused) {
     audio.play().catch(recordPlaybackError);
     armPlaybackHealthCheck(2200);
-    return;
-  }
-
-  if (bufferedNarrationUrl && audio.currentSrc !== bufferedNarrationUrl) {
-    mediaRecoveryStage = 2;
-    reloadMediaAt(resumeAt);
     return;
   }
 
@@ -1680,13 +1692,18 @@ document.addEventListener("visibilitychange", () => {
     || !audio
     || audio.ended
   ) {
-    if (document.visibilityState !== "visible") stopPlaybackHealthCheck();
+    if (document.visibilityState !== "visible") {
+      stopPlaybackHealthCheck();
+      releaseScreenWakeLock();
+    }
     return;
   }
   noteMediaProgress(true);
+  requestScreenWakeLock();
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });
+addEventListener("pagehide", releaseScreenWakeLock);
 addEventListener("pageshow", () => {
   if (playbackRequested && !chapterSeekInProgress && audio && !audio.paused && !audio.ended) {
     handlePlaybackStarted();
