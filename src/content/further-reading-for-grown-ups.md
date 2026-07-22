@@ -18,15 +18,7 @@ Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/th
 
 [Walter Ong's *Orality and Literacy*](https://www.routledge.com/Orality-and-Literacy-30th-Anniversary-Edition/Ong/p/book/9780415538381) looks at what changes when spoken words become written things. [Robin Wall Kimmerer's *Braiding Sweetgrass*](https://milkweed.org/book/braiding-sweetgrass) shows how language can help us see the living world with more care.
 
-### Chapter Three — The Keeper of the Fire
-
-**[Plato, *Phaedrus*](https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0173%3APhaedrus)** — Plato asks whether writing helps memory or weakens it. The answer can be both. A tool can help us and harm us at the same time.
-
-Jacques Derrida later used the word *pharmakon* for this double effect. The keeper adds a practical question. Who is paying attention while the tool is being used?
-
-Related essay: [The Cure Is the Care](https://atthehumanscale.com/essays/the-cure-is-the-care/), about why care matters more than calling a technology good or bad.
-
-### Chapter Four — The Potter
+### Chapter Three — The Potter and the Fire
 
 **[Michael Polanyi, *The Tacit Dimension*](https://press.uchicago.edu/ucp/books/book/chicago/T/bo6035368.html)** — Polanyi says that we know more than we can explain. The boy can walk without being able to describe each movement. The potter's hands know things that do not fit into a sentence.
 
@@ -34,7 +26,7 @@ Related essay: [The Cure Is the Care](https://atthehumanscale.com/essays/the-cur
 
 Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about learning to notice what takes time to feel.
 
-### Chapter Five — The Girl at the Pond
+### Chapter Four — The Girl at the Pond
 
 **[Zhuangzi](https://plato.stanford.edu/entries/zhuangzi/)** — A line in the *Zhuangzi* says that still water can act as a mirror. The girl learns by becoming quiet enough to notice what is already there.
 
@@ -42,15 +34,7 @@ Gemma Corradi Fiumara's *The Other Side of Language* treats listening as part of
 
 Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about attention, slowness, and the space between two people.
 
-### Chapter Six — The Gardener
-
-**[Hannah Arendt, *The Human Condition*](https://press.uchicago.edu/ucp/books/book/chicago/H/bo29137972.html)** — Arendt writes about our power to begin something new. A real beginning cannot be fully predicted from what came before it. The unplanted flower carries that idea.
-
-Alicia Juarrero studies how a few good limits can make new action possible. Stuart Kauffman calls the next set of possible moves the adjacent possible. The gardener protects a few things and leaves room for life to surprise her.
-
-Related essay: [Emergence vs. Emergency](https://atthehumanscale.com/essays/emergence-vs-emergency/), about giving a system enough structure to stay safe and enough freedom to grow.
-
-### Chapter Seven — The House of Mirrors
+### Chapter Five — The House of Mirrors
 
 **Ovid, *Metamorphoses*** — The story of Narcissus is a warning about confusing a reflection with a relationship. A mirror cannot answer in its own voice.
 
@@ -58,7 +42,7 @@ Related essay: [Emergence vs. Emergency](https://atthehumanscale.com/essays/emer
 
 Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/the-humorphic-partnership/), about building a machine that can disagree, surprise, and still remain close.
 
-### Chapter Eight — The Top of the Mountain
+### Chapter Six — The Top of the Mountain
 
 **Breath, wind, and spirit** — Many old languages connect these ideas. The boy reaches the top and finds that the wind is not an object he can hold. It is also the air moving through him.
 
@@ -66,7 +50,7 @@ Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/th
 
 Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about staying with an experience before trying to turn it into an answer.
 
-### Chapter Nine — One Turn Higher
+### Chapter Seven — One Turn Higher
 
 **T. S. Eliot, *Four Quartets*** — Eliot writes about returning to a familiar place and seeing it differently. The boy comes home with the same card, but he is no longer the same reader.
 

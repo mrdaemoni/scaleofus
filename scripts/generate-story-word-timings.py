@@ -23,13 +23,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_AUDIO = ROOT / "public/audio/the-boy-who-tried-to-catch-the-wind.mp3"
 
-# Exact spot checks for boundary words that the full-recording Whisper pass
-# merges into a neighboring segment. Indices are zero-based manuscript words.
-WORD_CUE_OVERRIDES: dict[int, dict[int, dict[str, float]]] = {
-    # Whisper hears "Higher" as the final word of the preceding pond scene.
-    # Anchor it to the Gardener chapter's actual opening instead.
-    31: {0: {"start": 538.3, "end": 538.56}},
-}
+# Keep draft-specific spot corrections out of the reusable alignment pass. If a
+# future recording needs one, add it only for that recording's model label.
+WORD_CUE_OVERRIDES: dict[str, dict[int, dict[int, dict[str, float]]]] = {}
 
 
 def manuscript_beats(markdown: str) -> list[dict]:
@@ -285,10 +281,15 @@ def main() -> None:
     parser.add_argument("--transcript-json", type=Path)
     parser.add_argument("--model", default="small.en")
     parser.add_argument("--model-label")
+    parser.add_argument(
+        "--preserve-speakers",
+        action="store_true",
+        help="Copy speaker labels from the existing output when its paragraph word counts still match.",
+    )
     args = parser.parse_args()
 
     preserved_speakers: dict[tuple[int, int], list[str]] = {}
-    if args.output.exists():
+    if args.preserve_speakers and args.output.exists():
         try:
             existing = json.loads(args.output.read_text())
             for beat in existing.get("beats", []):
@@ -372,7 +373,8 @@ def main() -> None:
         display_words = [word for paragraph in paragraph_words for word in paragraph]
         beat_mapping = mapping[cursor:cursor + len(display_words)]
         beat_cues = cues[cursor:cursor + len(display_words)]
-        for word_index, cue in WORD_CUE_OVERRIDES.get(beat["number"], {}).items():
+        model_overrides = WORD_CUE_OVERRIDES.get(model_label, {})
+        for word_index, cue in model_overrides.get(beat["number"], {}).items():
             beat_cues[word_index] = cue
 
         exact = fuzzy = interpolated = 0

@@ -1,4 +1,5 @@
 import "./watercolor-weather";
+import "./live-drawings";
 
 const app = document.querySelector<HTMLElement>("[data-story-app]");
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
@@ -964,6 +965,7 @@ const wakeCoverWind = () => {
   // Restart the gust even when someone taps Listen again after pausing.
   void storyCover.offsetWidth;
   document.body.classList.add("is-cover-wind-awake");
+  document.dispatchEvent(new CustomEvent("story:wind-awake"));
   coverWindResponseTimer = window.setTimeout(() => {
     coverWindResponseTimer = 0;
     document.body.classList.remove("is-cover-wind-awake");

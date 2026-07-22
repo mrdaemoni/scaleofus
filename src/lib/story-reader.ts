@@ -34,12 +34,13 @@ export type StoryReaderConfig = {
   };
   artwork: {
     cover?: string;
+    coverKind?: "original" | "study" | "live";
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;
     sources?: Record<number, {
       src: string;
-      kind: "original" | "study";
+      kind: "original" | "study" | "live";
     }>;
   };
   motions: string[];

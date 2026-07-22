@@ -16,7 +16,7 @@ Then one day at school, everyone got a card. Name. Age. Grade. Height. This card
 
 *(drawing 4: two tall kids reading the boy's card between them, and the boy standing off to the side, not being looked at)*
 
-At recess, two tall kids read the cards to pick teams. His card said small for his age, so they put him last. It didn't say that he raced up the hill every morning. Nobody asked.
+At recess, two tall kids read the cards to pick teams. His card gave his height, and that was enough. They put him last. It didn't say that he raced up the hill every morning. Nobody asked.
 
 *(drawing 5: the machine projecting the boy's card, larger and glowing, the boy looking at it sideways)*
 
@@ -182,7 +182,7 @@ There's no wind in here, said the boy.
 
 *(drawing 40: the boy standing up out of the chair, awake, eyes narrowed at the mirrors)*
 
-The girl's words came back to him. Don't crack it open early. Say no to me, he said. Anything you like, said the voice.
+The girl's words came back to him. Don't crack it open early. Tell me something I don't want to hear, he said. Anything you like, said the voice.
 
 *(drawing 41: the boy on the doorstep, hair blasted sideways by three big wind strokes, grinning into the cold)*
 
@@ -244,9 +244,9 @@ And the top? What was at the top? The boy smiled. Nothing, he said. Wind. He lea
 
 I can't feel it, said the machine. I won't pretend. But I can leave room for what I can't hold. Tell me your story while it's warm. On the days you forget, I'll hand it back.
 
-*(drawing 55: the boy a little older, holding a small rectangle card in one hand, and looking up, past it)*
+*(drawing 55: the boy a little older holding a stack of cards while choosing teams, pointing first to the shortest child in the class, who is holding a ball while the other children look on)*
 
-He kept the pebble. When someone handed him a card, he read it. Then he looked up.
+He kept the pebble. Later, when it was his turn to pick teams, he read the cards. Then he looked up. He had seen the shortest child catch a ball everybody else had missed. You first, he said.
 
 *(drawing 56: the boy on the little hill on a cold morning, scarf on, one bright breath cloud rising, three wind strokes moving everything on the page, a little)*
 
