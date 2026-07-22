@@ -434,6 +434,24 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
   animation: livingDrawingJolt 380ms steps(4) both;
 }
 
+.reader-diagnostics {
+  position: fixed;
+  z-index: 10000;
+  top: max(7px, env(safe-area-inset-top));
+  right: 7px;
+  max-width: calc(100vw - 14px);
+  padding: 7px 9px;
+  border: 1px solid rgba(89, 61, 69, 0.28);
+  border-radius: 9px;
+  background: rgba(255, 244, 246, 0.94);
+  color: #533c43;
+  box-shadow: 0 4px 18px rgba(78, 45, 55, 0.12);
+  font: 600 9px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+  pointer-events: none;
+}
+
 .cover-invitation-art .living-drawing {
   width: 100%;
   height: 100%;
