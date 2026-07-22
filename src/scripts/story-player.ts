@@ -1636,8 +1636,10 @@ if (matchMedia("(pointer: fine)").matches) {
 }
 
 const installReaderDiagnostics = () => {
-  if (!audio || !new URLSearchParams(location.search).has("readerDiagnostics")) return;
-  const diagnosticsBootKey = "scaleofus-reader-diagnostic-boots";
+  const diagnosticParameters = new URLSearchParams(location.search);
+  if (!audio || !diagnosticParameters.has("readerDiagnostics")) return;
+  const diagnosticsVersion = diagnosticParameters.get("v") ?? "default";
+  const diagnosticsBootKey = `scaleofus-reader-diagnostic-boots:${diagnosticsVersion}`;
   let diagnosticsBoot = 1;
   try {
     diagnosticsBoot = Number(sessionStorage.getItem(diagnosticsBootKey) ?? 0) + 1;
