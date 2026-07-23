@@ -1,0 +1,53 @@
+---
+import Base from "../layouts/Base.astro";
+import { storyCatalog } from "../books";
+import "../styles/library.css";
+---
+
+<Base
+  title="The Library — Scale of Us"
+  description="Small books about big machines and the humans trying not to forget themselves."
+  bodyClass="library-page"
+  canonicalPath="/library/"
+>
+  <header class="library-nav">
+    <a class="library-wordmark" href="/" aria-label="Scale of Us">
+      <span>Scale</span><i>of</i><span>Us</span>
+    </a>
+  </header>
+
+  <main class="library-main">
+    <header class="library-intro">
+      <p>The library</p>
+      <h1>Small books about big machines.</h1>
+      <div>
+        <span aria-hidden="true"></span>
+        <p>Stories for reading slowly, or listening while the page moves with the voice.</p>
+      </div>
+    </header>
+
+    <ol class="book-shelf">
+      {storyCatalog.map((book, index) => (
+        <li>
+          <a href={book.href} aria-label={`Open ${book.title}`}>
+            <figure>
+              {book.coverArt && <img src={book.coverArt} alt="" width="768" height="480" loading={index ? "lazy" : "eager"} decoding="async" />}
+            </figure>
+            <div>
+              <small>Book {String(index + 1).padStart(2, "0")}</small>
+              <h2>{book.title}</h2>
+              <p>{book.intro}</p>
+              <span>{book.narrationAvailable ? "Read or listen" : "Read"} <i aria-hidden="true">→</i></span>
+            </div>
+          </a>
+        </li>
+      ))}
+      <li class="future-book" aria-label="More books to come">
+        <div>
+          <span aria-hidden="true"></span>
+          <p>More stories will gather here.</p>
+        </div>
+      </li>
+    </ol>
+  </main>
+</Base>

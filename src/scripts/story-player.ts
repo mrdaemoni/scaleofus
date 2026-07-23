@@ -1,6 +1,3 @@
-import "./watercolor-weather";
-import "./live-drawings";
-
 const app = document.querySelector<HTMLElement>("[data-story-app]");
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
 const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
@@ -72,6 +69,30 @@ let activeWord = -1;
 type ReaderMode = "cover" | "read" | "listen";
 let readerMode: ReaderMode = location.hash && location.hash !== "#top" ? "read" : "cover";
 document.body.dataset.readerMode = readerMode;
+let atmospherePromise: Promise<void> | null = null;
+
+const announceAtmosphereState = () => {
+  document.dispatchEvent(new CustomEvent("story:reader-mode", { detail: { mode: readerMode } }));
+  document.dispatchEvent(new CustomEvent("story:reading-stage", {
+    detail: { stage: document.body.dataset.readingStage ?? "cover" },
+  }));
+  if (document.body.classList.contains("is-cover-wind-awake")) {
+    document.dispatchEvent(new CustomEvent("story:wind-awake"));
+  }
+};
+
+const loadStoryAtmosphere = () => {
+  if (!atmospherePromise) {
+    atmospherePromise = Promise.all([
+      import("./watercolor-weather"),
+      import("./live-drawings"),
+    ]).then(() => {
+      announceAtmosphereState();
+    });
+  }
+  return atmospherePromise;
+};
+
 let followNarration = true;
 let dockPinnedOpen = false;
 let playbackRequested = false;
@@ -366,7 +387,7 @@ const setWord = (index: number) => {
   nextWord.classList.remove("is-wind-trail");
   shapeWindWake(nextWord);
   nextWord.classList.add("is-current-word");
-  document.body.dataset.activeSpeaker = nextWord.dataset.speaker ?? "narrator";
+  document.body.dataset.activeSpeaker = nextWord.dataset.voiceStyle ?? "narrator";
   activeWord = index;
 };
 
@@ -498,14 +519,16 @@ const beatForNumber = (number: number) => beats.findIndex((beat) => beat.number 
 const setChapter = (index: number) => {
   if (index < 0 || !chapters[index]) return;
   const changed = activeChapter !== index;
+  const previousChapter = activeChapter;
   activeChapter = index;
   chapterLinks.forEach((link) => {
     const isCurrent = Number(link.dataset.chapterIndex) === index;
     link.toggleAttribute("aria-current", isCurrent);
   });
-  storyChapters.forEach((chapter, chapterIndex) => {
-    chapter.classList.toggle("is-current-chapter", chapterIndex === index);
-  });
+  if (previousChapter >= 0 && previousChapter !== index) {
+    storyChapters[previousChapter]?.classList.remove("is-current-chapter");
+  }
+  storyChapters[index]?.classList.add("is-current-chapter");
   if (currentChapter) {
     currentChapter.textContent = `Chapter ${index + 1} · ${chapters[index].title}`;
   }
@@ -552,7 +575,9 @@ const measureMountainJourney = () => {
 };
 
 const updateMountainJourney = (seconds: number) => {
-  if (!mountainArt || !mountainClimber || chapters.length < 2) return;
+  // The mountain is desktop-only. Reading its geometry on phones forces a
+  // needless layout pass every 160ms even though the rail is not rendered.
+  if (!desktopReader.matches || !mountainArt || !mountainClimber || chapters.length < 2) return;
   if (mountainAnchors.length !== chapters.length) measureMountainJourney();
   if (mountainAnchors.length !== chapters.length) return;
 
@@ -598,31 +623,30 @@ const updateStoryProgress = (seconds: number) => {
 
 const setBeat = (index: number) => {
   if (index < 0 || !beats[index]) return;
-  if (activeBeat !== index && beatElements[activeBeat]) {
-    beatElements[activeBeat].style.removeProperty("--reader-beat-gap");
-    beatElements[activeBeat].querySelector<HTMLElement>("[data-cinematic-art]")
+  const previousBeat = activeBeat;
+  if (previousBeat !== index && beatElements[previousBeat]) {
+    beatElements[previousBeat].style.removeProperty("--reader-beat-gap");
+    beatElements[previousBeat].querySelector<HTMLElement>("[data-cinematic-art]")
       ?.style.removeProperty("--fitted-art-height");
+    beatElements[previousBeat].classList.remove("is-current-beat");
+    beatElements[previousBeat].removeAttribute("aria-current");
   }
   activeBeat = index;
-  beatElements.forEach((element, elementIndex) => {
-    const isCurrent = elementIndex === index;
-    element.classList.toggle("is-current-beat", isCurrent);
-    element.toggleAttribute("aria-current", isCurrent);
-  });
+  beatElements[index]?.classList.add("is-current-beat");
+  beatElements[index]?.setAttribute("aria-current", "true");
   setChapter(Number(beats[index].chapter) - 1);
 };
 
 const clearBeat = () => {
-  if (beatElements[activeBeat]) {
-    beatElements[activeBeat].style.removeProperty("--reader-beat-gap");
-    beatElements[activeBeat].querySelector<HTMLElement>("[data-cinematic-art]")
+  const currentBeat = beatElements[activeBeat];
+  if (currentBeat) {
+    currentBeat.style.removeProperty("--reader-beat-gap");
+    currentBeat.querySelector<HTMLElement>("[data-cinematic-art]")
       ?.style.removeProperty("--fitted-art-height");
+    currentBeat.classList.remove("is-current-beat");
+    currentBeat.removeAttribute("aria-current");
   }
   activeBeat = -1;
-  beatElements.forEach((element) => {
-    element.classList.remove("is-current-beat");
-    element.removeAttribute("aria-current");
-  });
 };
 
 const readingBounds = () => {
@@ -818,11 +842,10 @@ const queueViewportFit = (delay = 380) => {
 };
 
 const clearParagraphState = () => {
+  const currentParagraph = paragraphs[activeParagraph];
+  currentParagraph?.classList.remove("is-current-paragraph");
+  currentParagraph?.removeAttribute("aria-current");
   activeParagraph = -1;
-  paragraphs.forEach((paragraph) => {
-    paragraph.classList.remove("is-current-paragraph");
-    paragraph.removeAttribute("aria-current");
-  });
 };
 
 const setHeading = (index: number, source: "audio" | "scroll" | "restore" = "audio") => {
@@ -886,6 +909,7 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   if (index < 0 || !paragraphs[index]) return;
   if (activeParagraph === index && activeHeading < 0 && !coverIsActive) return;
   const changed = activeParagraph !== index || activeHeading >= 0 || coverIsActive;
+  const previousParagraph = activeParagraph;
   activeHeading = -1;
   coverIsActive = false;
   activeParagraph = index;
@@ -895,11 +919,12 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   });
   coverHeading?.classList.remove("is-current-heading");
   document.body.dataset.readingStage = "paragraph";
-  paragraphs.forEach((paragraph, paragraphIndex) => {
-    const isCurrent = paragraphIndex === index;
-    paragraph.classList.toggle("is-current-paragraph", isCurrent);
-    paragraph.toggleAttribute("aria-current", isCurrent);
-  });
+  if (previousParagraph >= 0 && previousParagraph !== index) {
+    paragraphs[previousParagraph]?.classList.remove("is-current-paragraph");
+    paragraphs[previousParagraph]?.removeAttribute("aria-current");
+  }
+  paragraphs[index].classList.add("is-current-paragraph");
+  paragraphs[index].setAttribute("aria-current", "true");
   const beatNumber = Number(paragraphs[index].dataset.beatNumber);
   setBeat(beatForNumber(beatNumber));
   document.dispatchEvent(new CustomEvent("story:reading-stage", {
@@ -1054,6 +1079,7 @@ const wakeCoverWind = () => {
 
 const togglePlayback = async (event?: Event) => {
   if (!audio) return;
+  void loadStoryAtmosphere();
   const trigger = event?.currentTarget as HTMLElement | null;
   if (trigger?.hasAttribute("data-hero-play")) wakeCoverWind();
   setReaderMode("listen");
@@ -1376,6 +1402,7 @@ readingCompass?.addEventListener("pointerleave", () => showReadingCompass(1500))
 
 readModeTriggers.forEach((trigger) => {
   trigger.addEventListener("click", () => {
+    void loadStoryAtmosphere();
     setReaderMode("read");
   });
 });
@@ -1830,3 +1857,14 @@ installReaderDiagnostics();
 syncDockFootprint();
 updateCinematicMotion();
 updatePlayState();
+
+// Keep first paint and audio controls fast, then prepare the active drawing and
+// watercolor during idle time. An immediate tap calls the same loader above.
+const idleWindow = window as Window & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+};
+if (idleWindow.requestIdleCallback) {
+  idleWindow.requestIdleCallback(() => void loadStoryAtmosphere(), { timeout: 1200 });
+} else {
+  window.setTimeout(() => void loadStoryAtmosphere(), 480);
+}

@@ -1,0 +1,512 @@
+---
+import Base from "../layouts/Base.astro";
+import "../styles/global.css";
+import { formatTime, parseStoryMarkdown } from "../lib/story";
+import type { StoryBookSource } from "../lib/story-book";
+import {
+  storyArt,
+  storyArtKind,
+  storyArtMobile,
+  speakerStyle,
+  validateStoryWordTimings,
+  validateVoicePassages,
+  voiceWords,
+} from "../lib/story-reader";
+
+const { book } = Astro.props as { book: StoryBookSource };
+const {
+  reader: windStoryReader,
+  manuscript: storyMarkdown,
+  headingTimings: storyHeadingTimings,
+  beatTimings: storyTimings,
+  wordTimings: storyWordTimings,
+} = book;
+const companion = book.presentation?.companion;
+const navigation = book.presentation?.navigation ?? { kind: "chapters" as const };
+const narrationAvailable = windStoryReader.narrationAvailable !== false;
+const duration = windStoryReader.audio.duration;
+const chapters = parseStoryMarkdown(storyMarkdown, duration, narrationAvailable ? storyTimings : []);
+if (narrationAvailable) {
+  validateVoicePassages(chapters, windStoryReader);
+  validateStoryWordTimings(chapters, storyWordTimings.beats, duration, windStoryReader);
+}
+const staticWordCues = (value: string, time: number) => value.trim().split(/\s+/).map(() => ({
+  start: time,
+  end: time,
+}));
+const activeCoverHeadingTiming = narrationAvailable ? storyHeadingTimings.cover : {
+  start: 0,
+  end: 0,
+  words: staticWordCues(windStoryReader.title, 0),
+};
+const activeChapterHeadingTimings = narrationAvailable ? storyHeadingTimings.chapters : chapters.map((chapter) => ({
+  number: chapter.number,
+  transitionStart: chapter.start,
+  start: chapter.start,
+  end: chapter.start,
+  labelWords: staticWordCues(`Chapter ${chapter.numeral}`, chapter.start),
+  titleWords: staticWordCues(chapter.title, chapter.start),
+}));
+const headingTimingByChapter = new Map(activeChapterHeadingTimings.map((heading) => [heading.number, heading]));
+if (
+  headingTimingByChapter.size !== activeChapterHeadingTimings.length
+  || headingTimingByChapter.size !== chapters.length
+) throw new Error("Chapter heading timings must contain each story chapter exactly once.");
+const timedTokens = (
+  text: string,
+  cues: ReadonlyArray<{ start: number; end: number }>,
+  context: string,
+) => {
+  const tokens = text.trim().split(/\s+/);
+  if (tokens.length !== cues.length) {
+    throw new Error(`${context} has ${tokens.length} displayed words but ${cues.length} timing cues.`);
+  }
+  let previousEnd = 0;
+  cues.forEach((cue, index) => {
+    if (
+      !Number.isFinite(cue.start)
+      || !Number.isFinite(cue.end)
+      || cue.start < previousEnd
+      || cue.end < cue.start
+      || cue.end > duration
+    ) throw new Error(`${context}, cue ${index + 1} is invalid or out of order.`);
+    previousEnd = cue.end;
+  });
+  return tokens.map((token, index) => ({ text: token, ...cues[index] }));
+};
+const coverHeadingWords = timedTokens(windStoryReader.title, activeCoverHeadingTiming.words, "Cover title");
+const chapterHeadingWords = new Map(chapters.map((chapter) => {
+  const timing = headingTimingByChapter.get(chapter.number);
+  if (!timing) throw new Error(`Chapter ${chapter.number} has no heading timing.`);
+  return [chapter.number, {
+    label: timedTokens(`Chapter ${chapter.numeral}`, timing.labelWords, `Chapter ${chapter.number} label`),
+    title: timedTokens(chapter.title, timing.titleWords, `Chapter ${chapter.number} title`),
+  }];
+}));
+const chapterData = chapters.map(({ number, title, id, beats }) => {
+  const heading = headingTimingByChapter.get(number);
+  if (!heading) throw new Error(`Chapter ${number} has no heading timing.`);
+  return {
+    number,
+    title,
+    id,
+    start: heading.start,
+    transitionStart: heading.transitionStart,
+    headingEnd: heading.end,
+    firstWordStart: beats[0]?.start ?? heading.end,
+  };
+});
+const beatData = chapters.flatMap((chapter) =>
+  chapter.beats.map(({ number, start, end }) => ({ number, start, end, chapter: chapter.number })),
+);
+const wordTimingByBeat = new Map(
+  narrationAvailable ? storyWordTimings.beats.map((beat) => [beat.number, beat] as const) : [],
+);
+const artForBeat = (number: number) => storyArt(windStoryReader, number);
+const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
+const mobileArtForBeat = (number: number) => storyArtMobile(windStoryReader, number);
+const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
+const coverMobileArt = windStoryReader.artwork.coverMobile ?? mobileArtForBeat(1) ?? coverArt;
+const coverArtKind = windStoryReader.artwork.coverKind ?? "original";
+const resolvedSpeaker = (
+  chapterNumber: number,
+  authoredSpeaker: string,
+  timedSpeaker = "narrator",
+) => {
+  const speaker = authoredSpeaker !== "narrator" ? authoredSpeaker : timedSpeaker;
+  if (speaker !== "character") return speaker;
+  return windStoryReader.chapterCharacterVoices?.[chapterNumber] ?? speaker;
+};
+const resolvedVoice = (
+  chapterNumber: number,
+  authoredSpeaker: string,
+  timedSpeaker = "narrator",
+) => {
+  const speaker = resolvedSpeaker(chapterNumber, authoredSpeaker, timedSpeaker);
+  return { speaker, style: speakerStyle(windStoryReader, speaker) };
+};
+const chapterStyle = (chapterNumber: number) => {
+  const palette = book.presentation?.chapterPalettes?.[chapterNumber - 1];
+  if (!palette) return undefined;
+  return [
+    `--chapter-wash:${palette.wash}`,
+    `--chapter-wash-secondary:${palette.secondary}`,
+    palette.previous ? `--chapter-previous:${palette.previous}` : "",
+    palette.next ? `--chapter-next:${palette.next}` : "",
+  ].filter(Boolean).join(";");
+};
+---
+
+<Base
+  title={`${windStoryReader.title} — Scale of Us`}
+  description={`${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`}
+  bodyClass="story-page"
+  canonicalPath={book.presentation?.canonicalPath}
+  socialImage={book.presentation?.socialImage}
+  themeColor={book.presentation?.themeColor}
+>
+  <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+
+  <header class="story-nav" data-story-nav>
+    <a class="wordmark" href="#top" aria-label="Scale of Us, back to the beginning" data-reader-home>
+      <span>Scale</span><i>of</i><span>Us</span>
+    </a>
+    <nav aria-label="Story links">
+      <a href="#story" data-reader-read>Read</a>
+      {companion && <a href={companion.href}>{companion.navLabel}</a>}
+    </nav>
+  </header>
+
+  <main
+    data-story-app
+    data-reader-id={windStoryReader.id}
+    data-chapters={JSON.stringify(chapterData)}
+    data-beats={JSON.stringify(beatData)}
+  >
+    <section class="story-cover" id="top" aria-labelledby="story-title">
+      <div class="cover-vignette" aria-hidden="true"></div>
+      <div class="wind-script" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+
+      <div class="cover-copy">
+        <h1
+          id="story-title"
+          class="spoken-heading"
+          data-cover-heading
+          data-heading-start={activeCoverHeadingTiming.start}
+          data-heading-end={activeCoverHeadingTiming.end}
+        >
+          {coverHeadingWords.map((word, index) => (
+            <>
+              {index > 0 && " "}
+              <span
+                data-narration-word
+                data-heading-word
+                data-voice-style="narrator"
+                data-start={word.start}
+                data-end={word.end}
+              >{word.text}</span>
+            </>
+          ))}
+        </h1>
+        <p class="cover-intro">{windStoryReader.intro}</p>
+        <div class="cover-story-entry" role="group" aria-label="Read or listen">
+          <a class="entry-read" href="#story" data-reader-read>
+            <span class="round-book" aria-hidden="true"></span>
+            <span><strong>Read</strong><small>At your pace</small></span>
+          </a>
+          {narrationAvailable ? (
+            <button class="entry-listen" type="button" data-hero-play>
+              <span class="round-play" aria-hidden="true">▶</span>
+              <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
+            </button>
+          ) : (
+            <span class="entry-listen is-unavailable" role="status">
+              <span class="round-play" aria-hidden="true">○</span>
+              <span><strong>Listen</strong><small>V9 narration to come</small></span>
+            </span>
+          )}
+        </div>
+        <div class="cover-invitation-art" aria-hidden="true">
+          {coverArtKind === "live" ? (
+            <div
+              class="living-drawing"
+              data-live-drawing
+              data-live-cover
+              data-svg-src={coverArt}
+              data-raster-src={coverMobileArt}
+            ></div>
+          ) : (
+            <picture>
+              <source media="(max-width: 760px)" srcset={coverMobileArt} />
+              <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
+            </picture>
+          )}
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#story" aria-label="Scroll into the story" data-reader-read><span></span></a>
+    </section>
+
+    <div class="reader-shell" id="story">
+      <aside class="chapter-rail" aria-label="Chapters">
+        {navigation.kind === "mountain" && (
+          <div class="mountain-nav-art" data-mountain-art aria-hidden="true">
+            <span class="nav-cloud cloud-one"></span>
+            <span class="nav-cloud cloud-two"></span>
+            <span class="nav-cloud cloud-three"></span>
+            <span class="nav-cloud cloud-four"></span>
+            <span class="nav-cloud cloud-five"></span>
+            <span class="nav-cloud cloud-six"></span>
+            <span class="mountain-face"></span>
+            <span class="mountain-climber" data-mountain-climber>
+              <i></i>
+              <b class="climber-arm arm-left"></b>
+              <b class="climber-arm arm-right"></b>
+            </span>
+          </div>
+        )}
+        <a class="rail-home" href="#top" data-reader-home>
+          {navigation.homeLabel ?? windStoryReader.title}
+        </a>
+        <ol>
+          {chapters.map((chapter) => (
+            <li>
+              <a
+                href={`#${chapter.id}`}
+                data-chapter-link
+                data-chapter-index={chapter.number - 1}
+                data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
+              >
+                <span>{chapter.numeral}</span>
+                <em>{chapter.shortTitle}</em>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+
+      <div class="story-flow">
+        {chapters.map((chapter) => (
+          <section
+            class={`story-chapter chapter-${chapter.number}`}
+            id={chapter.id}
+            data-chapter={chapter.number}
+            data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
+            aria-labelledby={`${chapter.id}-title`}
+            style={chapterStyle(chapter.number)}
+          >
+            <header
+              class="chapter-heading"
+              data-chapter-heading
+              data-heading-index={chapter.number - 1}
+              data-transition-start={headingTimingByChapter.get(chapter.number)!.transitionStart}
+              data-heading-start={headingTimingByChapter.get(chapter.number)!.start}
+              data-heading-end={headingTimingByChapter.get(chapter.number)!.end}
+            >
+              <p class="spoken-heading">
+                {chapterHeadingWords.get(chapter.number)!.label.map((word, index) => (
+                  <>
+                    {index > 0 && " "}
+                    <span
+                      data-narration-word
+                      data-heading-word
+                      data-voice-style="narrator"
+                      data-start={word.start}
+                      data-end={word.end}
+                    >{word.text}</span>
+                  </>
+                ))}
+              </p>
+              <h2 id={`${chapter.id}-title`} class="spoken-heading">
+                {chapterHeadingWords.get(chapter.number)!.title.map((word, index) => (
+                  <>
+                    {index > 0 && " "}
+                    <span
+                      data-narration-word
+                      data-heading-word
+                      data-voice-style="narrator"
+                      data-start={word.start}
+                      data-end={word.end}
+                    >{word.text}</span>
+                  </>
+                ))}
+              </h2>
+              <div class={`chapter-mark mark-${chapter.number}`} aria-hidden="true">
+                <i></i><i></i><i></i>
+              </div>
+            </header>
+
+            <div class="chapter-beats">
+              {chapter.beats.map((beat, beatIndex) => {
+                const alignedBeat = wordTimingByBeat.get(beat.number);
+                const passages = narrationAvailable
+                  ? windStoryReader.voices.filter((passage) => passage.beat === beat.number)
+                  : [];
+                const words = beat.paragraphs.flatMap((paragraph) => voiceWords(paragraph, passages));
+                const alignedWords = alignedBeat?.paragraphs.flatMap((paragraph) => paragraph.words) ?? [];
+                const paragraphStart = alignedWords[0]?.start ?? beat.start;
+                const paragraphEnd = alignedWords.at(-1)?.end ?? beat.end;
+                const artworkSrc = artForBeat(beat.number);
+                const mobileArtwork = mobileArtForBeat(beat.number) ?? artworkSrc;
+                const artworkKind = artKindForBeat(beat.number);
+                const isOriginalArtwork = artworkKind === "original";
+                const isLiveArtwork = artworkKind === "live";
+                return (
+                  <article
+                    class="story-beat has-featured-art"
+                    id={`beat-${beat.number}`}
+                    data-beat={beat.number}
+                    data-start={beat.start}
+                    data-end={beat.end}
+                  >
+                    <figure class="beat-visual">
+                      <div
+                        class={`beat-art-frame ${isOriginalArtwork ? "is-original-sketch" : ""} ${isLiveArtwork ? "is-live-sketch" : ""} ${artworkSrc ? "" : "is-missing-art"}`}
+                        data-cinematic-art
+                      >
+                        <canvas
+                          class="watercolor-wash"
+                          data-watercolor-wash
+                          data-watercolor-seed={beat.number}
+                          width="1"
+                          height="1"
+                          aria-hidden="true"
+                        ></canvas>
+                        <div
+                          class="art-placeholder"
+                          role="img"
+                          aria-hidden={artworkSrc ? "true" : "false"}
+                          aria-label={`Drawing ${beat.number} needed: ${beat.prompt}`}
+                        >
+                          <span>{String(beat.number).padStart(2, "0")}</span>
+                          <div class="placeholder-wind"><i></i><i></i><i></i></div>
+                          <strong>Drawing to come</strong>
+                          <small>{beat.prompt}</small>
+                        </div>
+                        {artworkSrc && isLiveArtwork && (
+                          <div
+                            class="living-drawing"
+                            data-live-drawing
+                            data-svg-src={artworkSrc}
+                            data-raster-src={mobileArtwork}
+                            role="img"
+                            aria-label={`Drawing ${beat.number}: ${beat.prompt}`}
+                          ></div>
+                        )}
+                        {artworkSrc && !isLiveArtwork && (
+                          <picture>
+                            <source media="(max-width: 760px)" srcset={mobileArtwork} />
+                            <img
+                              class={isOriginalArtwork ? "is-hand-sketch" : undefined}
+                              src={artworkSrc}
+                              alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                              data-story-art
+                              loading={beat.number === 1 ? "eager" : "lazy"}
+                              decoding="async"
+                              fetchpriority={beat.number === 1 ? "high" : "low"}
+                              width="1200"
+                              height="800"
+                            />
+                          </picture>
+                        )}
+                      </div>
+                    </figure>
+
+                    <div class="beat-copy">
+                      <p class="beat-number" aria-hidden="true">{String(beat.number).padStart(2, "0")}</p>
+                      <p
+                        class={beatIndex === 0 ? "opening-line" : undefined}
+                        data-narration-paragraph
+                        data-beat-number={beat.number}
+                        data-start={paragraphStart}
+                        data-end={paragraphEnd}
+                      >
+                        {words.map((word, wordIndex) => {
+                          const cue = alignedWords[wordIndex];
+                          const voice = resolvedVoice(chapter.number, word.speaker, cue?.speaker);
+                          return (
+                            <>
+                              {wordIndex > 0 && " "}
+                              <span
+                                data-narration-word
+                                data-voice-style={voice.style}
+                                data-start={cue?.start ?? paragraphStart}
+                                data-end={cue?.end ?? paragraphEnd}
+                              >
+                                {word.text}
+                              </span>
+                            </>
+                          );
+                        })}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
+
+        {companion && (
+          <section class="story-after" aria-labelledby="after-title">
+            <p class="eyebrow">{companion.eyebrow}</p>
+            <h2 id="after-title">{companion.title}</h2>
+            <p>{companion.description}</p>
+            <a class="primary-action light" href={companion.href}>{companion.actionLabel} <span aria-hidden="true">→</span></a>
+            <a class="return-link" href="#top" data-reader-home>Return to the beginning</a>
+          </section>
+        )}
+      </div>
+    </div>
+  </main>
+
+  {narrationAvailable && (
+  <div class="audio-dock is-compact" data-audio-dock>
+    <audio
+      data-audio
+      preload="metadata"
+      playsinline
+    >
+      {(windStoryReader.audio.sources ?? [{ src: windStoryReader.audio.src, type: "audio/mpeg" }]).map((source) => (
+        <source src={source.src} type={source.type} />
+      ))}
+    </audio>
+    <nav class="dock-chapters" aria-label="Story chapters">
+      <ol>
+        {chapters.map((chapter) => (
+          <li>
+            <a
+              href={`#${chapter.id}`}
+              data-dock-chapter-link
+              data-chapter-index={chapter.number - 1}
+              data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
+              aria-label={`Chapter ${chapter.numeral}: ${chapter.title}`}
+            >
+              <span class="dock-chapter-progress" aria-hidden="true"></span>
+              <strong>{chapter.numeral}</strong>
+              <small>{chapter.shortTitle}</small>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+    <div class="dock-player">
+      <button class="dock-play" type="button" data-play aria-label="Play narration">
+        <span data-play-icon aria-hidden="true">▶</span>
+      </button>
+      <div class="dock-now">
+        <small>Now in the story</small>
+        <strong data-current-chapter>Chapter 1 · The Boy Who Tried to Catch the Wind</strong>
+      </div>
+      <div class="dock-track">
+        <div class="waveform" aria-hidden="true"></div>
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value="0"
+          step="0.1"
+          data-seek
+          aria-label="Narration position"
+        />
+        <div class="dock-time"><span data-current-time>0:00</span><span>{formatTime(duration)}</span></div>
+      </div>
+      <button class="follow-toggle" type="button" data-follow aria-pressed="true">
+        <span aria-hidden="true"></span> Follow voice
+      </button>
+      <button class="dock-collapse" type="button" data-collapse aria-label="Expand story controls" aria-expanded="false">⌃</button>
+    </div>
+  </div>
+  )}
+
+  <nav class="reading-compass" data-reading-compass aria-label="Reading navigation" aria-hidden="true">
+    <button type="button" data-reader-previous aria-label="Previous chapter">←</button>
+    <a href="#top" data-reader-home>Home</a>
+    <span data-reader-chapter-position>Chapter 1</span>
+    <button type="button" data-reader-next aria-label="Next chapter">→</button>
+  </nav>
+
+  <script src="../scripts/story-player.ts"></script>
+</Base>

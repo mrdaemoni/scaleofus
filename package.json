@@ -7,8 +7,11 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
-    "build:pages": "astro build && mkdir -p docs && cp -R dist/. docs/",
+    "build": "astro build && node scripts/prune-build-assets.mjs && node scripts/check-reader-build.mjs",
+    "build:pages": "npm run build && node scripts/sync-pages.mjs",
+    "check:reader": "node scripts/check-reader-build.mjs",
+    "new:book": "node scripts/scaffold-book.mjs",
+    "prepare:audio": "node scripts/prepare-book-audio.mjs",
     "render:sketches": "node scripts/render-remarkable-sketches.mjs",
     "render:mobile-drawings": "node scripts/generate-mobile-drawings.mjs",
     "preview": "astro preview",

@@ -1,28 +1,119 @@
-# Reusing the immersive story reader
+# Adding a book to the Scale of Us reader
 
-The reader is split into content, story-specific configuration, generated timing, and shared presentation code. A new story should not require rewriting the player or scroll behavior.
+The platform has one shared reader and a registry of books. A book is data and
+assets, not a copy of the player.
 
-## What each story supplies
+## Start a book
 
-1. A Markdown manuscript using `## Chapter …` and `**Drawing …**` markers.
-2. One audio file for the full narration. Separate chapter files are not required. A deliberate pause of about four seconds between chapters gives the shared timing pipeline a reliable chapter-title anchor.
-3. Sequential artwork files named `beat-01`, `beat-02`, and so on.
-4. A reader configuration like `src/content/wind-story-reader.ts` containing the title, introduction, audio path, artwork paths, motion names, and exact character-voice passages.
-5. Beat and word timing JSON. Generate both files with `scripts/generate-story-word-timings.py`; the manuscript remains the canonical text even when transcription differs. The generator aligns the entire manuscript to the recording and derives every reading-unit boundary from the spoken words.
-6. A compact heading-timing file like `src/content/story-heading-timings.json`. It holds the spoken cover title, each spoken chapter label and title, and the beginning of the quiet transition before each chapter.
+```sh
+npm run new:book -- a-lowercase-slug "The Book Title"
+```
 
-The generator can transcribe through `faster-whisper`, or consume an existing OpenAI Whisper word-timestamp JSON file through `--transcript-json`. Keeping that transcript outside the site is fine; only the compact generated timing JSON ships to readers.
+This creates `src/books/a-lowercase-slug/` and registers it in
+`src/books/index.ts`. Registration automatically supplies:
 
-Each drawing marker becomes one visual reading unit: one illustration followed by one continuous passage. If a beat contains several Markdown paragraphs, the reader joins them for presentation without changing their words, voice annotations, or word timings. This gives every story the same calm image-then-text rhythm while leaving the manuscript as the source of truth.
+- `/books/a-lowercase-slug/`
+- a card in `/library/`
+- build-time story validation
+- the shared reading and listening experience
 
-Every reading unit also renders an integrated drawing placeholder beneath its artwork. When an image path is missing or the file cannot load, the placeholder appears automatically with the beat number and drawing prompt, so unfinished stories keep the same visual cadence and the prompt remains ready for the illustrator.
+The root route remains the special entrance for *The Boy Who Tried to Catch
+the Wind*. Future books use their `/books/<slug>/` route.
 
-## Shared behavior
+## Book folder contract
 
-- `src/lib/story-reader.ts` validates voice passages and the complete beat-to-word timing contract, assigns a speaker to each rendered word, and resolves artwork paths. Missing beats, word-count drift, out-of-order cues, and unknown speakers stop the build instead of failing in the browser.
-- `src/scripts/story-player.ts` synchronizes words, reading units, chapters, audio progress, manual seeking, and viewport-aware illustration fitting. Listening follows a reusable three-scene rhythm: the cover title stays on the cover, the quiet gap carries the reader to the chapter title, and the first spoken sentence carries the reader to its illustration and paragraph.
-- `src/styles/global.css` defines the reusable narrator, child, human character, machine, house, and wind treatments. Every spoken word receives a newly varied wake—different reach, lift, angle, thickness, and release time—while earlier words remain in a broader fading current. The effect stays continuous without repeating one mechanical shape.
+Each book folder contains:
 
-## Voice annotation rule
+- `manuscript.md`: the canonical text and drawing prompts
+- `reader.ts`: title, introduction, narration, artwork map, and voice passages
+- `story-timings.json`: the start and end of each reading beat
+- `story-word-timings.json`: word-level narration timing
+- `story-heading-timings.json`: spoken cover and chapter-title timing
+- `book.ts`: assembles the files and presentation metadata
 
-Add only the words actually spoken to the story configuration. Each passage must match the manuscript exactly once. Unannotated words remain third-person narration. This keeps character styling explicit and makes mistakes fail during the build instead of appearing silently on the published story.
+The manuscript uses `## Chapter …` headings and
+`**Drawing 1 — description**` markers. Each drawing marker starts one reading
+beat: one landscape illustration followed by one continuous passage. If art is
+missing, the drawing prompt becomes the graceful placeholder for that beat.
+
+## Prepare narration
+
+Keep the high-resolution WAV as an authoring master outside `public/`. Browsers
+should receive compressed, progressive files:
+
+```sh
+npm run prepare:audio -- a-lowercase-slug "/absolute/path/to/narration.wav"
+```
+
+The command creates:
+
+- `public/books/a-lowercase-slug/audio/narration.mp3`
+- `public/books/a-lowercase-slug/audio/narration.m4a`
+
+It also prints the duration to copy into `reader.ts`. MP3 is the primary source
+because it resumes cleanly with ordinary byte-range requests; fast-start M4A is
+the fallback. Do not ship the WAV, split the recording into chapters, or add a
+streaming framework for a book-sized recording.
+
+Generate beat and word timing JSON with
+`scripts/generate-story-word-timings.py`. The generator can transcribe through
+`faster-whisper` or consume OpenAI Whisper word timestamps through
+`--transcript-json`. The manuscript stays canonical even when a transcript
+differs. Keep roughly four seconds of quiet between chapters so each spoken
+chapter title has a clear transition.
+
+Set `narrationAvailable: true` only after all three timing files are complete.
+The production build rejects drift, missing beats, unknown speakers, and broken
+asset references.
+
+## Add drawings
+
+Put runtime art in `public/books/<slug>/art/`. Map art to story beats explicitly
+in `reader.ts`; drawing filenames do not have to match beat numbers.
+
+For a dynamic SVG, provide:
+
+- the SVG used on desktop
+- a small WebP still in `mobileSrc` for the mobile fallback and constrained
+  devices
+
+Only the active drawing is allowed to animate. The shared runtime pauses and
+releases inactive scenes. Do not preload a whole book, embed large raster data
+inside SVGs, add GIF loops, or build a separate animation runtime for each
+story. Prefer SVG strokes and small transforms over blur and full-screen
+compositor layers.
+
+## Style voices and chapters
+
+Voice IDs are local to a book. Map each ID to a shared visual role in
+`speakerStyles`, then list only the exact dialogue passages in `voices`.
+Unlisted text remains narration. The build requires each passage to match the
+manuscript exactly once.
+
+Chapter palettes and optional companion material live in `book.ts`. Use
+`navigation: { kind: "chapters" }` for the default reusable navigation.
+The first book keeps its bespoke mountain through
+`navigation: { kind: "mountain" }`.
+
+## Performance contract
+
+The production build enforces budgets for:
+
+- reader HTML and timed-word count
+- JavaScript and CSS
+- narration files
+- individual SVG and mobile-raster drawings
+- the complete deployed site
+
+`npm run build` also removes authoring galleries, HLS experiments, old studies,
+and animation tests from `dist/` without deleting their source files. The
+listening hot path updates only the previous and current beat, and the
+atmospheric drawing modules load after interaction or idle time.
+
+Before publishing a new book:
+
+1. Run `npm run build`.
+2. Read every validation error; do not bypass a budget.
+3. Test the book locally in reading and listening modes.
+4. Test a mobile viewport and one real phone through the full narration.
+5. Run `npm run build:pages` and publish only the validated output.

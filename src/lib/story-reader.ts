@@ -1,6 +1,6 @@
 import type { StoryChapter } from "./story";
 
-export type StorySpeaker =
+export type StorySpeakerStyle =
   | "narrator"
   | "boy"
   | "character"
@@ -15,7 +15,7 @@ export type StorySpeaker =
 
 export type VoicePassage = {
   beat: number;
-  speaker: Exclude<StorySpeaker, "narrator">;
+  speaker: string;
   text: string;
 };
 
@@ -34,23 +34,26 @@ export type StoryReaderConfig = {
   };
   artwork: {
     cover?: string;
+    coverMobile?: string;
     coverKind?: "original" | "study" | "live";
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;
     sources?: Record<number, {
       src: string;
+      mobileSrc?: string;
       kind: "original" | "study" | "live";
     }>;
   };
   motions: string[];
+  speakerStyles?: Readonly<Record<string, StorySpeakerStyle>>;
   voices: VoicePassage[];
-  chapterCharacterVoices?: Partial<Record<number, Exclude<StorySpeaker, "narrator" | "character">>>;
+  chapterCharacterVoices?: Partial<Record<number, string>>;
 };
 
 export type VoicedWord = {
   text: string;
-  speaker: StorySpeaker;
+  speaker: string;
 };
 
 export type StoryWordTimingBeat = {
@@ -76,11 +79,33 @@ const occurrences = (value: string, fragment: string) => {
   return count;
 };
 
-export function validateVoicePassages(chapters: StoryChapter[], passages: VoicePassage[]) {
+const builtInSpeakerStyles = new Set<StorySpeakerStyle>([
+  "narrator", "boy", "character", "machine", "stonecutter", "keeper", "potter",
+  "girl", "gardener", "house", "wind",
+]);
+
+export function speakerStyle(config: StoryReaderConfig, speaker: string): StorySpeakerStyle {
+  if (config.speakerStyles?.[speaker]) return config.speakerStyles[speaker];
+  if (builtInSpeakerStyles.has(speaker as StorySpeakerStyle)) return speaker as StorySpeakerStyle;
+  return "character";
+}
+
+const validSpeakerIds = (config: StoryReaderConfig) => new Set([
+  "narrator",
+  "character",
+  ...builtInSpeakerStyles,
+  ...Object.keys(config.speakerStyles ?? {}),
+]);
+
+export function validateVoicePassages(chapters: StoryChapter[], config: StoryReaderConfig) {
   const beats = new Map(
     chapters.flatMap((chapter) => chapter.beats.map((beat) => [beat.number, beat.paragraphs.join("\n")] as const)),
   );
-  passages.forEach((passage) => {
+  const speakers = validSpeakerIds(config);
+  config.voices.forEach((passage) => {
+    if (!speakers.has(passage.speaker)) {
+      throw new Error(`Voice passage for beat ${passage.beat} uses unknown speaker “${passage.speaker}”.`);
+    }
     const count = occurrences(beats.get(passage.beat) ?? "", passage.text);
     if (count !== 1) {
       throw new Error(
@@ -94,6 +119,7 @@ export function validateStoryWordTimings(
   chapters: StoryChapter[],
   timings: ReadonlyArray<StoryWordTimingBeat>,
   duration: number,
+  config: StoryReaderConfig,
 ) {
   const expectedBeats = chapters.flatMap((chapter) => chapter.beats);
   const timingByNumber = new Map(timings.map((timing) => [timing.number, timing]));
@@ -102,10 +128,7 @@ export function validateStoryWordTimings(
     throw new Error(`Story has ${expectedBeats.length} beats but ${timings.length} aligned timing entries.`);
   }
 
-  const validSpeakers = new Set<StorySpeaker>([
-    "narrator", "boy", "character", "machine", "stonecutter", "keeper", "potter",
-    "girl", "gardener", "house", "wind",
-  ]);
+  const validSpeakers = validSpeakerIds(config);
   let previousCueEnd = 0;
 
   expectedBeats.forEach((beat) => {
@@ -138,7 +161,7 @@ export function validateStoryWordTimings(
         ) {
           throw new Error(`Drawing ${beat.number}, word ${wordIndex + 1} has an invalid or out-of-order cue.`);
         }
-        if (cue.speaker && !validSpeakers.has(cue.speaker as StorySpeaker)) {
+        if (cue.speaker && !validSpeakers.has(cue.speaker)) {
           throw new Error(`Drawing ${beat.number}, word ${wordIndex + 1} has unknown speaker “${cue.speaker}”.`);
         }
         previousCueEnd = cue.end;
@@ -152,7 +175,7 @@ export function voiceWords(paragraph: string, passages: VoicePassage[]): VoicedW
     text: match[0],
     start: match.index,
     end: match.index + match[0].length,
-    speaker: "narrator" as StorySpeaker,
+    speaker: "narrator",
   }));
 
   passages.forEach((passage) => {
@@ -179,4 +202,8 @@ export function storyArt(config: StoryReaderConfig, number: number) {
 export function storyArtKind(config: StoryReaderConfig, number: number) {
   if (config.artwork.sources) return config.artwork.sources[number]?.kind ?? null;
   return number <= config.artwork.originalThrough ? "original" : "study";
+}
+
+export function storyArtMobile(config: StoryReaderConfig, number: number) {
+  return config.artwork.sources?.[number]?.mobileSrc ?? storyArt(config, number);
 }

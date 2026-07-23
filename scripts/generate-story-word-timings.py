@@ -22,6 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_AUDIO = ROOT / "public/audio/the-boy-who-tried-to-catch-the-wind.mp3"
+DEFAULT_BOOK = ROOT / "src/books/the-boy-who-tried-to-catch-the-wind"
 
 # Keep draft-specific spot corrections out of the reusable alignment pass. If a
 # future recording needs one, add it only for that recording's model label.
@@ -275,9 +276,9 @@ def interpolate_missing(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--audio", type=Path, default=DEFAULT_AUDIO)
-    parser.add_argument("--story", type=Path, default=ROOT / "src/content/the-boy-who-tried-to-catch-the-wind.md")
-    parser.add_argument("--output", type=Path, default=ROOT / "src/content/story-word-timings.json")
-    parser.add_argument("--timing-output", type=Path, default=ROOT / "src/content/story-timings.json")
+    parser.add_argument("--story", type=Path, default=DEFAULT_BOOK / "the-boy-who-tried-to-catch-the-wind.md")
+    parser.add_argument("--output", type=Path, default=DEFAULT_BOOK / "story-word-timings.json")
+    parser.add_argument("--timing-output", type=Path, default=DEFAULT_BOOK / "story-timings.json")
     parser.add_argument("--transcript-json", type=Path)
     parser.add_argument("--model", default="small.en")
     parser.add_argument("--model-label")

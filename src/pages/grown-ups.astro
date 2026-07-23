@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
-import readingMarkdown from "../content/further-reading-for-grown-ups.md?raw";
+import "../styles/global.css";
+import readingMarkdown from "../books/the-boy-who-tried-to-catch-the-wind/further-reading-for-grown-ups.md?raw";
 import { inlineMarkdown, parseReadingMarkdown } from "../lib/story";
 
 const reading = parseReadingMarkdown(readingMarkdown);

@@ -2,16 +2,18 @@
 import "@fontsource-variable/playwrite-ie";
 import "@fontsource-variable/newsreader/standard.css";
 import "@fontsource-variable/newsreader/standard-italic.css";
-import "../styles/global.css";
 
 const {
   title = "Scale of Us",
   description = "Stories simple enough for children, serious enough for adults.",
   bodyClass = "",
+  canonicalPath,
+  socialImage = "/images/wind-story/og-wind-pink.jpg",
+  themeColor = "#f3dfe1",
 } = Astro.props;
 
-const canonicalUrl = new URL(Astro.url.pathname, "https://scaleofus.com").toString();
-const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pink.jpg";
+const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, "https://scaleofus.com").toString();
+const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
 ---
 
 <!doctype html>
@@ -21,7 +23,7 @@ const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pink.jpg";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f3dfe1" />
+    <meta name="theme-color" content={themeColor} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:site_name" content="Scale of Us" />
@@ -29,13 +31,13 @@ const socialImage = "https://scaleofus.com/images/wind-story/og-wind-pink.jpg";
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={socialImage} />
+    <meta property="og:image" content={socialImageUrl} />
     <meta property="og:image:width" content="1672" />
     <meta property="og:image:height" content="941" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image" content={socialImageUrl} />
   </head>
   <body class={bodyClass}>
     <slot />

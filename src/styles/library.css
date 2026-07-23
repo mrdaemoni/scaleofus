@@ -1,0 +1,243 @@
+:root {
+  --paper: #f3dfe1;
+  --paper-light: #f8ebec;
+  --ink: #5f5358;
+  --muted: #8f7d83;
+  --line: rgba(95, 83, 88, 0.2);
+  --display: "Playwrite IE Variable", "Playwrite IE", cursive;
+  --serif: "Newsreader Variable", Newsreader, Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--paper);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14)),
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(95, 83, 88, 0.012) 3px 4px),
+    var(--paper);
+  font-family: var(--serif);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.library-nav {
+  width: min(1280px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0;
+}
+
+.library-wordmark {
+  display: inline-flex;
+  gap: 0.28em;
+  align-items: baseline;
+  font-family: var(--display);
+  font-size: 19px;
+}
+
+.library-wordmark i {
+  font-size: 0.7em;
+  font-weight: 300;
+}
+
+.library-main {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(68px, 10vw, 150px) 0 120px;
+}
+
+.library-intro {
+  max-width: 760px;
+  margin-bottom: clamp(72px, 10vw, 130px);
+}
+
+.library-intro > p,
+.book-shelf small {
+  margin: 0 0 18px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.library-intro h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(52px, 8vw, 106px);
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.library-intro > div {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  max-width: 560px;
+  margin-top: 38px;
+}
+
+.library-intro > div > span {
+  flex: 0 0 54px;
+  height: 1px;
+  margin-top: 13px;
+  background: var(--ink);
+  opacity: 0.38;
+}
+
+.library-intro > div p {
+  margin: 0;
+  font-size: clamp(19px, 2vw, 25px);
+  font-weight: 350;
+  line-height: 1.45;
+}
+
+.book-shelf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(50px, 8vw, 110px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book-shelf > li > a {
+  display: block;
+}
+
+.book-shelf figure {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  margin: 0 0 32px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--paper-light) 72%, white);
+}
+
+.book-shelf figure::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line);
+  pointer-events: none;
+}
+
+.book-shelf img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: saturate(0.42) sepia(0.04) hue-rotate(310deg) contrast(0.9);
+  transition: transform 700ms ease, opacity 700ms ease;
+}
+
+.book-shelf a:hover img,
+.book-shelf a:focus-visible img {
+  opacity: 0.82;
+  transform: scale(1.025);
+}
+
+.book-shelf h2 {
+  max-width: 12ch;
+  margin: 0 0 18px;
+  font-family: var(--display);
+  font-size: clamp(34px, 4.4vw, 60px);
+  font-weight: 400;
+  line-height: 1.18;
+}
+
+.book-shelf p {
+  max-width: 38ch;
+  margin: 0;
+  font-size: clamp(17px, 1.6vw, 21px);
+  font-weight: 350;
+  line-height: 1.45;
+}
+
+.book-shelf a > div > span {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 26px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.book-shelf a > div > span i {
+  font-size: 18px;
+  font-style: normal;
+  transition: transform 250ms ease;
+}
+
+.book-shelf a:hover > div > span i,
+.book-shelf a:focus-visible > div > span i {
+  transform: translateX(5px);
+}
+
+.future-book {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.future-book span {
+  display: block;
+  width: 72px;
+  height: 34px;
+  margin: 0 auto 24px;
+  border-top: 1px solid var(--muted);
+  border-radius: 50%;
+  opacity: 0.38;
+}
+
+.future-book p {
+  color: var(--muted);
+  font-family: var(--display);
+  font-size: clamp(22px, 3vw, 34px);
+}
+
+@media (max-width: 720px) {
+  .library-nav,
+  .library-main {
+    width: min(100% - 32px, 560px);
+  }
+
+  .library-main {
+    padding-top: 54px;
+  }
+
+  .library-intro h1 {
+    font-size: clamp(48px, 15vw, 70px);
+  }
+
+  .book-shelf {
+    grid-template-columns: 1fr;
+  }
+
+  .future-book {
+    min-height: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-shelf img,
+  .book-shelf a > div > span i {
+    transition: none;
+  }
+}

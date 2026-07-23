@@ -2165,19 +2165,19 @@ body.is-listening .mountain-climber {
   transform-origin: left center;
 }
 
-.beat-copy [data-narration-word][data-speaker="boy"] {
+.beat-copy [data-narration-word][data-voice-style="boy"] {
   --word-weight: 425;
   color: #674f58;
   font-style: italic;
 }
 
-.beat-copy [data-narration-word][data-speaker="character"] {
+.beat-copy [data-narration-word][data-voice-style="character"] {
   --word-weight: 390;
   color: #735b63;
   font-style: italic;
 }
 
-.beat-copy [data-narration-word][data-speaker="stonecutter"] {
+.beat-copy [data-narration-word][data-voice-style="stonecutter"] {
   --word-weight: 455;
   --word-wind-core: rgba(115, 114, 124, 0.28);
   --word-wind-wisp: rgba(216, 213, 219, 0.46);
@@ -2186,7 +2186,7 @@ body.is-listening .mountain-climber {
   letter-spacing: 0.012em;
 }
 
-.beat-copy [data-narration-word][data-speaker="keeper"] {
+.beat-copy [data-narration-word][data-voice-style="keeper"] {
   --word-weight: 430;
   --word-wind-core: rgba(185, 117, 82, 0.3);
   --word-wind-wisp: rgba(239, 207, 185, 0.46);
@@ -2195,7 +2195,7 @@ body.is-listening .mountain-climber {
   font-style: italic;
 }
 
-.beat-copy [data-narration-word][data-speaker="potter"] {
+.beat-copy [data-narration-word][data-voice-style="potter"] {
   --word-weight: 470;
   --word-wind-core: rgba(157, 100, 78, 0.3);
   --word-wind-wisp: rgba(228, 194, 179, 0.46);
@@ -2203,7 +2203,7 @@ body.is-listening .mountain-climber {
   color: #765a51;
 }
 
-.beat-copy [data-narration-word][data-speaker="girl"] {
+.beat-copy [data-narration-word][data-voice-style="girl"] {
   --word-weight: 390;
   --word-wind-core: rgba(83, 139, 164, 0.29);
   --word-wind-wisp: rgba(190, 220, 229, 0.46);
@@ -2212,7 +2212,7 @@ body.is-listening .mountain-climber {
   font-style: italic;
 }
 
-.beat-copy [data-narration-word][data-speaker="gardener"] {
+.beat-copy [data-narration-word][data-voice-style="gardener"] {
   --word-weight: 430;
   --word-wind-core: rgba(90, 137, 94, 0.28);
   --word-wind-wisp: rgba(202, 225, 200, 0.46);
@@ -2220,7 +2220,7 @@ body.is-listening .mountain-climber {
   color: #58705d;
 }
 
-.beat-copy [data-narration-word][data-speaker="machine"] {
+.beat-copy [data-narration-word][data-voice-style="machine"] {
   --word-weight: 490;
   --word-wind-core: rgba(83, 139, 167, 0.34);
   --word-wind-wisp: rgba(190, 218, 230, 0.48);
@@ -2229,7 +2229,7 @@ body.is-listening .mountain-climber {
   letter-spacing: 0.006em;
 }
 
-.beat-copy [data-narration-word][data-speaker="house"] {
+.beat-copy [data-narration-word][data-voice-style="house"] {
   --word-weight: 470;
   --word-wind-core: rgba(130, 103, 151, 0.3);
   --word-wind-wisp: rgba(210, 190, 218, 0.44);
@@ -2237,7 +2237,7 @@ body.is-listening .mountain-climber {
   color: #70617b;
 }
 
-.beat-copy [data-narration-word][data-speaker="wind"] {
+.beat-copy [data-narration-word][data-voice-style="wind"] {
   --word-weight: 360;
   color: #667274;
   font-style: italic;
@@ -2317,28 +2317,28 @@ body.is-listening .mountain-climber {
   animation: wordWindWispAway var(--wind-release-duration, 1920ms) cubic-bezier(0.16, 0.7, 0.2, 1) both;
 }
 
-.beat-copy [data-narration-word][data-speaker="boy"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="character"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="stonecutter"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="keeper"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="potter"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="girl"].is-current-word,
-.beat-copy [data-narration-word][data-speaker="gardener"].is-current-word {
+.beat-copy [data-narration-word][data-voice-style="boy"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="character"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="stonecutter"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="keeper"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="potter"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="girl"].is-current-word,
+.beat-copy [data-narration-word][data-voice-style="gardener"].is-current-word {
   --word-weight: 540;
 }
 
-.beat-copy [data-narration-word][data-speaker="stonecutter"].is-current-word { color: #51505a; }
-.beat-copy [data-narration-word][data-speaker="keeper"].is-current-word { color: #70483d; }
-.beat-copy [data-narration-word][data-speaker="potter"].is-current-word { color: #63483f; }
-.beat-copy [data-narration-word][data-speaker="girl"].is-current-word { color: #3f6877; }
-.beat-copy [data-narration-word][data-speaker="gardener"].is-current-word { color: #46624c; }
+.beat-copy [data-narration-word][data-voice-style="stonecutter"].is-current-word { color: #51505a; }
+.beat-copy [data-narration-word][data-voice-style="keeper"].is-current-word { color: #70483d; }
+.beat-copy [data-narration-word][data-voice-style="potter"].is-current-word { color: #63483f; }
+.beat-copy [data-narration-word][data-voice-style="girl"].is-current-word { color: #3f6877; }
+.beat-copy [data-narration-word][data-voice-style="gardener"].is-current-word { color: #46624c; }
 
-.beat-copy [data-narration-word][data-speaker="machine"].is-current-word {
+.beat-copy [data-narration-word][data-voice-style="machine"].is-current-word {
   --word-weight: 620;
   color: #3f6172;
 }
 
-.beat-copy [data-narration-word][data-speaker="house"].is-current-word {
+.beat-copy [data-narration-word][data-voice-style="house"].is-current-word {
   --word-weight: 580;
   color: #604e6c;
 }

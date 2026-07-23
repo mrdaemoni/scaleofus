@@ -21,9 +21,9 @@ const fetchSvg = (source: string) => {
   return request;
 };
 
-const mobileSourceFor = (source: string) => source
-  .replace("/wind-story/live/", "/wind-story/mobile/")
-  .replace(/\.svg$/, ".webp");
+const mobileSourceFor = (drawing: HTMLElement, source: string) =>
+  drawing.dataset.rasterSrc
+  || source.replace("/live/", "/mobile/").replace(/\.svg$/, ".webp");
 
 const mobileListening = () => compactReader.matches && document.body.dataset.readerMode === "listen";
 const desiredRenderMode = () => compactReader.matches && !mobileListening() ? "raster" : "inline";
@@ -141,7 +141,7 @@ const scheduleDrawingRelease = (drawing: HTMLElement) => {
 };
 
 const mountLightweightDrawing = (drawing: HTMLElement, source: string) => new Promise<void>((resolve, reject) => {
-  const mobileSource = mobileSourceFor(source);
+  const mobileSource = mobileSourceFor(drawing, source);
   const image = document.createElement("img");
   image.className = "live-drawing-image";
   image.alt = "";

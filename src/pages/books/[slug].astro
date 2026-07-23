@@ -1,0 +1,16 @@
+---
+import StoryReader from "../../components/StoryReader.astro";
+import { storyBooks } from "../../books";
+import type { StoryBookSource } from "../../lib/story-book";
+
+export function getStaticPaths() {
+  return storyBooks.map((book) => ({
+    params: { slug: book.slug },
+    props: { book },
+  }));
+}
+
+const { book } = Astro.props as { book: StoryBookSource };
+---
+
+<StoryReader book={book} />
