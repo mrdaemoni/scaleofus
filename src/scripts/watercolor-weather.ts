@@ -38,6 +38,7 @@ const watercolorCanvases = [
 const reducedWatercolorMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const compactWatercolor = matchMedia("(max-width: 760px)");
 const stateByCanvas = new WeakMap<HTMLCanvasElement, WatercolorState>();
+let activeCompactWatercolor: HTMLCanvasElement | null = null;
 
 const hashSeed = (value: number) => {
   let seed = value + 0x6d2b79f5;
@@ -343,25 +344,74 @@ const watercolorObserver = new IntersectionObserver((entries) => {
   });
 }, { rootMargin: "12% 0px 12%", threshold: 0.01 });
 
-if (compactWatercolor.matches) {
-  // The chapter background already carries the palette on phones. Keeping
-  // dozens of canvas backing stores around adds memory without improving the
-  // fitted listening page, so collapse them completely.
-  watercolorCanvases.forEach((canvas) => {
-    canvas.hidden = true;
-    canvas.width = 1;
-    canvas.height = 1;
+const releaseCompactWatercolor = (canvas: HTMLCanvasElement) => {
+  canvas.hidden = true;
+  canvas.width = 1;
+  canvas.height = 1;
+  // Mobile pages never reuse a watercolor state while another page is active.
+  // Drop its polygon objects along with the backing store so a full narration
+  // still owns roughly one page of watercolor data, not one state per page.
+  stateByCanvas.delete(canvas);
+};
+
+const syncCompactWatercolor = () => {
+  if (!compactWatercolor.matches) return;
+  const nextCanvas = document.body.dataset.readerMode === "listen"
+    ? document.querySelector<HTMLCanvasElement>(".story-beat.is-current-beat [data-watercolor-wash]")
+    : null;
+
+  if (activeCompactWatercolor && activeCompactWatercolor !== nextCanvas) {
+    releaseCompactWatercolor(activeCompactWatercolor);
+  }
+  activeCompactWatercolor = nextCanvas;
+  if (!nextCanvas) return;
+
+  nextCanvas.hidden = false;
+  const state = stateByCanvas.get(nextCanvas) ?? buildWatercolorState(nextCanvas);
+  stateByCanvas.set(nextCanvas, state);
+  // The stage class and canvas visibility change in the same task. Render on
+  // the next frame, once the one visible page has its final fitted bounds.
+  requestAnimationFrame(() => {
+    if (
+      compactWatercolor.matches
+      && document.body.dataset.readerMode === "listen"
+      && nextCanvas === activeCompactWatercolor
+      && nextCanvas.closest(".story-beat")?.classList.contains("is-current-beat")
+    ) renderWatercolor(state, true);
   });
-} else {
-  watercolorCanvases.forEach((canvas) => watercolorObserver.observe(canvas));
-}
+};
+
+const initializeWatercolorMode = () => {
+  if (compactWatercolor.matches) {
+    activeCompactWatercolor = null;
+    watercolorCanvases.forEach((canvas) => {
+      watercolorObserver.unobserve(canvas);
+      releaseCompactWatercolor(canvas);
+    });
+    syncCompactWatercolor();
+    return;
+  }
+  activeCompactWatercolor = null;
+  watercolorCanvases.forEach((canvas) => {
+    canvas.hidden = false;
+    watercolorObserver.observe(canvas);
+  });
+};
+
+initializeWatercolorMode();
+document.addEventListener("story:reader-mode", syncCompactWatercolor);
+document.addEventListener("story:reading-stage", syncCompactWatercolor);
+compactWatercolor.addEventListener("change", initializeWatercolorMode);
 
 let resizeTimer = 0;
 addEventListener("resize", () => {
-  if (compactWatercolor.matches) return;
   if (resizeTimer) window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     resizeTimer = 0;
+    if (compactWatercolor.matches) {
+      syncCompactWatercolor();
+      return;
+    }
     watercolorCanvases.forEach((canvas) => {
       const state = stateByCanvas.get(canvas);
       if (state && canvas.getBoundingClientRect().width > 0) renderWatercolor(state);

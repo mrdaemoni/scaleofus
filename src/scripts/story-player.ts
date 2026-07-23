@@ -126,15 +126,35 @@ let screenWakeLockRequest: Promise<void> | null = null;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
+const mobileWindProperties = [
+  "--wind-arrival-duration",
+  "--wind-release-duration",
+  "--wind-before-right",
+  "--wind-before-left",
+  "--wind-settle-x",
+  "--wind-release-x",
+  "--wind-lift",
+];
+
+const clearMobileWindShape = (word: HTMLElement) => {
+  mobileWindProperties.forEach((property) => word.style.removeProperty(property));
+  delete word.dataset.windRelease;
+};
 
 const shapeWindWake = (word: HTMLElement) => {
   if (mobileSafeReader.matches) {
-    // Mobile listening deliberately uses one simple text-state transition.
-    // Avoid writing fresh custom properties for every spoken word: on long
-    // reads those inline styles and pseudo-element animations put unnecessary
-    // pressure on the browser's rendering process.
-    const releaseDuration = 260;
+    // The single-frame mobile reader only paints this word and its predecessor.
+    // A few short-lived variables make each gust feel organic, then they are
+    // removed when the trail clears so styles never accumulate through the book.
+    const releaseDuration = Math.round(randomBetween(560, 780));
     word.dataset.windRelease = String(releaseDuration);
+    word.style.setProperty("--wind-arrival-duration", `${Math.round(randomBetween(390, 560))}ms`);
+    word.style.setProperty("--wind-release-duration", `${releaseDuration}ms`);
+    word.style.setProperty("--wind-before-right", `${-randomBetween(1.3, 2.4).toFixed(2)}em`);
+    word.style.setProperty("--wind-before-left", `${-randomBetween(0.7, 1.4).toFixed(2)}em`);
+    word.style.setProperty("--wind-settle-x", `${randomBetween(0.05, 0.18).toFixed(2)}em`);
+    word.style.setProperty("--wind-release-x", `${randomBetween(0.9, 1.8).toFixed(2)}em`);
+    word.style.setProperty("--wind-lift", `${randomBetween(-0.07, 0.06).toFixed(2)}em`);
     return releaseDuration;
   }
 
@@ -326,19 +346,14 @@ const setWord = (index: number) => {
     const existingTimer = windTrailTimers.get(previousWord);
     if (existingTimer) window.clearTimeout(existingTimer);
     windTrailTimers.delete(previousWord);
-    if (mobileSafeReader.matches) {
-      previousWord.classList.remove("is-wind-trail");
-    } else {
-      previousWord.classList.add("is-wind-trail");
-    }
+    previousWord.classList.add("is-wind-trail");
     const releaseDuration = Number(previousWord.dataset.windRelease) || 1920;
-    if (!mobileSafeReader.matches) {
-      const timer = window.setTimeout(() => {
-        previousWord.classList.remove("is-wind-trail");
-        windTrailTimers.delete(previousWord);
-      }, releaseDuration);
-      windTrailTimers.set(previousWord, timer);
-    }
+    const timer = window.setTimeout(() => {
+      previousWord.classList.remove("is-wind-trail");
+      if (mobileSafeReader.matches) clearMobileWindShape(previousWord);
+      windTrailTimers.delete(previousWord);
+    }, releaseDuration);
+    windTrailTimers.set(previousWord, timer);
   }
   if (index < 0 || !narrationWords[index]) {
     activeWord = -1;
@@ -444,6 +459,7 @@ const showReadingCompass = (duration = 2600) => {
 const setReaderMode = (mode: ReaderMode) => {
   readerMode = mode;
   document.body.dataset.readerMode = mode;
+  document.dispatchEvent(new CustomEvent("story:reader-mode", { detail: { mode } }));
   dockPinnedOpen = false;
 
   if (mode === "listen") {
@@ -825,6 +841,7 @@ const setHeading = (index: number, source: "audio" | "scroll" | "restore" = "aud
   });
   document.body.dataset.readingStage = "heading";
   setChapter(index);
+  document.dispatchEvent(new CustomEvent("story:reading-stage", { detail: { stage: "heading" } }));
   if (
     source === "audio"
     && audio
@@ -852,6 +869,7 @@ const setCover = (source: "audio" | "scroll" | "restore" = "audio") => {
   coverHeading?.classList.add("is-current-heading");
   document.body.dataset.readingStage = "cover";
   setChapter(0);
+  document.dispatchEvent(new CustomEvent("story:reading-stage", { detail: { stage: "cover" } }));
   if (
     source === "audio"
     && audio
@@ -884,6 +902,9 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   });
   const beatNumber = Number(paragraphs[index].dataset.beatNumber);
   setBeat(beatForNumber(beatNumber));
+  document.dispatchEvent(new CustomEvent("story:reading-stage", {
+    detail: { stage: "paragraph", beatNumber },
+  }));
   if (readerMode === "listen" && !desktopReader.matches && changed) fitBeatToViewport(index);
   if (
     source === "audio"

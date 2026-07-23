@@ -5,6 +5,7 @@ const drawings = [...document.querySelectorAll<HTMLElement>("[data-live-drawing]
 const svgCache = new Map<string, Promise<string>>();
 const drawingLoads = new WeakMap<HTMLElement, Promise<void>>();
 const drawingUnloadTimers = new WeakMap<HTMLElement, number>();
+const drawingRevealTimers = new WeakMap<HTMLElement, number[]>();
 const visibleDrawings = new Set<HTMLElement>();
 let phase = 0;
 let boilTimer = 0;
@@ -24,6 +25,9 @@ const mobileSourceFor = (source: string) => source
   .replace("/wind-story/live/", "/wind-story/mobile/")
   .replace(/\.svg$/, ".webp");
 
+const mobileListening = () => compactReader.matches && document.body.dataset.readerMode === "listen";
+const desiredRenderMode = () => compactReader.matches && !mobileListening() ? "raster" : "inline";
+
 const stopBoilIfIdle = () => {
   if (visibleDrawings.size || !boilTimer) return;
   window.clearInterval(boilTimer);
@@ -31,11 +35,21 @@ const stopBoilIfIdle = () => {
 };
 
 const startBoil = () => {
-  if (compactReader.matches || reducedMotion.matches || boilTimer || !visibleDrawings.size || document.hidden) return;
+  if (
+    (compactReader.matches && !mobileListening())
+    || reducedMotion.matches
+    || boilTimer
+    || !visibleDrawings.size
+    || document.hidden
+  ) return;
   boilTimer = window.setInterval(() => {
     phase = (phase + 1) % 3;
     visibleDrawings.forEach((drawing) => {
-      if (!drawing.classList.contains("is-drawn") || drawing.classList.contains("is-jolt-frame")) return;
+      if (
+        drawing.dataset.liveRenderMode !== "inline"
+        || !drawing.classList.contains("is-drawn")
+        || drawing.classList.contains("is-jolt-frame")
+      ) return;
       drawing.classList.remove("is-boil-0", "is-boil-1", "is-boil-2");
       drawing.classList.add(`is-boil-${phase}`);
     });
@@ -43,7 +57,11 @@ const startBoil = () => {
 };
 
 const jolt = (drawing: HTMLElement) => {
-  if (compactReader.matches || reducedMotion.matches || !drawing.classList.contains("is-drawn")) return;
+  if (
+    (compactReader.matches && !mobileListening())
+    || reducedMotion.matches
+    || !drawing.classList.contains("is-drawn")
+  ) return;
   drawing.classList.add("is-jolt-frame");
   drawing.classList.remove("is-drawing-jolt");
   void drawing.offsetWidth;
@@ -73,13 +91,34 @@ const showLightweightDrawing = (drawing: HTMLElement) => {
   });
 };
 
-const releaseLightweightDrawing = (drawing: HTMLElement) => {
-  if (drawing.dataset.liveRenderMode !== "raster" || visibleDrawings.has(drawing)) return;
+const clearRevealTimers = (drawing: HTMLElement) => {
+  drawingRevealTimers.get(drawing)?.forEach((timer) => window.clearTimeout(timer));
+  drawingRevealTimers.delete(drawing);
+};
+
+const resetDrawing = (drawing: HTMLElement) => {
+  clearRevealTimers(drawing);
   drawing.replaceChildren();
-  drawing.classList.remove("is-boil-0", "is-boil-1", "is-boil-2", "is-drawn");
+  drawing.classList.remove(
+    "is-boil-0",
+    "is-boil-1",
+    "is-boil-2",
+    "is-drawn",
+    "is-grained",
+    "is-jolt-frame",
+    "is-drawing-jolt",
+  );
   delete drawing.dataset.liveLoaded;
   delete drawing.dataset.liveRevealed;
   delete drawing.dataset.liveRenderMode;
+  delete drawing.dataset.liveError;
+};
+
+const releaseCompactDrawing = (drawing: HTMLElement) => {
+  if (!compactReader.matches || visibleDrawings.has(drawing)) return;
+  const source = drawing.dataset.svgSrc;
+  resetDrawing(drawing);
+  if (source) svgCache.delete(source);
 };
 
 const cancelDrawingRelease = (drawing: HTMLElement) => {
@@ -93,12 +132,11 @@ const scheduleDrawingRelease = (drawing: HTMLElement) => {
   if (
     !compactReader.matches
     || drawingUnloadTimers.has(drawing)
-    || (drawing.dataset.liveRenderMode !== "raster" && !drawingLoads.has(drawing))
   ) return;
   const timer = window.setTimeout(() => {
     drawingUnloadTimers.delete(drawing);
-    releaseLightweightDrawing(drawing);
-  }, 2500);
+    releaseCompactDrawing(drawing);
+  }, 1400);
   drawingUnloadTimers.set(drawing, timer);
 };
 
@@ -131,7 +169,7 @@ const injectDrawing = async (drawing: HTMLElement) => {
   if (!source) return;
   const request = (async () => {
     try {
-      if (compactReader.matches) {
+      if (desiredRenderMode() === "raster") {
         await mountLightweightDrawing(drawing, source);
         return;
       }
@@ -146,7 +184,10 @@ const injectDrawing = async (drawing: HTMLElement) => {
       drawing.classList.add("is-boil-0");
       drawing.dataset.liveLoaded = "true";
       drawing.dataset.liveRenderMode = "inline";
-      drawing.addEventListener("pointerdown", () => jolt(drawing), { passive: true });
+      if (drawing.dataset.livePointerBound !== "true") {
+        drawing.dataset.livePointerBound = "true";
+        drawing.addEventListener("pointerdown", () => jolt(drawing), { passive: true });
+      }
       if (reducedMotion.matches) showStaticDrawing(drawing);
     } catch (error) {
       console.error(error);
@@ -166,12 +207,12 @@ const revealDrawing = async (drawing: HTMLElement) => {
   await injectDrawing(drawing);
   if (drawing.dataset.liveRevealed === "true" || drawing.dataset.liveError === "true") return;
   drawing.dataset.liveRevealed = "true";
-  if (reducedMotion.matches) {
-    showStaticDrawing(drawing);
+  if (drawing.dataset.liveRenderMode === "raster") {
+    showLightweightDrawing(drawing);
     return;
   }
-  if (compactReader.matches) {
-    showLightweightDrawing(drawing);
+  if (reducedMotion.matches) {
+    showStaticDrawing(drawing);
     return;
   }
 
@@ -186,6 +227,18 @@ const revealDrawing = async (drawing: HTMLElement) => {
     drawing.classList.add("is-drawn");
     startBoil();
   }, finish + 300));
+  drawingRevealTimers.set(drawing, timers);
+};
+
+const refreshDrawingMode = async (drawing: HTMLElement) => {
+  const pending = drawingLoads.get(drawing);
+  if (pending) await pending;
+  const desired = desiredRenderMode();
+  if (drawing.dataset.liveLoaded === "true" && drawing.dataset.liveRenderMode !== desired) {
+    resetDrawing(drawing);
+  }
+  if (visibleDrawings.has(drawing)) await revealDrawing(drawing);
+  else scheduleDrawingRelease(drawing);
 };
 
 const visibilityObserver = new IntersectionObserver((entries) => {
@@ -232,6 +285,12 @@ document.addEventListener("story:wind-awake", () => {
   void revealDrawing(cover).then(() => jolt(cover));
 });
 
+document.addEventListener("story:reader-mode", () => {
+  visibleDrawings.forEach((drawing) => {
+    void refreshDrawingMode(drawing).then(startBoil);
+  });
+});
+
 reducedMotion.addEventListener("change", () => {
   if (!reducedMotion.matches) {
     startBoil();
@@ -256,6 +315,7 @@ compactReader.addEventListener("change", () => {
   boilTimer = 0;
   drawings.forEach((drawing) => {
     preloadObserver.unobserve(drawing);
-    if (drawing.dataset.liveLoaded === "true") showLightweightDrawing(drawing);
+    if (visibleDrawings.has(drawing)) void refreshDrawingMode(drawing).then(startBoil);
+    else scheduleDrawingRelease(drawing);
   });
 });

@@ -3920,15 +3920,19 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   }
 }
 
-/*
- * Mobile listening is a deliberately quiet rendering path. The full wind,
- * watercolor and cinematic layers remain on desktop; phones keep the voice,
- * speaker colors and fitted page without maintaining filtered compositor
- * surfaces for the whole seventeen-minute story.
- */
+/* Mobile listening paints atmosphere only inside the one visible stage. */
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .watercolor-wash,
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .cinematic-layer {
   display: none !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .watercolor-wash {
+  display: block !important;
+  opacity: 0.48;
+  filter: none;
+  mix-blend-mode: multiply;
+  animation: mobileStageWatercolor 11s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::before,
@@ -3956,10 +3960,27 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat
   --word-weight: 540;
   text-shadow: none;
   animation: none;
+  isolation: isolate;
 }
 
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail {
   animation: none;
+  isolation: isolate;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
+  content: "" !important;
+  display: block !important;
+  filter: none !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before {
+  animation: mobileWordWind var(--wind-arrival-duration, 470ms) ease-out both !important;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
+  animation: mobileWordWindAway var(--wind-release-duration, 680ms) ease-out both !important;
 }
 
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-heading.is-current-heading .chapter-mark {
@@ -4009,6 +4030,7 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapt
   min-height: 0;
   padding: 0 16px 102px;
   overflow: hidden;
+  animation: mobileStagePaletteArrival 850ms ease-out both;
 }
 
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading-stage="heading"] .chapter-heading.is-current-heading {
@@ -4021,6 +4043,37 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading
   display: grid;
   margin: 0;
   contain: layout paint style;
+}
+
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .living-drawing,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .art-placeholder {
+  animation: mobileStageDrawingFloat 8.5s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes mobileStageWatercolor {
+  0% {
+    opacity: 0.39;
+    transform: translate3d(-1.2%, 0.8%, 0) rotate(calc(var(--wash-rotation) - 1deg)) scale(0.98, 0.97);
+  }
+  52% {
+    opacity: 0.54;
+    transform: translate3d(1.1%, -0.7%, 0) rotate(var(--wash-rotation)) scale(1.025, 1.01);
+  }
+  100% {
+    opacity: 0.45;
+    transform: translate3d(-0.3%, -1%, 0) rotate(calc(var(--wash-rotation) + 1deg)) scale(1.01, 1.035);
+  }
+}
+
+@keyframes mobileStagePaletteArrival {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
+}
+
+@keyframes mobileStageDrawingFloat {
+  from { transform: translate3d(-0.35%, 0.3%, 0) rotate(-0.12deg); }
+  to { transform: translate3d(0.45%, -0.45%, 0) rotate(0.14deg); }
 }
 
 @media (max-width: 420px) {
