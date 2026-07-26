@@ -10,6 +10,15 @@ type RGB = {
   b: number;
 };
 
+type WatercolorMotif =
+  | "orbit"
+  | "stone"
+  | "vessel"
+  | "reflection"
+  | "mirror"
+  | "summit"
+  | "return";
+
 type PigmentLayer = {
   points: PigmentPoint[];
   color: RGB;
@@ -109,6 +118,94 @@ const makePolygon = (
   };
 });
 
+const makeDiamond = (
+  random: () => number,
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+  rotation = 0,
+) => Array.from({ length: 4 }, (_, index): PigmentPoint => {
+  const angle = rotation + Math.PI * 2 * index / 4;
+  return {
+    x: centerX + Math.cos(angle) * radiusX * (0.98 + random() * 0.035),
+    y: centerY + Math.sin(angle) * radiusY * (0.98 + random() * 0.035),
+    variance: 0.018 + random() * 0.018,
+  };
+});
+
+const makeVessel = (
+  random: () => number,
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+  rotation = 0,
+) => Array.from({ length: 14 }, (_, index): PigmentPoint => {
+  const angle = Math.PI * 2 * index / 14;
+  const localY = Math.sin(angle);
+  const shoulder = 0.68 + (localY + 1) * 0.2;
+  const localX = Math.cos(angle) * radiusX * shoulder * (0.97 + random() * 0.06);
+  const scaledY = localY * radiusY * (0.98 + random() * 0.04);
+  return {
+    x: centerX + localX * Math.cos(rotation) - scaledY * Math.sin(rotation),
+    y: centerY + localX * Math.sin(rotation) + scaledY * Math.cos(rotation),
+    variance: 0.035 + random() * 0.04,
+  };
+});
+
+const makeKidney = (
+  random: () => number,
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+  rotation = 0,
+) => Array.from({ length: 14 }, (_, index): PigmentPoint => {
+  const angle = Math.PI * 2 * index / 14;
+  const inset = 1 - Math.max(0, Math.cos(angle)) * 0.24;
+  const localX = Math.cos(angle) * radiusX * inset * (0.95 + random() * 0.08);
+  const localY = Math.sin(angle) * radiusY * (0.96 + random() * 0.08);
+  return {
+    x: centerX + localX * Math.cos(rotation) - localY * Math.sin(rotation),
+    y: centerY + localX * Math.sin(rotation) + localY * Math.cos(rotation),
+    variance: 0.045 + random() * 0.045,
+  };
+});
+
+const makeHeart = (
+  random: () => number,
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+) => Array.from({ length: 18 }, (_, index): PigmentPoint => {
+  const angle = Math.PI * 2 * index / 18;
+  const x = 16 * Math.sin(angle) ** 3 / 17;
+  const y = -(13 * Math.cos(angle)
+    - 5 * Math.cos(angle * 2)
+    - 2 * Math.cos(angle * 3)
+    - Math.cos(angle * 4)) / 17;
+  return {
+    x: centerX + x * radiusX * (0.98 + random() * 0.035),
+    y: centerY + y * radiusY * (0.98 + random() * 0.035),
+    variance: 0.025 + random() * 0.035,
+  };
+});
+
+const makePath = (
+  random: () => number,
+  centerX: number,
+  centerY: number,
+  radiusX: number,
+  radiusY: number,
+) => [
+  { x: centerX - radiusX, y: centerY + radiusY, variance: 0.022 + random() * 0.02 },
+  { x: centerX - radiusX * 0.14, y: centerY - radiusY, variance: 0.022 + random() * 0.02 },
+  { x: centerX + radiusX * 0.14, y: centerY - radiusY, variance: 0.022 + random() * 0.02 },
+  { x: centerX + radiusX, y: centerY + radiusY, variance: 0.022 + random() * 0.02 },
+];
+
 const deformPolygon = (
   points: PigmentPoint[],
   random: () => number,
@@ -154,9 +251,69 @@ const deformRepeatedly = (
   return result;
 };
 
+const motifGeometry = (
+  motif: WatercolorMotif,
+  random: () => number,
+  direction: number,
+) => {
+  switch (motif) {
+    case "stone":
+      return {
+        primary: makeKidney(random, 0.45, 0.52, 0.47, 0.34, direction * 0.12),
+        secondary: makePolygon(random, 0.7, 0.48, 0.2, 0.17, 11, direction * -0.18),
+        rounds: 2,
+        roughness: 0.76,
+      };
+    case "vessel":
+      return {
+        primary: makeVessel(random, 0.48, 0.52, 0.42, 0.42, direction * 0.035),
+        secondary: makePolygon(random, 0.63, 0.43, 0.29, 0.25, 10, direction * 0.09),
+        rounds: 2,
+        roughness: 0.72,
+      };
+    case "reflection":
+      return {
+        primary: makePolygon(random, 0.4, 0.5, 0.39, 0.36, 14),
+        secondary: makePolygon(random, 0.62, 0.5, 0.38, 0.35, 14),
+        rounds: 2,
+        roughness: 0.57,
+      };
+    case "mirror":
+      return {
+        primary: makeDiamond(random, 0.48, 0.5, 0.44, 0.4, Math.PI / 2),
+        secondary: makeDiamond(random, 0.56, 0.48, 0.35, 0.32, Math.PI / 4),
+        rounds: 1,
+        roughness: 0.22,
+      };
+    case "summit":
+      return {
+        primary: makeHeart(random, 0.49, 0.5, 0.42, 0.38),
+        secondary: makePolygon(random, 0.5, 0.53, 0.33, 0.32, 15),
+        rounds: 2,
+        roughness: 0.46,
+      };
+    case "return":
+      return {
+        primary: makePath(random, 0.49, 0.54, 0.45, 0.4),
+        secondary: makePolygon(random, 0.5, 0.31, 0.28, 0.25, 16),
+        rounds: 1,
+        roughness: 0.28,
+      };
+    case "orbit":
+    default:
+      return {
+        primary: makePolygon(random, 0.46 + direction * 0.018, 0.51, 0.44, 0.38, 15),
+        secondary: makePolygon(random, 0.6 - direction * 0.018, 0.46, 0.32, 0.27, 12, direction * 0.08),
+        rounds: 2,
+        roughness: 0.58,
+      };
+  }
+};
+
 const buildWatercolorState = (canvas: HTMLCanvasElement): WatercolorState => {
   const seed = Number(canvas.dataset.watercolorSeed ?? 1);
   const random = makeRandom(seed * 7919 + 47);
+  const motif = (canvas.dataset.watercolorTheme ?? "orbit") as WatercolorMotif;
   const chapter = canvas.closest<HTMLElement>(".story-chapter");
   const chapterStyle = getComputedStyle(chapter ?? canvas);
   const primary = parseHex(chapterStyle.getPropertyValue("--chapter-wash"));
@@ -165,18 +322,19 @@ const buildWatercolorState = (canvas: HTMLCanvasElement): WatercolorState => {
   const deepPrimary = mixColor(primary, ink, 0.1);
   const deepSecondary = mixColor(secondary, ink, 0.08);
   const direction = seed % 2 === 0 ? 1 : -1;
+  const geometry = motifGeometry(motif, random, direction);
 
   const primaryBase = deformRepeatedly(
-    makePolygon(random, 0.44 + direction * 0.025, 0.52, 0.44, 0.38),
+    geometry.primary,
     random,
-    3,
-    0.95,
+    geometry.rounds,
+    geometry.roughness,
   );
   const secondaryBase = deformRepeatedly(
-    makePolygon(random, 0.61 - direction * 0.02, 0.45, 0.37, 0.32),
+    geometry.secondary,
     random,
-    3,
-    0.88,
+    geometry.rounds,
+    geometry.roughness * 0.92,
   );
 
   const layers: PigmentLayer[] = [];
@@ -194,7 +352,7 @@ const buildWatercolorState = (canvas: HTMLCanvasElement): WatercolorState => {
         base,
         random,
         isFringe || index % 5 === 0 ? 2 : 1,
-        isFringe ? 1.02 : 0.72,
+        (isFringe ? 1.02 : 0.72) * Math.max(0.36, geometry.roughness),
       ),
       color: layerColor,
       alpha: isFringe ? 0.012 + random() * 0.006 : 0.028 + random() * 0.012,

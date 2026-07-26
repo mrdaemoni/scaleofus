@@ -131,10 +131,15 @@ const chapterStyle = (chapterNumber: number) => {
   return [
     `--chapter-wash:${palette.wash}`,
     `--chapter-wash-secondary:${palette.secondary}`,
+    palette.paper ? `--chapter-paper:${palette.paper}` : "",
+    palette.paperDeep ? `--chapter-paper-deep:${palette.paperDeep}` : "",
+    palette.line ? `--chapter-line:${palette.line}` : "",
     palette.previous ? `--chapter-previous:${palette.previous}` : "",
     palette.next ? `--chapter-next:${palette.next}` : "",
   ].filter(Boolean).join(";");
 };
+const chapterTheme = (chapterNumber: number) =>
+  book.presentation?.chapterPalettes?.[chapterNumber - 1]?.motif ?? "orbit";
 ---
 
 <Base
@@ -143,6 +148,8 @@ const chapterStyle = (chapterNumber: number) => {
   bodyClass="story-page"
   canonicalPath={book.presentation?.canonicalPath}
   socialImage={book.presentation?.socialImage}
+  socialImageWidth={book.presentation?.socialImageWidth}
+  socialImageHeight={book.presentation?.socialImageHeight}
   themeColor={book.presentation?.themeColor}
 >
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
@@ -273,6 +280,7 @@ const chapterStyle = (chapterNumber: number) => {
             class={`story-chapter chapter-${chapter.number}`}
             id={chapter.id}
             data-chapter={chapter.number}
+            data-chapter-theme={chapterTheme(chapter.number)}
             data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
             aria-labelledby={`${chapter.id}-title`}
             style={chapterStyle(chapter.number)}
@@ -350,6 +358,7 @@ const chapterStyle = (chapterNumber: number) => {
                           class="watercolor-wash"
                           data-watercolor-wash
                           data-watercolor-seed={beat.number}
+                          data-watercolor-theme={chapterTheme(chapter.number)}
                           width="1"
                           height="1"
                           aria-hidden="true"

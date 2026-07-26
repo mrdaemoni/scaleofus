@@ -1,17 +1,17 @@
 :root {
   color-scheme: light;
-  --night: #58494e;
-  --night-soft: #715e64;
-  --ink: #5b5356;
-  --paper: #f3dfe1;
-  --paper-deep: #e2c9cd;
-  --mist: #d9c4c7;
-  --sage: #9ea09d;
-  --clay: #ad8e95;
-  --ember: #bc969e;
-  --gold: #c69ba4;
-  --blush: #d8acb3;
-  --blush-deep: #b98792;
+  --night: #50464c;
+  --night-soft: #6d5f65;
+  --ink: #585052;
+  --paper: #f2dfd4;
+  --paper-deep: #dfc5b8;
+  --mist: #d7c1ba;
+  --sage: #90958b;
+  --clay: #b48675;
+  --ember: #bd6d58;
+  --gold: #d1a33a;
+  --blush: #d98c75;
+  --blush-deep: #b56e66;
   --line: rgba(104, 82, 89, 0.18);
   --voice-accent: var(--gold);
   --display: "Playwrite IE Variable", "Segoe Print", cursive;
@@ -214,7 +214,7 @@ img {
   align-items: center;
   overflow: hidden;
   isolation: isolate;
-  background: #f2dcdf;
+  background: #f2dfd4;
 }
 
 .cover-vignette {
@@ -226,9 +226,12 @@ img {
 .cover-vignette {
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(243, 223, 225, 0.97) 0%, rgba(243, 223, 225, 0.89) 27%, rgba(216, 172, 179, 0.15) 63%, transparent 82%),
-    linear-gradient(0deg, rgba(226, 193, 198, 0.54), transparent 34%),
-    rgba(216, 172, 179, 0.12);
+    radial-gradient(circle at 86% 23%, transparent 0 7.5%, rgba(116, 105, 132, 0.12) 7.8% 8.2%, transparent 8.5% 14%, rgba(223, 106, 73, 0.1) 14.3% 15%, transparent 15.3% 22%, rgba(226, 166, 47, 0.11) 22.3% 23%, transparent 23.4%),
+    radial-gradient(circle at 76% 84%, rgba(223, 106, 73, 0.1) 0 12%, transparent 12.5%),
+    radial-gradient(circle at 91% 68%, rgba(226, 166, 47, 0.12) 0 6%, transparent 6.5%),
+    linear-gradient(90deg, rgba(242, 223, 212, 0.98) 0%, rgba(242, 223, 212, 0.91) 30%, rgba(217, 140, 117, 0.13) 67%, transparent 86%),
+    linear-gradient(0deg, rgba(223, 197, 184, 0.52), transparent 35%),
+    rgba(217, 140, 117, 0.08);
 }
 
 .cover-vignette::after {
@@ -678,7 +681,7 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
   border-right: 1px solid var(--line);
   background:
     repeating-linear-gradient(101deg, rgba(126, 98, 106, 0.022) 0 1px, transparent 1px 9px),
-    rgba(243, 223, 225, 0.94);
+    rgba(242, 223, 212, 0.94);
   backdrop-filter: blur(16px);
 }
 
@@ -1042,25 +1045,32 @@ body.is-listening .mountain-climber {
 .story-chapter {
   --chapter-wash: #d2a7b2;
   --chapter-wash-secondary: #bea8bd;
+  --chapter-paper: var(--paper);
+  --chapter-paper-deep: var(--paper-deep);
+  --chapter-line: var(--night-soft);
   --chapter-previous: #d2a7b2;
   --chapter-next: #aaa9a8;
   --chapter-accent: var(--chapter-wash);
   --chapter-wash-deep: color-mix(in srgb, var(--chapter-wash) 66%, var(--ink));
   --chapter-wash-secondary-deep: color-mix(in srgb, var(--chapter-wash-secondary) 68%, var(--ink));
+  --chapter-pattern:
+    radial-gradient(circle at 50% 50%, transparent 0 25%, color-mix(in srgb, var(--chapter-line) 17%, transparent) 25.3% 25.8%, transparent 26.1% 43%, color-mix(in srgb, var(--chapter-wash) 10%, transparent) 43.3% 44%, transparent 44.3%);
+  --chapter-pattern-size: 720px 680px;
+  --chapter-pattern-opacity: 0.34;
   position: relative;
   isolation: isolate;
   overflow: clip;
   padding: 0 clamp(24px, 4vw, 58px) 12vh;
   background:
-    radial-gradient(ellipse 74% 20% at 82% 17%, color-mix(in srgb, var(--chapter-wash) 19%, transparent), transparent 72%),
-    radial-gradient(ellipse 62% 17% at 12% 61%, color-mix(in srgb, var(--chapter-wash-secondary) 14%, transparent), transparent 74%),
+    radial-gradient(ellipse at 82% 17%, color-mix(in srgb, var(--chapter-wash) 14%, transparent), transparent 66%) 0 0 / 980px 820px repeat,
+    radial-gradient(ellipse at 12% 61%, color-mix(in srgb, var(--chapter-wash-secondary) 11%, transparent), transparent 68%) 0 0 / 840px 760px repeat,
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--chapter-previous) 9%, var(--paper)) 0%,
-      color-mix(in srgb, var(--chapter-wash) 7%, var(--paper)) 14%,
-      color-mix(in srgb, var(--chapter-wash) 11%, var(--paper)) 48%,
-      color-mix(in srgb, var(--chapter-wash-secondary) 8%, var(--paper)) 82%,
-      color-mix(in srgb, var(--chapter-next) 9%, var(--paper)) 100%
+      color-mix(in srgb, var(--chapter-previous) 7%, var(--chapter-paper)) 0%,
+      color-mix(in srgb, var(--chapter-wash) 5%, var(--chapter-paper)) 14%,
+      color-mix(in srgb, var(--chapter-paper-deep) 28%, var(--chapter-paper)) 48%,
+      color-mix(in srgb, var(--chapter-wash-secondary) 6%, var(--chapter-paper)) 82%,
+      color-mix(in srgb, var(--chapter-next) 7%, var(--chapter-paper)) 100%
     );
 }
 
@@ -1072,7 +1082,9 @@ body.is-listening .mountain-climber {
   pointer-events: none;
   background:
     repeating-linear-gradient(2deg, rgba(27, 36, 33, 0.016) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(93deg, rgba(27, 36, 33, 0.012) 0 1px, transparent 1px 7px);
+    repeating-linear-gradient(93deg, rgba(27, 36, 33, 0.012) 0 1px, transparent 1px 7px),
+    radial-gradient(circle at 38% 42%, rgba(255, 255, 255, 0.12) 0 1px, transparent 1.5px) 0 0 / 13px 17px;
+  opacity: 0.9;
   mix-blend-mode: multiply;
 }
 
@@ -1080,19 +1092,15 @@ body.is-listening .mountain-climber {
   content: "";
   position: absolute;
   z-index: 0;
-  inset: 5% -12% 4%;
+  inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 28% 8% at 79% 12%, color-mix(in srgb, var(--chapter-wash) 24%, transparent) 0 34%, transparent 76%),
-    radial-gradient(ellipse 23% 7% at 20% 37%, color-mix(in srgb, var(--chapter-wash-secondary) 18%, transparent) 0 31%, transparent 78%),
-    radial-gradient(ellipse 31% 9% at 72% 67%, color-mix(in srgb, var(--chapter-wash-secondary) 15%, transparent) 0 28%, transparent 77%),
-    radial-gradient(ellipse 20% 6% at 14% 88%, color-mix(in srgb, var(--chapter-wash) 17%, transparent) 0 32%, transparent 79%);
+  background: var(--chapter-pattern);
   background-position: 0% 0%;
-  background-repeat: no-repeat;
-  background-size: 118% 112%;
-  filter: blur(18px);
-  opacity: 0.72;
-  transform: translate3d(0, 0, 0) scale(1.02);
+  background-repeat: repeat;
+  background-size: var(--chapter-pattern-size);
+  filter: blur(0.35px) saturate(0.88);
+  opacity: var(--chapter-pattern-opacity);
+  transform: translate3d(0, 0, 0);
   animation: none;
   mix-blend-mode: multiply;
   will-change: auto;
@@ -1109,66 +1117,112 @@ body.is-listening .mountain-climber {
 }
 
 .chapter-1 {
-  --chapter-wash: #ff4f75;
-  --chapter-wash-secondary: #f58b59;
-  --chapter-previous: #ff4f75;
-  --chapter-next: #aeb1b3;
+  --chapter-wash: #df6a49;
+  --chapter-wash-secondary: #e2a62f;
+  --chapter-paper: #f2dfd4;
+  --chapter-paper-deep: #e8c8bc;
+  --chapter-line: #77718d;
+  --chapter-previous: #df6a49;
+  --chapter-next: #4f6072;
+  --chapter-pattern:
+    radial-gradient(circle at 50% 50%, transparent 0 11%, color-mix(in srgb, var(--chapter-line) 26%, transparent) 11.3% 11.8%, transparent 12.1% 21%, color-mix(in srgb, var(--chapter-wash-secondary) 20%, transparent) 21.3% 22%, transparent 22.3% 34%, color-mix(in srgb, var(--chapter-wash) 20%, transparent) 34.3% 35.2%, transparent 35.5% 48%, color-mix(in srgb, var(--chapter-line) 16%, transparent) 48.3% 49%, transparent 49.3%),
+    radial-gradient(ellipse at 20% 77%, transparent 0 17%, color-mix(in srgb, var(--chapter-wash) 15%, transparent) 17.4% 18%, transparent 18.4% 28%, color-mix(in srgb, var(--chapter-wash-secondary) 16%, transparent) 28.4% 29.2%, transparent 29.6%);
+  --chapter-pattern-size: 740px 710px, 560px 520px;
+  --chapter-pattern-opacity: 0.48;
 }
 
 .chapter-2 {
-  --chapter-wash: #aeb1b3;
-  --chapter-wash-secondary: #d2bda6;
-  --chapter-previous: #ff4f75;
-  --chapter-next: #f29a49;
+  --chapter-wash: #4f6072;
+  --chapter-wash-secondary: #d4a62f;
+  --chapter-paper: #ead6bc;
+  --chapter-paper-deep: #d8b998;
+  --chapter-line: #40556d;
+  --chapter-previous: #df6a49;
+  --chapter-next: #dc6a43;
+  --chapter-pattern:
+    radial-gradient(ellipse 34% 27% at 28% 38%, color-mix(in srgb, var(--chapter-wash) 15%, transparent) 0 64%, transparent 66%),
+    radial-gradient(ellipse 17% 12% at 77% 28%, color-mix(in srgb, var(--chapter-wash-secondary) 18%, transparent) 0 62%, transparent 65%),
+    radial-gradient(ellipse 25% 18% at 65% 76%, transparent 0 58%, color-mix(in srgb, var(--chapter-line) 18%, transparent) 60% 63%, transparent 65%);
+  --chapter-pattern-size: 690px 570px, 580px 520px, 740px 620px;
+  --chapter-pattern-opacity: 0.55;
 }
 
 .chapter-3 {
-  --chapter-wash: #c9825f;
-  --chapter-wash-secondary: #e3a25f;
-  --chapter-previous: #aeb1b3;
-  --chapter-next: #59acd1;
+  --chapter-wash: #dc6a43;
+  --chapter-wash-secondary: #a66f82;
+  --chapter-paper: #ecd3c3;
+  --chapter-paper-deep: #dfb7a2;
+  --chapter-line: #d19b32;
+  --chapter-previous: #4f6072;
+  --chapter-next: #839da0;
+  --chapter-pattern:
+    radial-gradient(ellipse 25% 35% at 30% 39%, color-mix(in srgb, var(--chapter-wash) 19%, transparent) 0 60%, transparent 62%),
+    radial-gradient(ellipse 20% 29% at 70% 62%, color-mix(in srgb, var(--chapter-wash-secondary) 17%, transparent) 0 60%, transparent 62%),
+    radial-gradient(circle at 63% 24%, transparent 0 12%, color-mix(in srgb, var(--chapter-line) 22%, transparent) 12.5% 13.3%, transparent 13.8% 21%, color-mix(in srgb, var(--chapter-wash) 13%, transparent) 21.5% 22.2%, transparent 22.7%);
+  --chapter-pattern-size: 700px 620px, 690px 590px, 510px 510px;
+  --chapter-pattern-opacity: 0.53;
 }
 
 .chapter-4 {
-  --chapter-wash: #59acd1;
-  --chapter-wash-secondary: #8ccfc9;
-  --chapter-previous: #c9825f;
-  --chapter-next: #9da7b8;
+  --chapter-wash: #df8a78;
+  --chapter-wash-secondary: #839da0;
+  --chapter-paper: #f0dac5;
+  --chapter-paper-deep: #e6bea7;
+  --chapter-line: #ce7266;
+  --chapter-previous: #dc6a43;
+  --chapter-next: #6d587a;
+  --chapter-pattern:
+    radial-gradient(circle at 38% 48%, transparent 0 26%, color-mix(in srgb, var(--chapter-line) 22%, transparent) 26.4% 27%, transparent 27.4%),
+    radial-gradient(circle at 62% 48%, transparent 0 26%, color-mix(in srgb, var(--chapter-wash-secondary) 23%, transparent) 26.4% 27%, transparent 27.4%),
+    repeating-conic-gradient(from 0deg at 50% 50%, color-mix(in srgb, var(--chapter-wash) 10%, transparent) 0deg 1.5deg, transparent 1.5deg 12deg);
+  --chapter-pattern-size: 680px 610px, 680px 610px, 470px 470px;
+  --chapter-pattern-opacity: 0.46;
 }
 
 .chapter-5 {
-  --chapter-wash: #9da7b8;
-  --chapter-wash-secondary: #c3a7c8;
-  --chapter-previous: #59acd1;
-  --chapter-next: #55a0d2;
+  --chapter-wash: #6d587a;
+  --chapter-wash-secondary: #83967a;
+  --chapter-paper: #e5d8df;
+  --chapter-paper-deep: #cfbdcd;
+  --chapter-line: #d4ad36;
+  --chapter-previous: #839da0;
+  --chapter-next: #bd5d4c;
+  --chapter-pattern:
+    linear-gradient(45deg, transparent calc(50% - 0.7px), color-mix(in srgb, var(--chapter-line) 25%, transparent) 50%, transparent calc(50% + 0.7px)),
+    linear-gradient(-45deg, transparent calc(50% - 0.7px), color-mix(in srgb, var(--chapter-wash) 17%, transparent) 50%, transparent calc(50% + 0.7px)),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--chapter-line) 12%, transparent) 0 2%, transparent 2.4% 18%, color-mix(in srgb, var(--chapter-wash-secondary) 14%, transparent) 18.4% 19%, transparent 19.4%);
+  --chapter-pattern-size: 180px 180px, 180px 180px, 720px 720px;
+  --chapter-pattern-opacity: 0.58;
 }
 
 .chapter-6 {
-  --chapter-wash: #55a0d2;
-  --chapter-wash-secondary: #91c7df;
-  --chapter-previous: #9da7b8;
-  --chapter-next: #ec6a91;
+  --chapter-wash: #bd5d4c;
+  --chapter-wash-secondary: #75546e;
+  --chapter-paper: #ead8d1;
+  --chapter-paper-deep: #d9bbb2;
+  --chapter-line: #d1a454;
+  --chapter-previous: #6d587a;
+  --chapter-next: #df7b3f;
+  --chapter-pattern:
+    radial-gradient(circle at 50% 50%, transparent 0 13%, color-mix(in srgb, var(--chapter-line) 22%, transparent) 13.4% 14%, transparent 14.4% 29%, color-mix(in srgb, var(--chapter-wash) 17%, transparent) 29.4% 30.2%, transparent 30.6% 45%, color-mix(in srgb, var(--chapter-wash-secondary) 16%, transparent) 45.4% 46.2%, transparent 46.6%),
+    conic-gradient(from 180deg at 50% 75%, color-mix(in srgb, var(--chapter-wash-secondary) 12%, transparent), transparent 18%, color-mix(in srgb, var(--chapter-wash) 12%, transparent) 34%, transparent 50%, color-mix(in srgb, var(--chapter-line) 10%, transparent) 67%, transparent 84%);
+  --chapter-pattern-size: 760px 680px, 660px 620px;
+  --chapter-pattern-opacity: 0.49;
 }
 
 .chapter-7 {
-  --chapter-wash: #ec6a91;
-  --chapter-wash-secondary: #b476c9;
-  --chapter-previous: #55a0d2;
-  --chapter-next: #ec6a91;
-}
-
-.chapter-8 {
-  --chapter-wash: #55a0d2;
-  --chapter-wash-secondary: #91c7df;
-  --chapter-previous: #9da7b8;
-  --chapter-next: #ec6a91;
-}
-
-.chapter-9 {
-  --chapter-wash: #ec6a91;
-  --chapter-wash-secondary: #b476c9;
-  --chapter-previous: #55a0d2;
-  --chapter-next: #ec6a91;
+  --chapter-wash: #df7b3f;
+  --chapter-wash-secondary: #666286;
+  --chapter-paper: #ead8ce;
+  --chapter-paper-deep: #d7b9ae;
+  --chapter-line: #a58aaa;
+  --chapter-previous: #bd5d4c;
+  --chapter-next: #df7b3f;
+  --chapter-pattern:
+    conic-gradient(from 330deg at 50% 100%, transparent 0 4%, color-mix(in srgb, var(--chapter-wash) 18%, transparent) 4.5% 12%, transparent 12.5% 19%, color-mix(in srgb, var(--chapter-line) 18%, transparent) 19.5% 27%, transparent 27.5% 34%, color-mix(in srgb, var(--chapter-wash-secondary) 16%, transparent) 34.5% 42%, transparent 42.5% 58%, color-mix(in srgb, var(--chapter-wash-secondary) 16%, transparent) 58.5% 66%, transparent 66.5% 73%, color-mix(in srgb, var(--chapter-line) 18%, transparent) 73.5% 81%, transparent 81.5% 88%, color-mix(in srgb, var(--chapter-wash) 18%, transparent) 88.5% 96%, transparent 96.5%),
+    radial-gradient(circle at 50% 17%, color-mix(in srgb, var(--chapter-wash) 15%, transparent) 0 17%, color-mix(in srgb, var(--chapter-line) 18%, transparent) 17.4% 18.1%, transparent 18.5% 27%, color-mix(in srgb, var(--chapter-wash-secondary) 13%, transparent) 27.4% 28.2%, transparent 28.6%);
+  --chapter-pattern-size: 760px 680px, 620px 620px;
+  --chapter-pattern-opacity: 0.55;
 }
 
 .chapter-7 {
@@ -1217,11 +1271,11 @@ body.is-listening .mountain-climber {
   aspect-ratio: 1;
   border-radius: 56% 44% 62% 38% / 43% 61% 39% 57%;
   background:
-    radial-gradient(ellipse 54% 45% at 44% 48%, color-mix(in srgb, var(--chapter-wash) 30%, transparent), transparent 78%),
-    radial-gradient(ellipse 48% 39% at 63% 58%, color-mix(in srgb, var(--chapter-wash-secondary) 24%, transparent), transparent 80%);
-  color: color-mix(in srgb, var(--chapter-wash) 52%, var(--ink));
-  filter: blur(1.4px) saturate(0.82);
-  opacity: 0.36;
+    radial-gradient(ellipse 54% 45% at 44% 48%, color-mix(in srgb, var(--chapter-wash) 25%, transparent), transparent 78%),
+    radial-gradient(ellipse 48% 39% at 63% 58%, color-mix(in srgb, var(--chapter-wash-secondary) 21%, transparent), transparent 80%);
+  color: color-mix(in srgb, var(--chapter-line) 62%, var(--ink));
+  filter: blur(0.5px) saturate(0.86);
+  opacity: 0.42;
   mix-blend-mode: multiply;
 }
 
@@ -1236,15 +1290,36 @@ body.is-listening .mountain-climber {
 .chapter-mark i:nth-child(2) { inset: 25%; }
 .chapter-mark i:nth-child(3) { inset: 40%; }
 
-.mark-1 i,
-.mark-8 i {
+.mark-1 {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 13%, color-mix(in srgb, var(--chapter-line) 20%, transparent) 13.5% 14.2%, transparent 14.7% 27%, color-mix(in srgb, var(--chapter-wash-secondary) 18%, transparent) 27.5% 28.4%, transparent 28.9% 41%, color-mix(in srgb, var(--chapter-wash) 19%, transparent) 41.5% 42.4%, transparent 43%),
+    radial-gradient(circle at 48% 52%, color-mix(in srgb, var(--chapter-wash) 16%, transparent), transparent 66%);
+}
+
+.mark-1 i {
   border-width: 2px 0 0;
   border-radius: 50%;
   transform: rotate(-7deg);
 }
 
+.mark-2 {
+  border-radius: 68% 34% 62% 42% / 45% 57% 39% 62%;
+  background:
+    radial-gradient(ellipse at 39% 54%, color-mix(in srgb, var(--chapter-wash) 27%, transparent) 0 39%, transparent 40%),
+    radial-gradient(circle at 70% 43%, color-mix(in srgb, var(--chapter-wash-secondary) 22%, transparent) 0 14%, transparent 15%);
+}
+
 .mark-2 i {
   border-radius: 43% 58% 47% 53%;
+}
+
+.mark-3 {
+  width: clamp(150px, 22vw, 300px);
+  border-radius: 42% 42% 50% 50% / 25% 25% 68% 68%;
+  background:
+    radial-gradient(ellipse at 50% 62%, color-mix(in srgb, var(--chapter-wash) 30%, transparent) 0 44%, transparent 45%),
+    radial-gradient(circle at 50% 27%, color-mix(in srgb, var(--chapter-wash-secondary) 24%, transparent) 0 18%, transparent 19%);
 }
 
 .mark-3 i {
@@ -1253,35 +1328,60 @@ body.is-listening .mountain-climber {
   transform: rotate(7deg);
 }
 
+.mark-4 {
+  width: clamp(230px, 34vw, 470px);
+  aspect-ratio: 1.28;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 50%, transparent 0 32%, color-mix(in srgb, var(--chapter-wash) 23%, transparent) 32.6% 33.5%, transparent 34%),
+    radial-gradient(circle at 62% 50%, transparent 0 32%, color-mix(in srgb, var(--chapter-wash-secondary) 24%, transparent) 32.6% 33.5%, transparent 34%);
+}
+
 .mark-4 i {
   inset: 28% 13%;
   border-width: 0 0 3px;
   border-radius: 0 0 50% 50%;
 }
 
+.mark-5 {
+  border-radius: 0;
+  background:
+    linear-gradient(45deg, transparent calc(50% - 1px), color-mix(in srgb, var(--chapter-line) 28%, transparent) 50%, transparent calc(50% + 1px)),
+    linear-gradient(-45deg, transparent calc(50% - 1px), color-mix(in srgb, var(--chapter-wash) 22%, transparent) 50%, transparent calc(50% + 1px)),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--chapter-wash-secondary) 16%, transparent), transparent 60%);
+  clip-path: polygon(50% 2%, 98% 50%, 50% 98%, 2% 50%);
+}
+
 .mark-5 i {
-  inset: 28% 8%;
-  transform: rotateX(66deg);
+  inset: 23%;
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+.mark-6 {
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 35% 32%, color-mix(in srgb, var(--chapter-wash) 24%, transparent) 0 29%, transparent 30%),
+    radial-gradient(circle at 65% 32%, color-mix(in srgb, var(--chapter-wash-secondary) 22%, transparent) 0 29%, transparent 30%),
+    linear-gradient(45deg, transparent 32%, color-mix(in srgb, var(--chapter-line) 13%, transparent) 32% 68%, transparent 68%);
+  clip-path: polygon(50% 96%, 8% 48%, 9% 25%, 23% 8%, 42% 7%, 50% 21%, 58% 7%, 77% 8%, 91% 25%, 92% 48%);
 }
 
 .mark-6 i {
-  inset: 30% 44%;
-  border-radius: 48% 55% 48% 58%;
-  transform: rotate(-28deg);
+  inset: 19%;
+  border-radius: 50%;
+}
+
+.mark-7 {
+  border-radius: 0;
+  background:
+    conic-gradient(from 330deg at 50% 91%, transparent 0 6%, color-mix(in srgb, var(--chapter-wash) 20%, transparent) 6.5% 17%, transparent 17.5% 25%, color-mix(in srgb, var(--chapter-line) 20%, transparent) 25.5% 36%, transparent 36.5% 64%, color-mix(in srgb, var(--chapter-wash-secondary) 20%, transparent) 64.5% 75%, transparent 75.5% 83%, color-mix(in srgb, var(--chapter-wash) 20%, transparent) 83.5% 94%, transparent 94.5%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
 .mark-7 i {
-  inset: 9% 33%;
+  inset: 12% 33% 8%;
   border-radius: 0;
-}
-
-.mark-9 i:first-child {
-  inset: 10%;
-}
-
-.mark-9 i:nth-child(2) {
-  inset: 45%;
-  background: currentColor;
 }
 
 .story-beat {
@@ -1534,7 +1634,7 @@ body.is-listening .mountain-climber {
 }
 
 .beat-art-frame.is-live-sketch {
-  --live: color-mix(in srgb, var(--chapter-accent) 44%, var(--ink));
+  --live: color-mix(in srgb, var(--chapter-accent) 12%, var(--ink));
 }
 [data-beat="5"] .motion-glow .motion-mark {
   top: 42%;
@@ -3038,23 +3138,23 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
 @keyframes watercolorAmbient {
   0% {
     background-position: -2% -1%;
-    filter: blur(18px) saturate(0.9);
-    opacity: 0.62;
-    transform: translate3d(-0.8%, -0.2%, 0) scale(1.01, 0.99);
+    filter: blur(0.35px) saturate(0.88);
+    opacity: calc(var(--chapter-pattern-opacity) - 0.08);
+    transform: translate3d(-0.8%, -0.2%, 0);
   }
 
   55% {
     background-position: 4% 2%;
-    filter: blur(20px) saturate(1.03);
-    opacity: 0.76;
-    transform: translate3d(0.7%, 0.35%, 0) scale(1.035, 1.01);
+    filter: blur(0.7px) saturate(1);
+    opacity: var(--chapter-pattern-opacity);
+    transform: translate3d(0.7%, 0.35%, 0);
   }
 
   100% {
     background-position: 0% 5%;
-    filter: blur(17px) saturate(0.96);
-    opacity: 0.67;
-    transform: translate3d(-0.2%, 0.6%, 0) scale(1.02, 1.025);
+    filter: blur(0.45px) saturate(0.94);
+    opacity: calc(var(--chapter-pattern-opacity) - 0.04);
+    transform: translate3d(-0.2%, 0.6%, 0);
   }
 }
 
@@ -3506,9 +3606,17 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     will-change: auto;
   }
 
-  .story-chapter::before,
+  .story-chapter::before {
+    display: block;
+    opacity: 0.45;
+  }
+
   .story-chapter::after {
-    display: none;
+    display: block;
+    filter: none;
+    opacity: calc(var(--chapter-pattern-opacity) * 0.58);
+    animation: none;
+    will-change: auto;
   }
 
   :where(.beat-copy, .spoken-heading) [data-narration-word] {

@@ -39,6 +39,10 @@ export type StoryWordTimings = {
 export type ChapterPalette = {
   wash: string;
   secondary: string;
+  paper?: string;
+  paperDeep?: string;
+  line?: string;
+  motif?: "orbit" | "stone" | "vessel" | "reflection" | "mirror" | "summit" | "return";
   previous?: string;
   next?: string;
 };
@@ -53,6 +57,8 @@ export type StoryBookSource = {
   presentation?: {
     canonicalPath?: string;
     socialImage?: string;
+    socialImageWidth?: number;
+    socialImageHeight?: number;
     libraryCover?: string;
     themeColor?: string;
     navigation?: {
