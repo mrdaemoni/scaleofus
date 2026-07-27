@@ -30,6 +30,19 @@
   box-sizing: border-box;
 }
 
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 html {
   min-height: 100%;
   scroll-behavior: smooth;
@@ -360,6 +373,34 @@ body.is-cover-wind-awake .cover-living-wind {
   text-wrap: balance;
 }
 
+.cover-title-art {
+  width: min(520px, 74vw);
+  height: clamp(290px, 44svh, 440px);
+  margin: 0 0 -8px;
+  pointer-events: none;
+}
+
+.cover-title-art .living-drawing,
+.cover-title-art img {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-title-art img {
+  display: block;
+  object-fit: contain;
+}
+
+.cover-title-fallback {
+  max-width: 11.4ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(54px, 6.65vw, 101px);
+  font-weight: var(--title-weight);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
 .cover-intro {
   max-width: 40ch;
   margin: 29px 0 0;
@@ -539,6 +580,20 @@ body.is-cover-wind-awake .cover-living-wind {
 
 .entry-listen.is-unavailable:hover {
   opacity: 0.46;
+}
+
+.entry-art-icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+}
+
+.entry-art-icon .living-drawing {
+  width: 100%;
+  height: 100%;
+  cursor: inherit;
 }
 
 .cover-art-status {
@@ -1296,20 +1351,25 @@ body.is-listening .mountain-climber {
   text-wrap: balance;
 }
 
-.chapter-living-art {
-  position: absolute;
-  z-index: 0;
-  right: clamp(1%, 4vw, 7%);
-  bottom: clamp(4%, 7vh, 11%);
-  width: min(34vw, 360px);
-  height: min(38vh, 350px);
-  opacity: 0.34;
+.chapter-cover-art {
+  position: relative;
+  z-index: 1;
+  width: min(64vw, 620px);
+  height: min(62svh, 560px);
+  margin: auto;
+  opacity: 0.88;
   pointer-events: none;
 }
 
-.chapter-living-art .living-drawing {
+.chapter-cover-art .living-drawing,
+.chapter-cover-art img {
   width: 100%;
   height: 100%;
+}
+
+.chapter-cover-art img {
+  display: block;
+  object-fit: contain;
 }
 
 .chapter-mark {
@@ -3766,6 +3826,12 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     line-height: 1.14;
   }
 
+  .cover-title-art {
+    width: min(88vw, 440px);
+    height: clamp(270px, 40svh, 380px);
+    margin: 0 auto -12px 0;
+  }
+
   .cover-intro {
     max-width: 32ch;
     margin-top: 21px;
@@ -3855,12 +3921,10 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     line-height: 1.16;
   }
 
-  .chapter-living-art {
-    right: 0;
-    bottom: 4%;
-    width: min(54vw, 250px);
-    height: min(28svh, 220px);
-    opacity: 0.27;
+  .chapter-cover-art {
+    width: min(88vw, 420px);
+    height: min(53svh, 440px);
+    opacity: 0.88;
   }
 
   .story-beat {
@@ -4274,7 +4338,8 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.
     padding: 4px 0;
   }
 
-  .entry-listen .round-play {
+  .entry-listen .round-play,
+  .entry-art-icon {
     width: 31px;
     height: 31px;
   }

@@ -43,6 +43,11 @@ export type StoryReaderConfig = {
     coverMobile?: string;
     coverKind?: "original" | "study" | "live";
     coverBackdrop?: StoryArtworkSource;
+    title?: StoryArtworkSource;
+    entryIcons?: {
+      read: StoryArtworkSource;
+      listen: StoryArtworkSource;
+    };
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;

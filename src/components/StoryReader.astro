@@ -109,6 +109,8 @@ const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind
 const coverMobileArt = windStoryReader.artwork.coverMobile ?? mobileArtForBeat(1) ?? coverArt;
 const coverArtKind = windStoryReader.artwork.coverKind ?? "original";
 const coverBackdrop = windStoryReader.artwork.coverBackdrop;
+const titleArtwork = windStoryReader.artwork.title;
+const entryIcons = windStoryReader.artwork.entryIcons;
 const endArtwork = windStoryReader.artwork.end;
 const resolvedSpeaker = (
   chapterNumber: number,
@@ -193,7 +195,7 @@ const chapterTheme = (chapterNumber: number) =>
       <div class="cover-copy">
         <h1
           id="story-title"
-          class="spoken-heading"
+          class="spoken-heading visually-hidden"
           data-cover-heading
           data-heading-start={activeCoverHeadingTiming.start}
           data-heading-end={activeCoverHeadingTiming.end}
@@ -211,15 +213,49 @@ const chapterTheme = (chapterNumber: number) =>
             </>
           ))}
         </h1>
+        {titleArtwork ? (
+          <div class="cover-title-art" aria-hidden="true">
+            {titleArtwork.kind === "live" ? (
+              <div
+                class="living-drawing"
+                data-live-drawing
+                data-svg-src={titleArtwork.src}
+                data-raster-src={titleArtwork.mobileSrc ?? titleArtwork.src}
+              ></div>
+            ) : (
+              <img src={titleArtwork.mobileSrc ?? titleArtwork.src} alt="" />
+            )}
+          </div>
+        ) : (
+          <p class="cover-title-fallback" aria-hidden="true">{windStoryReader.title}</p>
+        )}
         <p class="cover-intro">{windStoryReader.intro}</p>
         <div class="cover-story-entry" role="group" aria-label="Read or listen">
           <a class="entry-read" href="#story" data-reader-read>
-            <span class="round-book" aria-hidden="true"></span>
+            {entryIcons?.read ? (
+              <span class="entry-art-icon" aria-hidden="true">
+                <span
+                  class="living-drawing"
+                  data-live-drawing
+                  data-svg-src={entryIcons.read.src}
+                  data-raster-src={entryIcons.read.mobileSrc ?? entryIcons.read.src}
+                ></span>
+              </span>
+            ) : <span class="round-book" aria-hidden="true"></span>}
             <span><strong>Read</strong><small>At your pace</small></span>
           </a>
           {narrationAvailable ? (
             <button class="entry-listen" type="button" data-hero-play>
-              <span class="round-play" aria-hidden="true">▶</span>
+              {entryIcons?.listen ? (
+                <span class="entry-art-icon" aria-hidden="true">
+                  <span
+                    class="living-drawing"
+                    data-live-drawing
+                    data-svg-src={entryIcons.listen.src}
+                    data-raster-src={entryIcons.listen.mobileSrc ?? entryIcons.listen.src}
+                  ></span>
+                </span>
+              ) : <span class="round-play" aria-hidden="true">▶</span>}
               <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
             </button>
           ) : (
@@ -308,7 +344,7 @@ const chapterTheme = (chapterNumber: number) =>
               data-heading-start={headingTimingByChapter.get(chapter.number)!.start}
               data-heading-end={headingTimingByChapter.get(chapter.number)!.end}
             >
-              <p class="spoken-heading">
+              <p class="spoken-heading visually-hidden">
                 {chapterHeadingWords.get(chapter.number)!.label.map((word, index) => (
                   <>
                     {index > 0 && " "}
@@ -322,7 +358,7 @@ const chapterTheme = (chapterNumber: number) =>
                   </>
                 ))}
               </p>
-              <h2 id={`${chapter.id}-title`} class="spoken-heading">
+              <h2 id={`${chapter.id}-title`} class="spoken-heading visually-hidden">
                 {chapterHeadingWords.get(chapter.number)!.title.map((word, index) => (
                   <>
                     {index > 0 && " "}
@@ -337,7 +373,7 @@ const chapterTheme = (chapterNumber: number) =>
                 ))}
               </h2>
               {chapterArtwork && (
-                <div class="chapter-living-art" aria-hidden="true">
+                <div class="chapter-cover-art" aria-hidden="true">
                   {chapterArtwork.kind === "live" ? (
                     <div
                       class="living-drawing"
