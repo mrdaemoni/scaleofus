@@ -13,10 +13,15 @@ let boilTimer = 0;
 const fetchSvg = (source: string) => {
   const cached = svgCache.get(source);
   if (cached) return cached;
-  const request = fetch(source, { credentials: "same-origin" }).then(async (response) => {
-    if (!response.ok) throw new Error(`Unable to load drawing ${source}: ${response.status}`);
-    return response.text();
-  });
+  const request = fetch(source, { credentials: "same-origin" })
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Unable to load drawing ${source}: ${response.status}`);
+      return response.text();
+    })
+    .catch((error) => {
+      svgCache.delete(source);
+      throw error;
+    });
   svgCache.set(source, request);
   return request;
 };
@@ -112,6 +117,7 @@ const resetDrawing = (drawing: HTMLElement) => {
   delete drawing.dataset.liveRevealed;
   delete drawing.dataset.liveRenderMode;
   delete drawing.dataset.liveError;
+  delete drawing.dataset.liveRetryCount;
 };
 
 const releaseCompactDrawing = (drawing: HTMLElement) => {
@@ -154,6 +160,7 @@ const mountLightweightDrawing = (drawing: HTMLElement, source: string) => new Pr
     drawing.dataset.liveLoaded = "true";
     drawing.dataset.liveRevealed = "true";
     drawing.dataset.liveRenderMode = "raster";
+    delete drawing.dataset.liveRetryCount;
     if (!visibleDrawings.has(drawing)) scheduleDrawingRelease(drawing);
     resolve();
   }, { once: true });
@@ -187,12 +194,21 @@ const injectDrawing = async (drawing: HTMLElement) => {
       drawing.classList.add("is-boil-0");
       drawing.dataset.liveLoaded = "true";
       drawing.dataset.liveRenderMode = "inline";
+      delete drawing.dataset.liveRetryCount;
       if (drawing.dataset.livePointerBound !== "true") {
         drawing.dataset.livePointerBound = "true";
         drawing.addEventListener("pointerdown", () => jolt(drawing), { passive: true });
       }
       if (reducedMotion.matches) showStaticDrawing(drawing);
     } catch (error) {
+      const retryCount = Number(drawing.dataset.liveRetryCount ?? 0);
+      if (retryCount < 2) {
+        drawing.dataset.liveRetryCount = String(retryCount + 1);
+        window.setTimeout(() => {
+          if (visibleDrawings.has(drawing)) void revealDrawing(drawing);
+        }, 260 * (retryCount + 1));
+        return;
+      }
       console.error(error);
       drawing.dataset.liveError = "true";
       const frame = drawing.closest<HTMLElement>(".beat-art-frame");
@@ -208,6 +224,7 @@ const injectDrawing = async (drawing: HTMLElement) => {
 
 const revealDrawing = async (drawing: HTMLElement) => {
   await injectDrawing(drawing);
+  if (drawing.dataset.liveLoaded !== "true") return;
   if (drawing.dataset.liveRevealed === "true" || drawing.dataset.liveError === "true") return;
   drawing.dataset.liveRevealed = "true";
   if (drawing.dataset.liveRenderMode === "raster") {

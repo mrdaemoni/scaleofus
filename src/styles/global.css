@@ -420,29 +420,6 @@ body.is-cover-wind-awake .cover-living-wind {
   column-gap: clamp(20px, 4vw, 42px);
 }
 
-.cover-invitation-art {
-  width: min(560px, 86%);
-  height: clamp(118px, 17svh, 168px);
-  margin: 10px auto 0 58px;
-  overflow: hidden;
-  opacity: 0.62;
-  pointer-events: none;
-}
-
-.cover-invitation-art picture,
-.cover-invitation-art img {
-  width: 100%;
-  height: 100%;
-}
-
-.cover-invitation-art img {
-  object-fit: contain;
-  object-position: center;
-  filter: saturate(0.32) sepia(0.04) hue-rotate(308deg) contrast(0.88) brightness(1.045);
-  transform-origin: 84% 64%;
-  animation: coverBoyInWind 9s ease-in-out infinite;
-}
-
 .living-drawing {
   --live-ink: color-mix(in srgb, var(--ink) 88%, var(--paper));
   --live: color-mix(in srgb, var(--chapter-accent, var(--blush-deep)) 10%, var(--ink));
@@ -534,12 +511,6 @@ body.is-cover-wind-awake .cover-living-wind {
   letter-spacing: 0;
   white-space: pre-wrap;
   pointer-events: none;
-}
-
-.cover-invitation-art .living-drawing {
-  width: 100%;
-  height: 100%;
-  opacity: 0.9;
 }
 
 @keyframes livingDrawingJolt {
@@ -755,6 +726,11 @@ body.is-cover-wind-awake .cover-living-wind {
 }
 
 .chapter-rail {
+  --rail-paper: #f2dfd4;
+  --rail-paper-deep: #ead4c9;
+  --rail-wash: #c98772;
+  --rail-wash-secondary: #c5a35f;
+  --rail-line: #888398;
   position: sticky;
   z-index: 10;
   top: 0;
@@ -764,11 +740,15 @@ body.is-cover-wind-awake .cover-living-wind {
   justify-content: center;
   overflow: hidden;
   padding: 86px 18px 116px;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid color-mix(in srgb, var(--rail-line) 22%, transparent);
   background:
-    repeating-linear-gradient(101deg, rgba(126, 98, 106, 0.022) 0 1px, transparent 1px 9px),
-    rgba(242, 223, 212, 0.94);
-  backdrop-filter: blur(16px);
+    repeating-linear-gradient(101deg, color-mix(in srgb, var(--rail-line) 2.2%, transparent) 0 1px, transparent 1px 9px),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rail-paper) 93%, var(--rail-wash) 7%),
+      color-mix(in srgb, var(--rail-paper-deep) 92%, var(--rail-wash-secondary) 8%)
+    );
+  transition: background 700ms ease, border-color 700ms ease;
 }
 
 .reading-rail > p {
@@ -810,7 +790,7 @@ body.is-cover-wind-awake .cover-living-wind {
   --mountain-progress: 0;
   position: absolute;
   z-index: 0;
-  inset: 82px 8px 92px;
+  inset: 82px 8px 0;
   opacity: 0.78;
   pointer-events: none;
 }
@@ -823,9 +803,9 @@ body.is-cover-wind-awake .cover-living-wind {
   z-index: 0;
   width: 62px;
   height: 18px;
-  border-bottom: 1px solid rgba(113, 90, 97, 0.26);
+  border-bottom: 1px solid color-mix(in srgb, var(--rail-line) 26%, transparent);
   border-radius: 50%;
-  background: rgba(249, 232, 234, 0.36);
+  background: color-mix(in srgb, var(--rail-paper) 72%, transparent);
   opacity: 0.72;
   transform: translate3d(var(--nav-cloud-drift), var(--nav-cloud-lift), 0);
   transform-origin: center;
@@ -838,10 +818,10 @@ body.is-cover-wind-awake .cover-living-wind {
   content: "";
   position: absolute;
   bottom: 1px;
-  border: 1px solid rgba(113, 90, 97, 0.22);
+  border: 1px solid color-mix(in srgb, var(--rail-line) 22%, transparent);
   border-bottom: 0;
   border-radius: 50% 50% 0 0;
-  background: rgba(248, 229, 232, 0.46);
+  background: color-mix(in srgb, var(--rail-paper) 78%, transparent);
   transform-origin: bottom;
   animation: cloudBreathe 11s ease-in-out infinite;
 }
@@ -928,12 +908,12 @@ body.is-cover-wind-awake .cover-living-wind {
   display: block;
   background: linear-gradient(
     154deg,
-    rgba(246, 231, 233, 0.62),
-    rgba(210, 190, 195, 0.42) 68%,
-    rgba(201, 171, 180, 0.34)
+    color-mix(in srgb, var(--rail-paper) 76%, var(--rail-wash) 24%),
+    color-mix(in srgb, var(--rail-paper-deep) 72%, var(--rail-wash-secondary) 28%) 68%,
+    color-mix(in srgb, var(--rail-paper-deep) 64%, var(--rail-wash) 36%)
   );
   clip-path: polygon(0 100%, 8% 92%, 18% 84%, 28% 71%, 38% 58%, 47% 36%, 52% 8%, 59% 32%, 68% 49%, 78% 66%, 89% 84%, 100% 100%);
-  box-shadow: inset 0 -24px 40px rgba(178, 141, 151, 0.08);
+  box-shadow: inset 0 -24px 40px color-mix(in srgb, var(--rail-wash) 11%, transparent);
 }
 
 .mountain-climber {
@@ -960,8 +940,8 @@ body.is-cover-wind-awake .cover-living-wind {
   height: 8px;
   border: 1px solid currentColor;
   border-radius: 50%;
-  background: var(--paper);
-  box-shadow: 0 0 0 3px rgba(243, 223, 225, 0.52);
+  background: var(--rail-paper);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rail-paper) 62%, transparent);
 }
 
 .mountain-climber::after {
@@ -973,7 +953,7 @@ body.is-cover-wind-awake .cover-living-wind {
   height: 10px;
   border: 1px solid currentColor;
   border-top: 0;
-  background: rgba(216, 185, 189, 0.58);
+  background: color-mix(in srgb, var(--rail-wash) 36%, var(--rail-paper));
   clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%);
 }
 
@@ -1742,6 +1722,11 @@ body.is-listening .mountain-climber {
 
 .beat-art-frame.is-live-sketch {
   --live: color-mix(in srgb, var(--chapter-accent) 12%, var(--ink));
+}
+
+.story-beat[data-beat="40"] .beat-art-frame .living-drawing {
+  width: 52%;
+  height: 62%;
 }
 [data-beat="5"] .motion-glow .motion-mark {
   top: 42%;
@@ -2596,6 +2581,33 @@ body.is-listening .mountain-climber {
   letter-spacing: -0.03em;
   line-height: 1.15;
   text-wrap: balance;
+}
+
+.story-after-title-art {
+  width: min(760px, 84vw);
+  height: clamp(180px, 34vw, 360px);
+  pointer-events: none;
+}
+
+.story-after-title-art .living-drawing,
+.story-after-title-art img {
+  width: 100%;
+  height: 100%;
+}
+
+.story-after-title-art img {
+  display: block;
+  object-fit: contain;
+}
+
+.story-after-title-fallback {
+  max-width: 11ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(52px, 7vw, 104px);
+  font-weight: var(--title-weight);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .story-after > p:not(.eyebrow) {
@@ -3530,11 +3542,6 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   50% { opacity: 0.72; transform: translateX(18px) scaleX(1.12); }
 }
 
-@keyframes coverBoyInWind {
-  0%, 100% { transform: translate3d(-3px, 1px, 0) rotate(-0.25deg) scale(1.68); }
-  48% { transform: translate3d(4px, -2px, 0) rotate(0.35deg) scale(1.73); }
-}
-
 @keyframes headingWindBreathe {
   0%, 100% { transform: translate3d(-1.4%, 0, 0) scale(0.985); opacity: 0.045; }
   48% { transform: translate3d(1.8%, -1.2%, 0) scale(1.035); opacity: 0.095; }
@@ -3843,15 +3850,6 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     margin-top: 20px;
   }
 
-  .cover-invitation-art {
-    width: min(82vw, 310px);
-    height: clamp(92px, 15svh, 128px);
-    margin-top: 8px;
-    margin-right: 0;
-    margin-left: auto;
-    opacity: 0.58;
-  }
-
   .cover-living-wind {
     top: 12%;
     right: -22%;
@@ -3973,6 +3971,11 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     width: 88%;
     height: 88%;
     mix-blend-mode: normal;
+  }
+
+  .story-beat[data-beat="40"] .beat-art-frame .living-drawing {
+    width: 58%;
+    height: 68%;
   }
 
   .living-drawing svg .grain {

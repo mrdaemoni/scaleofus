@@ -57,6 +57,7 @@ export const windStoryReader: StoryReaderConfig = {
       read: live("icon-book"),
       listen: live("icon-play"),
     },
+    companionTitle: live("grownups"),
     originalThrough: 0,
     originalRoot: "/images/wind-story/live",
     studyRoot: "/images/wind-story/live",

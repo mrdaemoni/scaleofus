@@ -34,6 +34,7 @@ const beatElements = [...document.querySelectorAll<HTMLElement>("[data-beat]")];
 const paragraphs = [...document.querySelectorAll<HTMLElement>("[data-narration-paragraph]")];
 const paragraphStarts = paragraphs.map((paragraph) => Number(paragraph.dataset.start ?? 0));
 const storyChapters = [...document.querySelectorAll<HTMLElement>(".story-chapter")];
+const chapterRail = document.querySelector<HTMLElement>(".chapter-rail");
 const storyCover = document.querySelector<HTMLElement>(".story-cover");
 const coverHeading = document.querySelector<HTMLElement>("[data-cover-heading]");
 const chapterHeadings = [...document.querySelectorAll<HTMLElement>("[data-chapter-heading]")];
@@ -516,6 +517,22 @@ const setReaderMode = (mode: ReaderMode) => {
 
 const beatForNumber = (number: number) => beats.findIndex((beat) => beat.number === number);
 
+const syncRailPalette = (index: number) => {
+  const chapter = storyChapters[index];
+  if (!chapterRail || !chapter) return;
+  const paletteVariables = [
+    ["--chapter-paper", "--rail-paper"],
+    ["--chapter-paper-deep", "--rail-paper-deep"],
+    ["--chapter-wash", "--rail-wash"],
+    ["--chapter-wash-secondary", "--rail-wash-secondary"],
+    ["--chapter-line", "--rail-line"],
+  ] as const;
+  paletteVariables.forEach(([source, target]) => {
+    const value = chapter.style.getPropertyValue(source);
+    if (value) chapterRail.style.setProperty(target, value);
+  });
+};
+
 const setChapter = (index: number) => {
   if (index < 0 || !chapters[index]) return;
   const changed = activeChapter !== index;
@@ -529,6 +546,7 @@ const setChapter = (index: number) => {
     storyChapters[previousChapter]?.classList.remove("is-current-chapter");
   }
   storyChapters[index]?.classList.add("is-current-chapter");
+  syncRailPalette(index);
   if (currentChapter) {
     currentChapter.textContent = `Chapter ${index + 1} · ${chapters[index].title}`;
   }

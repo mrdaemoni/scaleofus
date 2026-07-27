@@ -48,6 +48,7 @@ export type StoryReaderConfig = {
       read: StoryArtworkSource;
       listen: StoryArtworkSource;
     };
+    companionTitle?: StoryArtworkSource;
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;

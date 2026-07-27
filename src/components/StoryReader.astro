@@ -105,12 +105,10 @@ const wordTimingByBeat = new Map(
 const artForBeat = (number: number) => storyArt(windStoryReader, number);
 const artKindForBeat = (number: number) => storyArtKind(windStoryReader, number);
 const mobileArtForBeat = (number: number) => storyArtMobile(windStoryReader, number);
-const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
-const coverMobileArt = windStoryReader.artwork.coverMobile ?? mobileArtForBeat(1) ?? coverArt;
-const coverArtKind = windStoryReader.artwork.coverKind ?? "original";
 const coverBackdrop = windStoryReader.artwork.coverBackdrop;
 const titleArtwork = windStoryReader.artwork.title;
 const entryIcons = windStoryReader.artwork.entryIcons;
+const companionTitleArtwork = windStoryReader.artwork.companionTitle;
 const endArtwork = windStoryReader.artwork.end;
 const resolvedSpeaker = (
   chapterNumber: number,
@@ -263,21 +261,6 @@ const chapterTheme = (chapterNumber: number) =>
               <span class="round-play" aria-hidden="true">○</span>
               <span><strong>Listen</strong><small>V9 narration to come</small></span>
             </span>
-          )}
-        </div>
-        <div class="cover-invitation-art" aria-hidden="true">
-          {coverArtKind === "live" ? (
-            <div
-              class="living-drawing"
-              data-live-drawing
-              data-svg-src={coverArt}
-              data-raster-src={coverMobileArt}
-            ></div>
-          ) : (
-            <picture>
-              <source media="(max-width: 760px)" srcset={coverMobileArt} />
-              <img class="is-hand-sketch" src={coverArt} alt="" fetchpriority="high" />
-            </picture>
           )}
         </div>
       </div>
@@ -532,7 +515,23 @@ const chapterTheme = (chapterNumber: number) =>
         {companion && (
           <section class="story-after" aria-labelledby="after-title">
             <p class="eyebrow">{companion.eyebrow}</p>
-            <h2 id="after-title">{companion.title}</h2>
+            <h2 id="after-title" class="visually-hidden">{companion.title}</h2>
+            {companionTitleArtwork ? (
+              <div class="story-after-title-art" aria-hidden="true">
+                {companionTitleArtwork.kind === "live" ? (
+                  <div
+                    class="living-drawing"
+                    data-live-drawing
+                    data-svg-src={companionTitleArtwork.src}
+                    data-raster-src={companionTitleArtwork.mobileSrc ?? companionTitleArtwork.src}
+                  ></div>
+                ) : (
+                  <img src={companionTitleArtwork.mobileSrc ?? companionTitleArtwork.src} alt="" />
+                )}
+              </div>
+            ) : (
+              <p class="story-after-title-fallback" aria-hidden="true">{companion.title}</p>
+            )}
             <p>{companion.description}</p>
             <a class="primary-action light" href={companion.href}>{companion.actionLabel} <span aria-hidden="true">→</span></a>
             <a class="return-link" href="#top" data-reader-home>Return to the beginning</a>
