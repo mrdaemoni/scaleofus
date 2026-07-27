@@ -3721,21 +3721,14 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
 
 @media (max-width: 760px) {
   .watercolor-wash,
-  .story-beat.is-seen .watercolor-wash {
-    animation: none;
-    transition: none;
-    border-radius: 48% 52% 43% 57% / 57% 42% 58% 43%;
-    background:
-      radial-gradient(ellipse 58% 54% at 39% 48%, color-mix(in srgb, var(--chapter-wash) 24%, transparent), transparent 76%),
-      radial-gradient(ellipse 52% 46% at 65% 56%, color-mix(in srgb, var(--chapter-wash-secondary) 20%, transparent), transparent 78%);
-    filter: blur(1px) saturate(1.02);
-    transform: rotate(var(--wash-rotation));
-    will-change: auto;
+  .story-beat.is-seen .watercolor-wash,
+  .cinematic-layer {
+    display: none !important;
   }
 
   .story-chapter::before {
     display: block;
-    opacity: 0.45;
+    opacity: 0.26;
   }
 
   .story-chapter::after {
@@ -4171,19 +4164,10 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   }
 }
 
-/* Mobile listening paints atmosphere only inside the one visible stage. */
+/* On phones the living ink carries the motion; canvas weather stays off. */
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .watercolor-wash,
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .cinematic-layer {
   display: none !important;
-}
-
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .watercolor-wash {
-  display: block !important;
-  opacity: 0.24;
-  filter: none;
-  mix-blend-mode: multiply;
-  animation: mobileStageWatercolor 11s ease-in-out infinite alternate;
-  will-change: transform, opacity;
 }
 
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::before,
@@ -4297,35 +4281,9 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"][data-reading
   contain: layout paint style;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .living-drawing,
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat.is-current-beat .art-placeholder {
-  animation: mobileStageDrawingFloat 8.5s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes mobileStageWatercolor {
-  0% {
-    opacity: 0.39;
-    transform: translate3d(-1.2%, 0.8%, 0) rotate(calc(var(--wash-rotation) - 1deg)) scale(0.98, 0.97);
-  }
-  52% {
-    opacity: 0.54;
-    transform: translate3d(1.1%, -0.7%, 0) rotate(var(--wash-rotation)) scale(1.025, 1.01);
-  }
-  100% {
-    opacity: 0.45;
-    transform: translate3d(-0.3%, -1%, 0) rotate(calc(var(--wash-rotation) + 1deg)) scale(1.01, 1.035);
-  }
-}
-
 @keyframes mobileStagePaletteArrival {
   from { opacity: 0.72; }
   to { opacity: 1; }
-}
-
-@keyframes mobileStageDrawingFloat {
-  from { transform: translate3d(-0.35%, 0.3%, 0) rotate(-0.12deg); }
-  to { transform: translate3d(0.45%, -0.45%, 0) rotate(0.14deg); }
 }
 
 @media (max-width: 420px) {

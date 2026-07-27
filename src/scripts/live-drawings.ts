@@ -30,21 +30,28 @@ const mobileSourceFor = (drawing: HTMLElement, source: string) =>
   drawing.dataset.rasterSrc
   || source.replace("/live/", "/mobile/").replace(/\.svg$/, ".webp");
 
-const mobileListening = () => compactReader.matches && document.body.dataset.readerMode === "listen";
-const desiredRenderMode = () => compactReader.matches && !mobileListening() ? "raster" : "inline";
+const desiredRenderMode = (drawing: HTMLElement) => {
+  if (!compactReader.matches) return "inline";
+  if (reducedMotion.matches || !drawing.hasAttribute("data-mobile-animate")) return "raster";
+  return "inline";
+};
+
+const hasBoilingDrawing = () => [...visibleDrawings].some((drawing) =>
+  drawing.dataset.liveRenderMode === "inline"
+  && drawing.classList.contains("is-drawn"),
+);
 
 const stopBoilIfIdle = () => {
-  if (visibleDrawings.size || !boilTimer) return;
+  if (hasBoilingDrawing() || !boilTimer) return;
   window.clearInterval(boilTimer);
   boilTimer = 0;
 };
 
 const startBoil = () => {
   if (
-    (compactReader.matches && !mobileListening())
-    || reducedMotion.matches
+    reducedMotion.matches
     || boilTimer
-    || !visibleDrawings.size
+    || !hasBoilingDrawing()
     || document.hidden
   ) return;
   boilTimer = window.setInterval(() => {
@@ -63,8 +70,8 @@ const startBoil = () => {
 
 const jolt = (drawing: HTMLElement) => {
   if (
-    (compactReader.matches && !mobileListening())
-    || reducedMotion.matches
+    reducedMotion.matches
+    || drawing.dataset.liveRenderMode !== "inline"
     || !drawing.classList.contains("is-drawn")
   ) return;
   drawing.classList.add("is-jolt-frame");
@@ -142,7 +149,7 @@ const scheduleDrawingRelease = (drawing: HTMLElement) => {
   const timer = window.setTimeout(() => {
     drawingUnloadTimers.delete(drawing);
     releaseCompactDrawing(drawing);
-  }, 1400);
+  }, 620);
   drawingUnloadTimers.set(drawing, timer);
 };
 
@@ -176,7 +183,7 @@ const injectDrawing = async (drawing: HTMLElement) => {
   if (!source) return;
   const request = (async () => {
     try {
-      if (desiredRenderMode() === "raster") {
+      if (desiredRenderMode(drawing) === "raster") {
         await mountLightweightDrawing(drawing, source);
         return;
       }
@@ -253,7 +260,7 @@ const revealDrawing = async (drawing: HTMLElement) => {
 const refreshDrawingMode = async (drawing: HTMLElement) => {
   const pending = drawingLoads.get(drawing);
   if (pending) await pending;
-  const desired = desiredRenderMode();
+  const desired = desiredRenderMode(drawing);
   if (drawing.dataset.liveLoaded === "true" && drawing.dataset.liveRenderMode !== desired) {
     resetDrawing(drawing);
   }
@@ -274,7 +281,10 @@ const visibilityObserver = new IntersectionObserver((entries) => {
       stopBoilIfIdle();
     }
   });
-}, { rootMargin: "20% 0px", threshold: 0.04 });
+}, {
+  rootMargin: compactReader.matches ? "0px" : "20% 0px",
+  threshold: compactReader.matches ? 0.18 : 0.04,
+});
 
 const preloadObserver = new IntersectionObserver((entries, observer) => {
   entries.forEach((entry) => {

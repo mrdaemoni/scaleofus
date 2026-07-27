@@ -84,10 +84,10 @@ const announceAtmosphereState = () => {
 
 const loadStoryAtmosphere = () => {
   if (!atmospherePromise) {
-    atmospherePromise = Promise.all([
-      import("./watercolor-weather"),
-      import("./live-drawings"),
-    ]).then(() => {
+    const atmosphereModules = mobileSafeReader.matches
+      ? [import("./live-drawings")]
+      : [import("./watercolor-weather"), import("./live-drawings")];
+    atmospherePromise = Promise.all(atmosphereModules).then(() => {
       announceAtmosphereState();
     });
   }
@@ -1876,8 +1876,8 @@ syncDockFootprint();
 updateCinematicMotion();
 updatePlayState();
 
-// Keep first paint and audio controls fast, then prepare the active drawing and
-// watercolor during idle time. An immediate tap calls the same loader above.
+// Keep first paint and audio controls fast, then prepare the active drawing.
+// Phones skip the canvas atmosphere and spend that budget on one living SVG.
 const idleWindow = window as Window & {
   requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
 };
