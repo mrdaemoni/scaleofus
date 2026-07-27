@@ -12,6 +12,7 @@
     "check:reader": "node scripts/check-reader-build.mjs",
     "new:book": "node scripts/scaffold-book.mjs",
     "prepare:audio": "node scripts/prepare-book-audio.mjs",
+    "render:social-image": "node scripts/generate-story-social-image.mjs",
     "render:sketches": "node scripts/render-remarkable-sketches.mjs",
     "render:mobile-drawings": "node scripts/generate-mobile-drawings.mjs",
     "preview": "astro preview",

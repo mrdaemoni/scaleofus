@@ -145,6 +145,8 @@ type ScreenWakeLock = EventTarget & {
 };
 let screenWakeLock: ScreenWakeLock | null = null;
 let screenWakeLockRequest: Promise<void> | null = null;
+let screenWakeLockRetryTimer = 0;
+let screenWakeLockRetryCount = 0;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 const randomBetween = (minimum: number, maximum: number) => minimum + Math.random() * (maximum - minimum);
@@ -1104,6 +1106,8 @@ const togglePlayback = async (event?: Event) => {
   if (!audio.paused && mediaIsBuffering) {
     releaseScrollToNarration();
     playbackRequested = true;
+    screenWakeLockRetryCount = 0;
+    requestScreenWakeLock();
     try {
       await audio.play();
       handlePlaybackStarted();
@@ -1125,6 +1129,11 @@ const togglePlayback = async (event?: Event) => {
     releaseScrollToNarration();
     if (startsFromCover) requestMediaSeek(0);
     playbackRequested = true;
+    screenWakeLockRetryCount = 0;
+    // Ask from the original tap, while the browser still considers this a
+    // direct user gesture. Waiting for `playing` is unreliable on mobile when
+    // the first audio buffer or a chapter seek takes a moment to arrive.
+    requestScreenWakeLock();
     const playAttempt = audio.play();
     // Start the visual clock from the tap itself. Mobile Safari can begin
     // audible playback before its play/playing events or play promise settle.
@@ -1435,18 +1444,37 @@ const shouldHoldScreenAwake = () => Boolean(
   readerMode === "listen"
   && playbackRequested
   && audio
-  && !audio.paused
   && !audio.ended
   && document.visibilityState === "visible"
 );
 
 const releaseScreenWakeLock = () => {
+  if (screenWakeLockRetryTimer) window.clearTimeout(screenWakeLockRetryTimer);
+  screenWakeLockRetryTimer = 0;
+  screenWakeLockRetryCount = 0;
   const lock = screenWakeLock;
   screenWakeLock = null;
   if (lock && !lock.released) lock.release().catch(() => {});
   if (document.body.dataset.wakeLock !== "unsupported") {
     document.body.dataset.wakeLock = "released";
   }
+};
+
+const scheduleScreenWakeLockRetry = () => {
+  if (
+    !shouldHoldScreenAwake()
+    || screenWakeLock
+    || screenWakeLockRequest
+    || screenWakeLockRetryTimer
+    || screenWakeLockRetryCount >= 3
+  ) return;
+  const delays = [240, 900, 2400];
+  const delay = delays[screenWakeLockRetryCount] ?? delays.at(-1) ?? 2400;
+  screenWakeLockRetryCount += 1;
+  screenWakeLockRetryTimer = window.setTimeout(() => {
+    screenWakeLockRetryTimer = 0;
+    requestScreenWakeLock();
+  }, delay);
 };
 
 const requestScreenWakeLock = () => {
@@ -1466,17 +1494,21 @@ const requestScreenWakeLock = () => {
         return;
       }
       screenWakeLock = lock;
+      screenWakeLockRetryCount = 0;
       document.body.dataset.wakeLock = "active";
       lock.addEventListener("release", () => {
         if (screenWakeLock === lock) screenWakeLock = null;
         document.body.dataset.wakeLock = "released";
+        scheduleScreenWakeLockRetry();
       }, { once: true });
     })
     .catch(() => {
       document.body.dataset.wakeLock = "blocked";
+      scheduleScreenWakeLockRetry();
     })
     .finally(() => {
       screenWakeLockRequest = null;
+      if (!screenWakeLock) scheduleScreenWakeLockRetry();
     });
 };
 
@@ -1683,6 +1715,7 @@ document.addEventListener("visibilitychange", () => {
     }
     return;
   }
+  screenWakeLockRetryCount = 0;
   requestScreenWakeLock();
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
@@ -1691,9 +1724,10 @@ addEventListener("pagehide", () => {
   releaseScreenWakeLock();
 });
 addEventListener("pageshow", () => {
-  if (playbackRequested && !chapterSeekInProgress && audio && !audio.paused && !audio.ended) {
-    handlePlaybackStarted();
-  }
+  if (!playbackRequested || !audio || audio.ended) return;
+  screenWakeLockRetryCount = 0;
+  requestScreenWakeLock();
+  if (!chapterSeekInProgress && !audio.paused) handlePlaybackStarted();
 });
 addEventListener("keydown", (event) => {
   const target = event.target as Element | null;

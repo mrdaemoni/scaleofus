@@ -14,9 +14,9 @@ export const windStoryBook = {
   wordTimings: storyWordTimings,
   presentation: {
     canonicalPath: "/",
-    socialImage: "/images/wind-story/og-wind-hilma.jpg",
-    socialImageWidth: 1662,
-    socialImageHeight: 946,
+    socialImage: "/images/wind-story/og-wind-drawing-01.png",
+    socialImageWidth: 1200,
+    socialImageHeight: 630,
     libraryCover: "/images/wind-story/mobile/n01.webp",
     themeColor: "#f2dfd4",
     navigation: {
