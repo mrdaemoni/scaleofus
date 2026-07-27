@@ -1,5 +1,6 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
+import { gzipSync } from "node:zlib";
 
 const projectRoot = process.cwd();
 const distRoot = path.join(projectRoot, "dist");
@@ -9,9 +10,11 @@ const limits = {
   readerScript: 64 * 1024,
   readerStylesheet: 96 * 1024,
   audioFile: 16 * 1024 * 1024,
-  liveDrawing: 300 * 1024,
+  liveDrawing: 512 * 1024,
+  liveDrawingWire: 96 * 1024,
+  liveDrawingWireTotal: 3 * 1024 * 1024,
   mobileDrawing: 128 * 1024,
-  totalBuild: 36 * 1024 * 1024,
+  totalBuild: 42 * 1024 * 1024,
 };
 
 const failures = [];
@@ -92,8 +95,16 @@ if (scriptFiles.length) {
   requireBudget(`largest script module (${scriptFiles.length} files)`, largestScriptModule, limits.readerScript);
 }
 if (liveDrawingFiles.length) {
-  const largestLiveDrawing = Math.max(...await Promise.all(liveDrawingFiles.map(bytesFor)));
+  const liveDrawingBytes = await Promise.all(liveDrawingFiles.map(bytesFor));
+  const compressedDrawingBytes = await Promise.all(liveDrawingFiles.map(async (filePath) =>
+    gzipSync(await readFile(filePath), { level: 9 }).byteLength
+  ));
+  const largestLiveDrawing = Math.max(...liveDrawingBytes);
+  const largestCompressedDrawing = Math.max(...compressedDrawingBytes);
+  const totalCompressedDrawings = compressedDrawingBytes.reduce((sum, value) => sum + value, 0);
   requireBudget(`largest live drawing (${liveDrawingFiles.length} files)`, largestLiveDrawing, limits.liveDrawing);
+  requireBudget("largest live drawing over the wire", largestCompressedDrawing, limits.liveDrawingWire);
+  requireBudget("all live drawings over the wire", totalCompressedDrawings, limits.liveDrawingWireTotal);
 }
 if (mobileDrawingFiles.length) {
   const largestMobileDrawing = Math.max(...await Promise.all(mobileDrawingFiles.map(bytesFor)));

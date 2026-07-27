@@ -312,6 +312,27 @@ body.is-cover-wind-awake .wind-script i:nth-child(3) { animation-delay: 90ms; }
 body.is-cover-wind-awake .wind-script i:nth-child(4) { animation-delay: 130ms; }
 body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
 
+.cover-living-wind {
+  position: absolute;
+  z-index: 0;
+  top: 8%;
+  right: -5%;
+  width: min(62vw, 900px);
+  height: 46%;
+  opacity: 0.2;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.cover-living-wind .living-drawing {
+  width: 100%;
+  height: 100%;
+}
+
+body.is-cover-wind-awake .cover-living-wind {
+  opacity: 0.34;
+}
+
 .cover-copy {
   position: relative;
   z-index: 1;
@@ -414,12 +435,22 @@ body.is-cover-wind-awake .wind-script i:nth-child(5) { animation-delay: 175ms; }
 
 .living-drawing svg .s {
   visibility: visible;
-  fill: var(--live-ink) !important;
 }
 
 .living-drawing svg .f {
   visibility: hidden;
+}
+
+.living-drawing svg .s path:not(.w) {
+  fill: var(--live-ink) !important;
+}
+
+.living-drawing svg .f path:not(.w) {
   fill: var(--live) !important;
+}
+
+.living-drawing svg .w {
+  mix-blend-mode: darken;
 }
 
 .living-drawing.is-boil-0 svg .f[data-f="0"],
@@ -1263,6 +1294,22 @@ body.is-listening .mountain-climber {
   letter-spacing: -0.02em;
   line-height: 1.16;
   text-wrap: balance;
+}
+
+.chapter-living-art {
+  position: absolute;
+  z-index: 0;
+  right: clamp(1%, 4vw, 7%);
+  bottom: clamp(4%, 7vh, 11%);
+  width: min(34vw, 360px);
+  height: min(38vh, 350px);
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.chapter-living-art .living-drawing {
+  width: 100%;
+  height: 100%;
 }
 
 .chapter-mark {
@@ -2456,6 +2503,7 @@ body.is-listening .mountain-climber {
 }
 
 .story-after {
+  position: relative;
   min-height: 100svh;
   display: grid;
   align-content: center;
@@ -2465,6 +2513,18 @@ body.is-listening .mountain-climber {
     radial-gradient(circle at 75% 25%, rgba(244, 214, 218, 0.2), transparent 28%),
     #80656d;
   color: var(--paper);
+}
+
+.story-endmark {
+  min-height: 34svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(50px, 8vh, 90px) 24px;
+}
+
+.story-endmark .living-drawing {
+  width: min(38vw, 220px);
+  height: min(22vh, 150px);
 }
 
 .story-after h2 {
@@ -3726,6 +3786,14 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     opacity: 0.58;
   }
 
+  .cover-living-wind {
+    top: 12%;
+    right: -22%;
+    width: 105vw;
+    height: 34%;
+    opacity: 0.16;
+  }
+
   .primary-action {
     min-height: 46px;
   }
@@ -3785,6 +3853,14 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   .chapter-heading h2 {
     font-size: clamp(48px, 15vw, 72px);
     line-height: 1.16;
+  }
+
+  .chapter-living-art {
+    right: 0;
+    bottom: 4%;
+    width: min(54vw, 250px);
+    height: min(28svh, 220px);
+    opacity: 0.27;
   }
 
   .story-beat {
@@ -4111,6 +4187,7 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .reader-shel
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter,
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-heading,
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-beat,
+body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-endmark,
 body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-after {
   display: none;
 }

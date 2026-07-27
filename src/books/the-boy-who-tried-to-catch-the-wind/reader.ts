@@ -1,10 +1,29 @@
-import type { StoryReaderConfig, VoicePassage } from "../../lib/story-reader";
+import type {
+  StoryArtworkSource,
+  StoryReaderConfig,
+  VoicePassage,
+} from "../../lib/story-reader";
 
-const live = (number: number) => ({
-  src: `/images/wind-story/live/d${String(number).padStart(2, "0")}.svg`,
-  mobileSrc: `/images/wind-story/mobile/d${String(number).padStart(2, "0")}.webp`,
+const live = (name: string): StoryArtworkSource => ({
+  src: `/images/wind-story/live/${name}.svg`,
+  mobileSrc: `/images/wind-story/mobile/${name}.webp`,
   kind: "live" as const,
 });
+
+const drawnBeats = [
+  1, 3, 4, 5,
+  7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+  35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+  49, 50, 51, 52, 53, 54, 55, 56,
+];
+
+const storyDrawings = Object.fromEntries(
+  drawnBeats.map((number) => [
+    number,
+    live(`n${String(number).padStart(2, "0")}`),
+  ]),
+) as Record<number, StoryArtworkSource>;
 
 const voice = (
   beat: number,
@@ -35,40 +54,25 @@ export const windStoryReader: StoryReaderConfig = {
     duration: 1020.074,
   },
   artwork: {
-    cover: "/images/wind-story/live/d00.svg",
-    coverMobile: "/images/wind-story/mobile/d00.webp",
+    cover: "/images/wind-story/live/n01.svg",
+    coverMobile: "/images/wind-story/mobile/n01.webp",
     coverKind: "live",
+    coverBackdrop: live("n00"),
     originalThrough: 0,
     originalRoot: "/images/wind-story/live",
     studyRoot: "/images/wind-story/live",
-    // The prototype maps drawings by story beat, not by filename order. Beats
-    // without a mapped drawing intentionally retain the prompt placeholder.
-    sources: {
-      1: live(1),
-      2: live(3),
-      3: live(2),
-      5: live(4),
-      7: live(5),
-      8: live(6),
-      9: live(7),
-      10: live(8),
-      11: live(10),
-      12: live(9),
-      13: live(11),
-      14: live(12),
-      15: live(13),
-      16: live(14),
-      17: live(15),
-      18: live(19),
-      19: live(20),
-      20: live(22),
-      21: live(21),
-      22: live(17),
-      23: live(23),
-      24: live(24),
-      25: live(25),
-      26: live(26),
+    // The hand-drawn labels are the story beat numbers. Pages 2 and 6 were
+    // intentionally left without drawings and retain their quiet prompts.
+    sources: storyDrawings,
+    chapterSources: {
+      2: live("ch-stonecutter"),
+      3: live("ch-potter"),
+      4: live("ch-pond"),
+      5: live("ch-mirrors"),
+      6: live("ch-mountain"),
+      7: live("ch-oneturn"),
     },
+    end: live("fin"),
   },
   motions: [],
   speakerStyles: {

@@ -19,6 +19,12 @@ export type VoicePassage = {
   text: string;
 };
 
+export type StoryArtworkSource = {
+  src: string;
+  mobileSrc?: string;
+  kind: "original" | "study" | "live";
+};
+
 export type StoryReaderConfig = {
   id: string;
   title: string;
@@ -36,14 +42,13 @@ export type StoryReaderConfig = {
     cover?: string;
     coverMobile?: string;
     coverKind?: "original" | "study" | "live";
+    coverBackdrop?: StoryArtworkSource;
     originalThrough: number;
     originalRoot: string;
     studyRoot: string;
-    sources?: Record<number, {
-      src: string;
-      mobileSrc?: string;
-      kind: "original" | "study" | "live";
-    }>;
+    sources?: Record<number, StoryArtworkSource>;
+    chapterSources?: Record<number, StoryArtworkSource>;
+    end?: StoryArtworkSource;
   };
   motions: string[];
   speakerStyles?: Readonly<Record<string, StorySpeakerStyle>>;

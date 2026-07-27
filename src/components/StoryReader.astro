@@ -108,6 +108,8 @@ const mobileArtForBeat = (number: number) => storyArtMobile(windStoryReader, num
 const coverArt = windStoryReader.artwork.cover ?? artForBeat(1) ?? "/images/wind-story/sketches/beat-01.png";
 const coverMobileArt = windStoryReader.artwork.coverMobile ?? mobileArtForBeat(1) ?? coverArt;
 const coverArtKind = windStoryReader.artwork.coverKind ?? "original";
+const coverBackdrop = windStoryReader.artwork.coverBackdrop;
+const endArtwork = windStoryReader.artwork.end;
 const resolvedSpeaker = (
   chapterNumber: number,
   authoredSpeaker: string,
@@ -172,9 +174,21 @@ const chapterTheme = (chapterNumber: number) =>
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-vignette" aria-hidden="true"></div>
-      <div class="wind-script" aria-hidden="true">
-        <i></i><i></i><i></i><i></i><i></i>
-      </div>
+      {coverBackdrop?.kind === "live" ? (
+        <div class="cover-living-wind" aria-hidden="true">
+          <div
+            class="living-drawing"
+            data-live-drawing
+            data-live-cover
+            data-svg-src={coverBackdrop.src}
+            data-raster-src={coverBackdrop.mobileSrc ?? coverBackdrop.src}
+          ></div>
+        </div>
+      ) : (
+        <div class="wind-script" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+      )}
 
       <div class="cover-copy">
         <h1
@@ -220,7 +234,6 @@ const chapterTheme = (chapterNumber: number) =>
             <div
               class="living-drawing"
               data-live-drawing
-              data-live-cover
               data-svg-src={coverArt}
               data-raster-src={coverMobileArt}
             ></div>
@@ -275,7 +288,9 @@ const chapterTheme = (chapterNumber: number) =>
       </aside>
 
       <div class="story-flow">
-        {chapters.map((chapter) => (
+        {chapters.map((chapter) => {
+          const chapterArtwork = windStoryReader.artwork.chapterSources?.[chapter.number];
+          return (
           <section
             class={`story-chapter chapter-${chapter.number}`}
             id={chapter.id}
@@ -321,6 +336,25 @@ const chapterTheme = (chapterNumber: number) =>
                   </>
                 ))}
               </h2>
+              {chapterArtwork && (
+                <div class="chapter-living-art" aria-hidden="true">
+                  {chapterArtwork.kind === "live" ? (
+                    <div
+                      class="living-drawing"
+                      data-live-drawing
+                      data-svg-src={chapterArtwork.src}
+                      data-raster-src={chapterArtwork.mobileSrc ?? chapterArtwork.src}
+                    ></div>
+                  ) : (
+                    <img
+                      src={chapterArtwork.mobileSrc ?? chapterArtwork.src}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
+                </div>
+              )}
               <div class={`chapter-mark mark-${chapter.number}`} aria-hidden="true">
                 <i></i><i></i><i></i>
               </div>
@@ -436,7 +470,28 @@ const chapterTheme = (chapterNumber: number) =>
               })}
             </div>
           </section>
-        ))}
+          );
+        })}
+
+        {endArtwork && (
+          <div class="story-endmark" aria-hidden="true">
+            {endArtwork.kind === "live" ? (
+              <div
+                class="living-drawing"
+                data-live-drawing
+                data-svg-src={endArtwork.src}
+                data-raster-src={endArtwork.mobileSrc ?? endArtwork.src}
+              ></div>
+            ) : (
+              <img
+                src={endArtwork.mobileSrc ?? endArtwork.src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+          </div>
+        )}
 
         {companion && (
           <section class="story-after" aria-labelledby="after-title">

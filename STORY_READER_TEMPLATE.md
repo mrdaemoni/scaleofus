@@ -71,6 +71,10 @@ asset references.
 Put runtime art in `public/books/<slug>/art/`. Map art to story beats explicitly
 in `reader.ts`; drawing filenames do not have to match beat numbers.
 
+The same artwork contract can also supply `coverBackdrop`, `chapterSources`,
+and an `end` drawing. These use the shared lazy loader, so decorative
+transitions do not create a second animation system.
+
 For a dynamic SVG, provide:
 
 - the SVG used on desktop

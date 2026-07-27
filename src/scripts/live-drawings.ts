@@ -175,6 +175,9 @@ const injectDrawing = async (drawing: HTMLElement) => {
       }
       const markup = await fetchSvg(source);
       drawing.innerHTML = markup;
+      // Every story figure has its own source. Once desktop has parsed the SVG
+      // into DOM, retaining a second full markup string only wastes memory.
+      if (!compactReader.matches) svgCache.delete(source);
       const svg = drawing.querySelector<SVGSVGElement>("svg");
       const viewBox = svg?.getAttribute("viewBox")?.trim().split(/\s+/).map(Number);
       if (!svg || !viewBox || viewBox.length !== 4 || viewBox.some((value) => !Number.isFinite(value))) {

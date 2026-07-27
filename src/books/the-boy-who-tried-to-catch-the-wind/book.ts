@@ -17,7 +17,7 @@ export const windStoryBook = {
     socialImage: "/images/wind-story/og-wind-hilma.jpg",
     socialImageWidth: 1662,
     socialImageHeight: 946,
-    libraryCover: "/images/wind-story/mobile/d00.webp",
+    libraryCover: "/images/wind-story/mobile/n01.webp",
     themeColor: "#f2dfd4",
     navigation: {
       kind: "mountain",
