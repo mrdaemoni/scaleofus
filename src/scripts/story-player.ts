@@ -9,7 +9,6 @@ const playIcon = document.querySelector<HTMLElement>("[data-play-icon]");
 const seek = document.querySelector<HTMLInputElement>("[data-seek]");
 const currentTime = document.querySelector<HTMLElement>("[data-current-time]");
 const currentChapter = document.querySelector<HTMLElement>("[data-current-chapter]");
-const follow = document.querySelector<HTMLButtonElement>("[data-follow]");
 const collapse = document.querySelector<HTMLButtonElement>("[data-collapse]");
 const storyProgress = document.querySelector<HTMLElement>("[data-reading-progress]");
 const chapters = JSON.parse(app?.dataset.chapters ?? "[]") as Array<{
@@ -496,7 +495,6 @@ const setReaderMode = (mode: ReaderMode) => {
 
   if (mode === "listen") {
     followNarration = true;
-    follow?.setAttribute("aria-pressed", "true");
     if (stagedListeningReader.matches) {
       releaseScrollToNarration();
       window.scrollTo(0, 0);
@@ -753,7 +751,7 @@ const fitBeatToViewport = (index: number) => {
 
   if (readerMode !== "listen") return frame;
 
-  if (!desktopReader.matches) {
+  if (usesMobileListeningStage()) {
     const bounds = readingBounds();
     const pageHeight = Math.max(430, Math.floor(bounds.height));
     const beatStyle = getComputedStyle(beat);
@@ -959,7 +957,7 @@ const setParagraph = (index: number, source: "audio" | "scroll" | "restore" = "a
   document.dispatchEvent(new CustomEvent("story:reading-stage", {
     detail: { stage: "paragraph", beatNumber },
   }));
-  if (readerMode === "listen" && !desktopReader.matches && changed) fitBeatToViewport(index);
+  if (readerMode === "listen" && usesMobileListeningStage() && changed) fitBeatToViewport(index);
   if (
     source === "audio"
     && audio
@@ -1190,6 +1188,10 @@ const setDockCompact = (compact: boolean) => {
 const syncDockFootprint = () => {
   if (readerMode !== "listen") return;
   if (dockPinnedOpen) return;
+  if (stagedListeningReader.matches) {
+    setDockCompact(true);
+    return;
+  }
   setDockCompact(!desktopReader.matches || scrollY > Math.min(innerHeight * 0.28, 280));
 };
 
@@ -1745,14 +1747,6 @@ readerHomes.forEach((readerHome) => {
     } catch {}
     scrollForNarration(0);
   });
-});
-
-follow?.addEventListener("click", () => {
-  followNarration = !followNarration;
-  follow.setAttribute("aria-pressed", String(followNarration));
-  lastCenteredParagraph = -1;
-  lastCenteredHeading = -1;
-  if (followNarration && audio) centerReadingStage(audio.currentTime);
 });
 
 collapse?.addEventListener("click", () => {
