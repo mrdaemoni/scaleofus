@@ -4165,17 +4165,17 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
 }
 
 /* On phones the living ink carries the motion; canvas weather stays off. */
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .watercolor-wash,
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .cinematic-layer {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] .watercolor-wash,
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] .cinematic-layer {
   display: none !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::before,
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .story-chapter::after {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] .story-chapter::before,
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] .story-chapter::after {
   display: none !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word] {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word] {
   isolation: auto;
   text-shadow: none;
   transform: none;
@@ -4183,42 +4183,42 @@ body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat
   transition: color 120ms linear, font-variation-settings 140ms linear;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::before,
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::after {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::before,
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word]::after {
   content: none !important;
   display: none !important;
   filter: none !important;
   animation: none !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word {
   --word-weight: 540;
   text-shadow: none;
   animation: none;
   isolation: isolate;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail {
   animation: none;
   isolation: isolate;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before,
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before,
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
   content: "" !important;
   display: block !important;
   filter: none !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-current-word::before {
   animation: mobileWordWind var(--wind-arrival-duration, 470ms) ease-out both !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] :where(.beat-copy, .spoken-heading) [data-narration-word].is-wind-trail::before {
   animation: mobileWordWindAway var(--wind-release-duration, 680ms) ease-out both !important;
 }
 
-body.story-page[data-mobile-safe-reader][data-reader-mode="listen"] .chapter-heading.is-current-heading .chapter-mark {
+body.story-page[data-lightweight-reader][data-reader-mode="listen"] .chapter-heading.is-current-heading .chapter-mark {
   animation: none;
 }
 

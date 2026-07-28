@@ -51,13 +51,15 @@ const readingNext = document.querySelector<HTMLButtonElement>("[data-reader-next
 const readingChapterPosition = document.querySelector<HTMLElement>("[data-reader-chapter-position]");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
-const mobileSafeReader = matchMedia("(max-width: 760px), (pointer: coarse)");
+const mobileSafeReader = matchMedia("(max-width: 760px)");
+const lightweightEffectsReader = matchMedia("(max-width: 760px), (pointer: coarse)");
 
-const syncMobileSafeReader = () => {
+const syncReaderCapabilities = () => {
   document.body.toggleAttribute("data-mobile-safe-reader", mobileSafeReader.matches);
+  document.body.toggleAttribute("data-lightweight-reader", lightweightEffectsReader.matches);
 };
 
-syncMobileSafeReader();
+syncReaderCapabilities();
 
 const usesMobileListeningStage = () => readerMode === "listen" && mobileSafeReader.matches;
 
@@ -84,7 +86,7 @@ const announceAtmosphereState = () => {
 
 const loadStoryAtmosphere = () => {
   if (!atmospherePromise) {
-    const atmosphereModules = mobileSafeReader.matches
+    const atmosphereModules = lightweightEffectsReader.matches
       ? [import("./live-drawings")]
       : [import("./watercolor-weather"), import("./live-drawings")];
     atmospherePromise = Promise.all(atmosphereModules).then(() => {
@@ -166,7 +168,7 @@ const clearMobileWindShape = (word: HTMLElement) => {
 };
 
 const shapeWindWake = (word: HTMLElement) => {
-  if (mobileSafeReader.matches) {
+  if (lightweightEffectsReader.matches) {
     // The single-frame mobile reader only paints this word and its predecessor.
     // A few short-lived variables make each gust feel organic, then they are
     // removed when the trail clears so styles never accumulate through the book.
@@ -374,7 +376,7 @@ const setWord = (index: number) => {
     const releaseDuration = Number(previousWord.dataset.windRelease) || 1920;
     const timer = window.setTimeout(() => {
       previousWord.classList.remove("is-wind-trail");
-      if (mobileSafeReader.matches) clearMobileWindShape(previousWord);
+      if (lightweightEffectsReader.matches) clearMobileWindShape(previousWord);
       windTrailTimers.delete(previousWord);
     }, releaseDuration);
     windTrailTimers.set(previousWord, timer);
@@ -561,7 +563,7 @@ const setChapter = (index: number) => {
       const left = activeLink.offsetLeft - dockChapterNav.clientWidth / 2 + activeLink.offsetWidth / 2;
       dockChapterNav.scrollTo({
         left: Math.max(0, left),
-        behavior: reducedMotion.matches || mobileSafeReader.matches ? "auto" : "smooth",
+        behavior: reducedMotion.matches || lightweightEffectsReader.matches ? "auto" : "smooth",
       });
     }
   }
@@ -1765,7 +1767,8 @@ addEventListener("resize", () => {
   if (readerMode === "listen") queueViewportFit(160);
 }, { passive: true });
 
-mobileSafeReader.addEventListener("change", syncMobileSafeReader);
+mobileSafeReader.addEventListener("change", syncReaderCapabilities);
+lightweightEffectsReader.addEventListener("change", syncReaderCapabilities);
 
 if (matchMedia("(pointer: fine)").matches) {
   addEventListener("pointermove", (event) => {
