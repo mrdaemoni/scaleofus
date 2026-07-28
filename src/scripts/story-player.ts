@@ -113,6 +113,10 @@ let manualScrollTimer = 0;
 let autoScrollTimer = 0;
 let autoScrollTarget = -1;
 let playbackRecoveryTimer = 0;
+let playbackWatchdogTimer = 0;
+let playbackWatchdogClock = 0;
+let playbackWatchdogAdvancedAt = performance.now();
+let playbackWatchdogRecoveries = 0;
 let playbackFollowTimer = 0;
 let pendingMediaSeekTimer = 0;
 let lastFollowAuditSecond = Number.NEGATIVE_INFINITY;
@@ -507,6 +511,7 @@ const setReaderMode = (mode: ReaderMode) => {
     }
     playbackRequested = false;
     mediaIsBuffering = false;
+    stopPlaybackWatchdog();
     releaseScreenWakeLock();
     audio?.pause();
     stopNarrationLoop();
@@ -1519,6 +1524,7 @@ const requestScreenWakeLock = () => {
 const handlePlaybackStarted = () => {
   if (!audio || audio.paused) return;
   playbackRequested = true;
+  startPlaybackWatchdog();
   requestScreenWakeLock();
   updatePlayState();
   if (chapterSeekInProgress) {
@@ -1539,7 +1545,10 @@ audio?.addEventListener("pause", () => {
     startNarrationLoop();
     return;
   }
-  if (!playbackRequested || audio.ended) releaseScreenWakeLock();
+  if (!playbackRequested || audio.ended) {
+    stopPlaybackWatchdog();
+    releaseScreenWakeLock();
+  }
   if (playbackRequested && !audio.ended && document.visibilityState === "visible") {
     // iOS may briefly pause a media element while it changes buffers. Keep
     // the lightweight visual clock alive so a successful resume cannot leave
@@ -1561,6 +1570,7 @@ audio?.addEventListener("pause", () => {
 audio?.addEventListener("ended", () => {
   playbackRequested = false;
   mediaIsBuffering = false;
+  stopPlaybackWatchdog();
   releaseScreenWakeLock();
   clearPendingMediaSeek();
   updatePlayState();
@@ -1573,17 +1583,95 @@ const setMediaBuffering = (buffering: boolean) => {
   updatePlayState();
 };
 
+const resetPlaybackWatchdogClock = () => {
+  playbackWatchdogClock = audio?.currentTime ?? 0;
+  playbackWatchdogAdvancedAt = performance.now();
+  playbackWatchdogRecoveries = 0;
+  delete document.body.dataset.playbackClock;
+};
+
+const stopPlaybackWatchdog = () => {
+  if (playbackWatchdogTimer) window.clearInterval(playbackWatchdogTimer);
+  playbackWatchdogTimer = 0;
+  playbackWatchdogRecoveries = 0;
+};
+
+const auditPlaybackClock = () => {
+  if (
+    !audio
+    || readerMode !== "listen"
+    || !playbackRequested
+    || audio.ended
+  ) {
+    stopPlaybackWatchdog();
+    return;
+  }
+
+  if (
+    document.visibilityState !== "visible"
+    || chapterSeekInProgress
+    || audio.seeking
+  ) {
+    resetPlaybackWatchdogClock();
+    return;
+  }
+
+  const currentTime = audio.currentTime;
+  if (Math.abs(currentTime - playbackWatchdogClock) >= 0.04) {
+    resetPlaybackWatchdogClock();
+    if (mediaIsBuffering) setMediaBuffering(false);
+    return;
+  }
+
+  const recoveryDelay = [5200, 6800, 9200, 14000][Math.min(playbackWatchdogRecoveries, 3)];
+  if (performance.now() - playbackWatchdogAdvancedAt < recoveryDelay) return;
+
+  playbackWatchdogAdvancedAt = performance.now();
+  playbackWatchdogRecoveries += 1;
+  document.body.dataset.playbackClock = "stalled";
+  setMediaBuffering(true);
+
+  // A browser can keep the media element nominally "playing" even though its
+  // clock has stopped after a buffer handoff. The first pass asks it to resume.
+  // Later passes make a nearly inaudible seek, prompting a fresh byte-range
+  // request without reloading the document or discarding the user's session.
+  if (
+    playbackWatchdogRecoveries > 1
+    && !audio.paused
+    && audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+  ) {
+    const duration = mediaDuration();
+    audio.currentTime = clamp(currentTime + 0.02, 0, Math.max(0, duration - 0.02));
+    playbackWatchdogClock = audio.currentTime;
+  }
+
+  audio.play().catch(recordPlaybackError);
+};
+
+const startPlaybackWatchdog = () => {
+  if (playbackWatchdogTimer || !audio || !playbackRequested || audio.ended) return;
+  resetPlaybackWatchdogClock();
+  playbackWatchdogTimer = window.setInterval(auditPlaybackClock, 1250);
+};
+
 audio?.addEventListener("waiting", () => {
   setMediaBuffering(true);
+  startPlaybackWatchdog();
 });
 audio?.addEventListener("stalled", () => {
   setMediaBuffering(true);
+  startPlaybackWatchdog();
+});
+audio?.addEventListener("suspend", () => {
+  if (playbackRequested && !audio.ended) startPlaybackWatchdog();
 });
 audio?.addEventListener("error", () => {
   if (playbackRequested && !audio.ended) setMediaBuffering(true);
 });
 audio?.addEventListener("playing", () => {
   delete document.body.dataset.playbackError;
+  resetPlaybackWatchdogClock();
+  startPlaybackWatchdog();
   if (!chapterSeekInProgress) setMediaBuffering(false);
   handlePlaybackStarted();
 });
@@ -1596,6 +1684,9 @@ audio?.addEventListener("canplay", () => {
   if (!chapterSeekInProgress) setMediaBuffering(false);
 });
 audio?.addEventListener("timeupdate", () => {
+  if (Math.abs(audio.currentTime - playbackWatchdogClock) >= 0.04) {
+    resetPlaybackWatchdogClock();
+  }
   if (chapterSeekInProgress) {
     retryPendingMediaSeek();
     return;
@@ -1715,21 +1806,25 @@ document.addEventListener("visibilitychange", () => {
     || audio.ended
   ) {
     if (document.visibilityState !== "visible") {
+      stopPlaybackWatchdog();
       releaseScreenWakeLock();
     }
     return;
   }
   screenWakeLockRetryCount = 0;
+  startPlaybackWatchdog();
   requestScreenWakeLock();
   if (audio.paused) audio.play().catch(() => {});
   else handlePlaybackStarted();
 });
 addEventListener("pagehide", () => {
+  stopPlaybackWatchdog();
   releaseScreenWakeLock();
 });
 addEventListener("pageshow", () => {
   if (!playbackRequested || !audio || audio.ended) return;
   screenWakeLockRetryCount = 0;
+  startPlaybackWatchdog();
   requestScreenWakeLock();
   if (!chapterSeekInProgress && !audio.paused) handlePlaybackStarted();
 });

@@ -58,6 +58,59 @@ for (const htmlPath of htmlFiles) {
     failures.push(`${relative(htmlPath)} references a GIF; use an active SVG or static raster.`);
   }
 
+  const storyStages = [...html.matchAll(/<article\b[^>]*\bdata-beat="[^"]+"[^>]*>/g)]
+    .map((match) => {
+      const tag = match[0];
+      return {
+        number: Number(tag.match(/\bdata-beat="([^"]+)"/)?.[1]),
+        start: Number(tag.match(/\bdata-start="([^"]+)"/)?.[1]),
+        end: Number(tag.match(/\bdata-end="([^"]+)"/)?.[1]),
+      };
+    });
+  metrics.push(`${relative(htmlPath)} timed story stages: ${storyStages.length}`);
+  if (!storyStages.length) {
+    failures.push(`${relative(htmlPath)} has no timed story stages.`);
+  } else {
+    storyStages.forEach((stage, index) => {
+      const expectedNumber = index + 1;
+      if (stage.number !== expectedNumber) {
+        failures.push(`${relative(htmlPath)} story stage ${index + 1} is numbered ${stage.number}; expected ${expectedNumber}.`);
+      }
+      if (!Number.isFinite(stage.start) || !Number.isFinite(stage.end) || stage.end <= stage.start) {
+        failures.push(`${relative(htmlPath)} story stage ${stage.number} has invalid timing ${stage.start}-${stage.end}.`);
+      }
+      const previousStage = storyStages[index - 1];
+      if (previousStage && stage.start <= previousStage.start) {
+        failures.push(`${relative(htmlPath)} story stage ${stage.number} does not start after stage ${previousStage.number}.`);
+      }
+    });
+  }
+
+  const narrationParagraphs = [...html.matchAll(/<p\b[^>]*\bdata-narration-paragraph(?:="")?[^>]*>/g)]
+    .map((match) => {
+      const tag = match[0];
+      return {
+        number: Number(tag.match(/\bdata-beat-number="([^"]+)"/)?.[1]),
+        start: Number(tag.match(/\bdata-start="([^"]+)"/)?.[1]),
+        end: Number(tag.match(/\bdata-end="([^"]+)"/)?.[1]),
+      };
+    });
+  metrics.push(`${relative(htmlPath)} timed narration paragraphs: ${narrationParagraphs.length}`);
+  if (narrationParagraphs.length !== storyStages.length) {
+    failures.push(`${relative(htmlPath)} has ${storyStages.length} story stages but ${narrationParagraphs.length} narration paragraphs.`);
+  }
+  narrationParagraphs.forEach((paragraph, index) => {
+    const expectedNumber = index + 1;
+    if (
+      paragraph.number !== expectedNumber
+      || !Number.isFinite(paragraph.start)
+      || !Number.isFinite(paragraph.end)
+      || paragraph.end <= paragraph.start
+    ) {
+      failures.push(`${relative(htmlPath)} narration paragraph ${expectedNumber} has invalid number or timing.`);
+    }
+  });
+
   const localAssets = [...html.matchAll(/(?:src|href)="(\/[^"#?]+)(?:\?[^"]*)?"/g)]
     .map((match) => match[1])
     .filter((assetPath) => !assetPath.endsWith("/"));
