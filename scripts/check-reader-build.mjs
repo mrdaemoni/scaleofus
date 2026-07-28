@@ -51,7 +51,8 @@ for (const htmlPath of htmlFiles) {
   if (wordCount > limits.readerWords) {
     failures.push(`${relative(htmlPath)} renders ${wordCount} word nodes; budget is ${limits.readerWords}.`);
   }
-  if (!html.includes('preload="metadata"')) {
+  const narrationAvailable = html.includes('data-narration-available="true"');
+  if (narrationAvailable && !html.includes('preload="metadata"')) {
     failures.push(`${relative(htmlPath)} must keep narration preload at metadata.`);
   }
   if (/src="[^"]+\.gif(?:\?[^"]*)?"/i.test(html)) {

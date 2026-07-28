@@ -12,6 +12,8 @@ const {
   socialImageWidth = 1672,
   socialImageHeight = 941,
   themeColor = "#f3dfe1",
+  lang = "en",
+  alternateLanguages = [],
 } = Astro.props;
 
 const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, "https://scaleofus.com").toString();
@@ -19,7 +21,7 @@ const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,6 +29,9 @@ const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
     <meta name="description" content={description} />
     <meta name="theme-color" content={themeColor} />
     <link rel="canonical" href={canonicalUrl} />
+    {alternateLanguages.map((alternate: { locale: string; href: string }) => (
+      <link rel="alternate" hreflang={alternate.locale} href={new URL(alternate.href, "https://scaleofus.com").toString()} />
+    ))}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:site_name" content="Scale of Us" />
     <meta property="og:title" content={title} />

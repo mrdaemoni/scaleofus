@@ -1,4 +1,5 @@
 const app = document.querySelector<HTMLElement>("[data-story-app]");
+const chapterLabel = app?.dataset.readerChapterLabel ?? "Chapter";
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
 const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
 const dockChapterNav = document.querySelector<HTMLElement>(".dock-chapters");
@@ -42,6 +43,7 @@ const narrationWordStarts = narrationWords.map((word) => Number(word.dataset.sta
 const cinematicFrames = [...document.querySelectorAll<HTMLElement>("[data-cinematic-art]")];
 const storyArtImages = [...document.querySelectorAll<HTMLImageElement>("[data-story-art]")];
 const readerHomes = [...document.querySelectorAll<HTMLAnchorElement>("[data-reader-home]")];
+const languageSwitches = [...document.querySelectorAll<HTMLAnchorElement>("[data-language-switch]")];
 const mountainArt = document.querySelector<HTMLElement>("[data-mountain-art]");
 const mountainClimber = document.querySelector<HTMLElement>("[data-mountain-climber]");
 const readingCompass = document.querySelector<HTMLElement>("[data-reading-compass]");
@@ -557,9 +559,9 @@ const setChapter = (index: number) => {
   storyChapters[index]?.classList.add("is-current-chapter");
   syncRailPalette(index);
   if (currentChapter) {
-    currentChapter.textContent = `Chapter ${index + 1} · ${chapters[index].title}`;
+    currentChapter.textContent = `${chapterLabel} ${index + 1} · ${chapters[index].title}`;
   }
-  if (readingChapterPosition) readingChapterPosition.textContent = `Chapter ${index + 1}`;
+  if (readingChapterPosition) readingChapterPosition.textContent = `${chapterLabel} ${index + 1}`;
   if (readingPrevious) readingPrevious.disabled = index <= 0;
   if (readingNext) readingNext.disabled = index >= chapters.length - 1;
   if (changed && dockChapterNav) {
@@ -1718,9 +1720,8 @@ seek?.addEventListener("change", () => {
 chapterLinks.forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
-    if (!audio) return;
     const index = Number(link.dataset.chapterIndex);
-    if (readerMode !== "listen") {
+    if (readerMode !== "listen" || !audio) {
       goToReadingChapter(index);
       return;
     }
@@ -1746,6 +1747,15 @@ readerHomes.forEach((readerHome) => {
       localStorage.setItem("scaleofus-wind-progress", "0");
     } catch {}
     scrollForNarration(0);
+  });
+});
+
+languageSwitches.forEach((languageSwitch) => {
+  languageSwitch.addEventListener("click", () => {
+    if (readerMode === "cover" || activeBeat < 0) return;
+    const target = new URL(languageSwitch.href, location.href);
+    target.hash = `beat-${beats[activeBeat]?.number ?? 1}`;
+    languageSwitch.href = target.toString();
   });
 });
 

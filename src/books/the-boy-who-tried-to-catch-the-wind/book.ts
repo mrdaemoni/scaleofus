@@ -7,6 +7,7 @@ import type { StoryBookSource } from "../../lib/story-book";
 
 export const windStoryBook = {
   slug: "the-boy-who-tried-to-catch-the-wind",
+  locale: "en",
   reader: windStoryReader,
   manuscript: storyMarkdown,
   beatTimings: storyTimings,
@@ -23,6 +24,10 @@ export const windStoryBook = {
       kind: "mountain",
       homeLabel: "The Boy Who Tried to Catch the Wind",
     },
+    languages: [
+      { locale: "en", label: "EN", href: "/" },
+      { locale: "es", label: "ES", href: "/es/" },
+    ],
     chapterPalettes: [
       {
         wash: "#c98772",

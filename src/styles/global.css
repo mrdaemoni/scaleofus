@@ -196,6 +196,26 @@ img {
   text-transform: uppercase;
 }
 
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: clamp(8px, 1vw, 14px);
+  border-left: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+}
+
+.language-switch a {
+  min-width: 22px;
+  text-align: center;
+}
+
+.language-switch a[aria-current="page"] {
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
 .story-nav nav button {
   padding: 0;
   border: 0;
@@ -419,6 +439,11 @@ body.is-cover-wind-awake .cover-living-wind {
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
   align-items: center;
   column-gap: clamp(20px, 4vw, 42px);
+}
+
+.cover-story-entry.is-read-only {
+  width: min(230px, 100%);
+  grid-template-columns: 1fr;
 }
 
 .living-drawing {
@@ -1356,6 +1381,33 @@ body.is-listening .mountain-climber {
 .chapter-cover-art img {
   display: block;
   object-fit: contain;
+}
+
+.chapter-title-fallback {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 82vw);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+.chapter-title-fallback span {
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  opacity: 0.52;
+}
+
+.chapter-title-fallback strong {
+  max-width: 13ch;
+  font-family: var(--display);
+  font-size: clamp(52px, 6.5vw, 96px);
+  font-weight: var(--title-weight);
+  letter-spacing: -0.02em;
+  line-height: 1.16;
+  text-wrap: balance;
 }
 
 .chapter-mark {
@@ -3757,7 +3809,7 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
     font-size: 9px;
   }
 
-  .story-nav nav a:first-child {
+.story-nav nav > a:first-child {
     display: none;
   }
 
@@ -3876,6 +3928,14 @@ body.story-page:not([data-reader-mode="read"]) .reading-compass {
   .chapter-heading h2 {
     font-size: clamp(48px, 15vw, 72px);
     line-height: 1.16;
+  }
+
+  .chapter-title-fallback {
+    width: min(88vw, 520px);
+  }
+
+  .chapter-title-fallback strong {
+    font-size: clamp(48px, 15vw, 72px);
   }
 
   .chapter-cover-art {

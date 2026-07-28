@@ -47,8 +47,33 @@ export type ChapterPalette = {
   next?: string;
 };
 
+export type StoryReaderUi = {
+  read: string;
+  readAtYourPace: string;
+  listen: string;
+  readAloud: string;
+  chapter: string;
+  chapters: string;
+  home: string;
+  previousChapter: string;
+  nextChapter: string;
+  readingNavigation: string;
+  backToBeginning: string;
+  scrollIntoStory: string;
+  drawing: string;
+  drawingNeeded: string;
+  drawingToCome: string;
+};
+
+export type StoryLanguageLink = {
+  locale: string;
+  label: string;
+  href: string;
+};
+
 export type StoryBookSource = {
   slug: string;
+  locale?: string;
   reader: StoryReaderConfig;
   manuscript: string;
   beatTimings: ReadonlyArray<StoryBeatTiming>;
@@ -65,6 +90,8 @@ export type StoryBookSource = {
       kind: "mountain" | "chapters";
       homeLabel?: string;
     };
+    ui?: Partial<StoryReaderUi>;
+    languages?: ReadonlyArray<StoryLanguageLink>;
     chapterPalettes?: ReadonlyArray<ChapterPalette>;
     companion?: {
       href: string;

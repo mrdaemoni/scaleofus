@@ -24,10 +24,31 @@ export type ReadingChapter = {
   paragraphs: string[];
 };
 
-const words = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+const chapterNumberWords = new Map([
+  ["one", 1],
+  ["two", 2],
+  ["three", 3],
+  ["four", 4],
+  ["five", 5],
+  ["six", 6],
+  ["seven", 7],
+  ["eight", 8],
+  ["nine", 9],
+  ["uno", 1],
+  ["dos", 2],
+  ["tres", 3],
+  ["cuatro", 4],
+  ["cinco", 5],
+  ["seis", 6],
+  ["siete", 7],
+  ["ocho", 8],
+  ["nueve", 9],
+]);
 
 const slugify = (value: string) =>
   value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[’']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
@@ -46,14 +67,17 @@ export function parseStoryMarkdown(
 
   for (const rawLine of raw.split("\n")) {
     const line = rawLine.trim();
-    const chapterMatch = line.match(/^## Chapter ([A-Za-z]+)\s*(?:—|:)\s*(.+)$/);
+    const chapterMatch = line.match(/^## (?:Chapter|Capítulo) ([A-Za-zÁÉÍÓÚáéíóúÑñ]+)\s*(?:—|:)\s*(.+)$/);
     if (chapterMatch) {
-      const number = words.indexOf(chapterMatch[1]) + 1;
+      const number = chapterNumberWords.get(
+        chapterMatch[1].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+      ) ?? 0;
+      if (!number) throw new Error(`Unknown chapter number word: ${chapterMatch[1]}`);
       chapter = {
         number,
         numeral: String(number),
         title: chapterMatch[2],
-        shortTitle: chapterMatch[2].replace(/^The /, ""),
+        shortTitle: chapterMatch[2].replace(/^(?:The|El|La|Los|Las) /, ""),
         id: `chapter-${number}-${slugify(chapterMatch[2])}`,
         start: 0,
         beats: [],
@@ -64,7 +88,7 @@ export function parseStoryMarkdown(
     }
 
     const drawingMatch = line.match(/^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$/)
-      ?? line.match(/^\*\(drawing (\d+):\s*(.+)\)\*$/i);
+      ?? line.match(/^\*\((?:drawing|dibujo) (\d+):\s*(.+)\)\*$/i);
     if (drawingMatch && chapter) {
       beat = {
         number: Number(drawingMatch[1]),
@@ -121,9 +145,12 @@ export function parseReadingMarkdown(raw: string) {
 
   for (const rawLine of raw.split("\n")) {
     const line = rawLine.trim();
-    const chapterMatch = line.match(/^### Chapter ([A-Za-z]+) — (.+)$/);
+    const chapterMatch = line.match(/^### (?:Chapter|Capítulo) ([A-Za-zÁÉÍÓÚáéíóúÑñ]+) — (.+)$/);
     if (chapterMatch) {
-      const number = words.indexOf(chapterMatch[1]) + 1;
+      const number = chapterNumberWords.get(
+        chapterMatch[1].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+      ) ?? 0;
+      if (!number) throw new Error(`Unknown chapter number word: ${chapterMatch[1]}`);
       chapter = {
         number,
         numeral: String(number),

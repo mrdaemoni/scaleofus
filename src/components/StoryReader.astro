@@ -23,9 +23,29 @@ const {
 } = book;
 const companion = book.presentation?.companion;
 const navigation = book.presentation?.navigation ?? { kind: "chapters" as const };
+const locale = book.locale ?? "en";
+const languageLinks = book.presentation?.languages ?? [];
+const ui = {
+  read: "Read",
+  readAtYourPace: "At your pace",
+  listen: "Listen",
+  readAloud: "read aloud",
+  chapter: "Chapter",
+  chapters: "Chapters",
+  home: "Home",
+  previousChapter: "Previous chapter",
+  nextChapter: "Next chapter",
+  readingNavigation: "Reading navigation",
+  backToBeginning: "Return to the beginning",
+  scrollIntoStory: "Scroll into the story",
+  drawing: "Drawing",
+  drawingNeeded: "needed",
+  drawingToCome: "Drawing to come",
+  ...book.presentation?.ui,
+};
 const narrationAvailable = windStoryReader.narrationAvailable !== false;
 const duration = windStoryReader.audio.duration;
-const chapters = parseStoryMarkdown(storyMarkdown, duration, narrationAvailable ? storyTimings : []);
+const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
 if (narrationAvailable) {
   validateVoicePassages(chapters, windStoryReader);
   validateStoryWordTimings(chapters, storyWordTimings.beats, duration, windStoryReader);
@@ -44,7 +64,7 @@ const activeChapterHeadingTimings = narrationAvailable ? storyHeadingTimings.cha
   transitionStart: chapter.start,
   start: chapter.start,
   end: chapter.start,
-  labelWords: staticWordCues(`Chapter ${chapter.numeral}`, chapter.start),
+  labelWords: staticWordCues(`${ui.chapter} ${chapter.numeral}`, chapter.start),
   titleWords: staticWordCues(chapter.title, chapter.start),
 }));
 const headingTimingByChapter = new Map(activeChapterHeadingTimings.map((heading) => [heading.number, heading]));
@@ -79,7 +99,7 @@ const chapterHeadingWords = new Map(chapters.map((chapter) => {
   const timing = headingTimingByChapter.get(chapter.number);
   if (!timing) throw new Error(`Chapter ${chapter.number} has no heading timing.`);
   return [chapter.number, {
-    label: timedTokens(`Chapter ${chapter.numeral}`, timing.labelWords, `Chapter ${chapter.number} label`),
+    label: timedTokens(`${ui.chapter} ${chapter.numeral}`, timing.labelWords, `${ui.chapter} ${chapter.number} label`),
     title: timedTokens(chapter.title, timing.titleWords, `Chapter ${chapter.number} title`),
   }];
 }));
@@ -110,6 +130,9 @@ const titleArtwork = windStoryReader.artwork.title;
 const entryIcons = windStoryReader.artwork.entryIcons;
 const companionTitleArtwork = windStoryReader.artwork.companionTitle;
 const endArtwork = windStoryReader.artwork.end;
+const experienceDescription = locale === "es"
+  ? `Una experiencia inmersiva de lectura. ${windStoryReader.intro}`
+  : `${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`;
 const resolvedSpeaker = (
   chapterNumber: number,
   authoredSpeaker: string,
@@ -146,23 +169,38 @@ const chapterTheme = (chapterNumber: number) =>
 
 <Base
   title={`${windStoryReader.title} — Scale of Us`}
-  description={`${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`}
+  description={experienceDescription}
   bodyClass="story-page"
   canonicalPath={book.presentation?.canonicalPath}
   socialImage={book.presentation?.socialImage}
   socialImageWidth={book.presentation?.socialImageWidth}
   socialImageHeight={book.presentation?.socialImageHeight}
   themeColor={book.presentation?.themeColor}
+  lang={locale}
+  alternateLanguages={languageLinks}
 >
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 
   <header class="story-nav" data-story-nav>
-    <a class="wordmark" href="#top" aria-label="Scale of Us, back to the beginning" data-reader-home>
+    <a class="wordmark" href="#top" aria-label={`Scale of Us, ${ui.backToBeginning.toLowerCase()}`} data-reader-home>
       <span>Scale</span><i>of</i><span>Us</span>
     </a>
     <nav aria-label="Story links">
-      <a href="#story" data-reader-read>Read</a>
+      <a href="#story" data-reader-read>{ui.read}</a>
       {companion && <a href={companion.href}>{companion.navLabel}</a>}
+      {languageLinks.length > 1 && (
+        <span class="language-switch" aria-label="Language">
+          {languageLinks.map((language) => (
+            <a
+              href={language.href}
+              lang={language.locale}
+              hreflang={language.locale}
+              aria-current={language.locale === locale ? "page" : undefined}
+              data-language-switch
+            >{language.label}</a>
+          ))}
+        </span>
+      )}
     </nav>
   </header>
 
@@ -171,6 +209,9 @@ const chapterTheme = (chapterNumber: number) =>
     data-reader-id={windStoryReader.id}
     data-chapters={JSON.stringify(chapterData)}
     data-beats={JSON.stringify(beatData)}
+    data-reader-locale={locale}
+    data-reader-chapter-label={ui.chapter}
+    data-narration-available={String(narrationAvailable)}
   >
     <section class="story-cover" id="top" aria-labelledby="story-title">
       <div class="cover-vignette" aria-hidden="true"></div>
@@ -230,7 +271,7 @@ const chapterTheme = (chapterNumber: number) =>
           <p class="cover-title-fallback" aria-hidden="true">{windStoryReader.title}</p>
         )}
         <p class="cover-intro">{windStoryReader.intro}</p>
-        <div class="cover-story-entry" role="group" aria-label="Read or listen">
+        <div class={`cover-story-entry ${narrationAvailable ? "" : "is-read-only"}`} role="group" aria-label={narrationAvailable ? `${ui.read} or ${ui.listen}` : ui.read}>
           <a class="entry-read" href="#story" data-reader-read>
             {entryIcons?.read ? (
               <span class="entry-art-icon" aria-hidden="true">
@@ -242,7 +283,7 @@ const chapterTheme = (chapterNumber: number) =>
                 ></span>
               </span>
             ) : <span class="round-book" aria-hidden="true"></span>}
-            <span><strong>Read</strong><small>At your pace</small></span>
+            <span><strong>{ui.read}</strong><small>{ui.readAtYourPace}</small></span>
           </a>
           {narrationAvailable ? (
             <button class="entry-listen" type="button" data-hero-play>
@@ -256,22 +297,17 @@ const chapterTheme = (chapterNumber: number) =>
                   ></span>
                 </span>
               ) : <span class="round-play" aria-hidden="true">▶</span>}
-              <span><strong>Listen</strong><small>{formatTime(duration)} · read aloud</small></span>
+              <span><strong>{ui.listen}</strong><small>{formatTime(duration)} · {ui.readAloud}</small></span>
             </button>
-          ) : (
-            <span class="entry-listen is-unavailable" role="status">
-              <span class="round-play" aria-hidden="true">○</span>
-              <span><strong>Listen</strong><small>V9 narration to come</small></span>
-            </span>
-          )}
+          ) : null}
         </div>
       </div>
 
-      <a class="scroll-cue" href="#story" aria-label="Scroll into the story" data-reader-read><span></span></a>
+      <a class="scroll-cue" href="#story" aria-label={ui.scrollIntoStory} data-reader-read><span></span></a>
     </section>
 
     <div class="reader-shell" id="story">
-      <aside class="chapter-rail" aria-label="Chapters">
+      <aside class="chapter-rail" aria-label={ui.chapters}>
         {navigation.kind === "mountain" && (
           <div class="mountain-nav-art" data-mountain-art aria-hidden="true">
             <span class="nav-cloud cloud-one"></span>
@@ -377,6 +413,12 @@ const chapterTheme = (chapterNumber: number) =>
                   )}
                 </div>
               )}
+              {!chapterArtwork && (
+                <div class="chapter-title-fallback" aria-hidden="true">
+                  <span>{ui.chapter} {chapter.numeral}</span>
+                  <strong>{chapter.title}</strong>
+                </div>
+              )}
               <div class={`chapter-mark mark-${chapter.number}`} aria-hidden="true">
                 <i></i><i></i><i></i>
               </div>
@@ -423,11 +465,11 @@ const chapterTheme = (chapterNumber: number) =>
                           class="art-placeholder"
                           role="img"
                           aria-hidden={artworkSrc ? "true" : "false"}
-                          aria-label={`Drawing ${beat.number} needed: ${beat.prompt}`}
+                          aria-label={`${ui.drawing} ${beat.number} ${ui.drawingNeeded}: ${beat.prompt}`}
                         >
                           <span>{String(beat.number).padStart(2, "0")}</span>
                           <div class="placeholder-wind"><i></i><i></i><i></i></div>
-                          <strong>Drawing to come</strong>
+                          <strong>{ui.drawingToCome}</strong>
                           <small>{beat.prompt}</small>
                         </div>
                         {artworkSrc && isLiveArtwork && (
@@ -438,7 +480,7 @@ const chapterTheme = (chapterNumber: number) =>
                             data-svg-src={artworkSrc}
                             data-raster-src={mobileArtwork}
                             role="img"
-                            aria-label={`Drawing ${beat.number}: ${beat.prompt}`}
+                            aria-label={`${ui.drawing} ${beat.number}: ${beat.prompt}`}
                           ></div>
                         )}
                         {artworkSrc && !isLiveArtwork && (
@@ -447,7 +489,7 @@ const chapterTheme = (chapterNumber: number) =>
                             <img
                               class={isOriginalArtwork ? "is-hand-sketch" : undefined}
                               src={artworkSrc}
-                              alt={`Drawing ${beat.number}: ${beat.prompt}`}
+                              alt={`${ui.drawing} ${beat.number}: ${beat.prompt}`}
                               data-story-art
                               loading={beat.number === 1 ? "eager" : "lazy"}
                               decoding="async"
@@ -540,7 +582,7 @@ const chapterTheme = (chapterNumber: number) =>
             )}
             <p>{companion.description}</p>
             <a class="primary-action light" href={companion.href}>{companion.actionLabel} <span aria-hidden="true">→</span></a>
-            <a class="return-link" href="#top" data-reader-home>Return to the beginning</a>
+            <a class="return-link" href="#top" data-reader-home>{ui.backToBeginning}</a>
           </section>
         )}
       </div>
@@ -567,7 +609,7 @@ const chapterTheme = (chapterNumber: number) =>
               data-dock-chapter-link
               data-chapter-index={chapter.number - 1}
               data-start={headingTimingByChapter.get(chapter.number)?.start ?? chapter.start}
-              aria-label={`Chapter ${chapter.numeral}: ${chapter.title}`}
+              aria-label={`${ui.chapter} ${chapter.numeral}: ${chapter.title}`}
             >
               <span class="dock-chapter-progress" aria-hidden="true"></span>
               <strong>{chapter.numeral}</strong>
@@ -583,7 +625,7 @@ const chapterTheme = (chapterNumber: number) =>
       </button>
       <div class="dock-now">
         <small>Now in the story</small>
-        <strong data-current-chapter>Chapter 1 · The Boy Who Tried to Catch the Wind</strong>
+        <strong data-current-chapter>{ui.chapter} 1 · {windStoryReader.title}</strong>
       </div>
       <div class="dock-track">
         <div class="waveform" aria-hidden="true"></div>
@@ -603,11 +645,11 @@ const chapterTheme = (chapterNumber: number) =>
   </div>
   )}
 
-  <nav class="reading-compass" data-reading-compass aria-label="Reading navigation" aria-hidden="true">
-    <button type="button" data-reader-previous aria-label="Previous chapter">←</button>
-    <a href="#top" data-reader-home>Home</a>
-    <span data-reader-chapter-position>Chapter 1</span>
-    <button type="button" data-reader-next aria-label="Next chapter">→</button>
+  <nav class="reading-compass" data-reading-compass aria-label={ui.readingNavigation} aria-hidden="true">
+    <button type="button" data-reader-previous aria-label={ui.previousChapter}>←</button>
+    <a href="#top" data-reader-home>{ui.home}</a>
+    <span data-reader-chapter-position>{ui.chapter} 1</span>
+    <button type="button" data-reader-next aria-label={ui.nextChapter}>→</button>
   </nav>
 
   <script src="../scripts/story-player.ts"></script>
