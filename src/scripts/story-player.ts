@@ -53,15 +53,17 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const desktopReader = matchMedia("(min-width: 761px)");
 const mobileSafeReader = matchMedia("(max-width: 760px)");
 const lightweightEffectsReader = matchMedia("(max-width: 760px), (pointer: coarse)");
+const stagedListeningReader = matchMedia("(max-width: 760px), (pointer: coarse)");
 
 const syncReaderCapabilities = () => {
   document.body.toggleAttribute("data-mobile-safe-reader", mobileSafeReader.matches);
   document.body.toggleAttribute("data-lightweight-reader", lightweightEffectsReader.matches);
+  document.body.toggleAttribute("data-staged-listener", stagedListeningReader.matches);
 };
 
 syncReaderCapabilities();
 
-const usesMobileListeningStage = () => readerMode === "listen" && mobileSafeReader.matches;
+const usesMobileListeningStage = () => readerMode === "listen" && stagedListeningReader.matches;
 
 let activeChapter = -1;
 let activeBeat = -1;
@@ -438,10 +440,10 @@ const runMobileNarrationLoop = () => {
 const startNarrationLoop = () => {
   lastNarrationStageFrame = Number.NEGATIVE_INFINITY;
   lastMobileStageSecond = Number.NEGATIVE_INFINITY;
-  if (desktopReader.matches) {
-    if (!narrationFrame) narrationFrame = requestAnimationFrame(runNarrationLoop);
-  } else if (!mobileNarrationTimer) {
-    runMobileNarrationLoop();
+  if (usesMobileListeningStage()) {
+    if (!mobileNarrationTimer) runMobileNarrationLoop();
+  } else if (!narrationFrame) {
+    narrationFrame = requestAnimationFrame(runNarrationLoop);
   }
 };
 
@@ -491,7 +493,7 @@ const setReaderMode = (mode: ReaderMode) => {
   if (mode === "listen") {
     followNarration = true;
     follow?.setAttribute("aria-pressed", "true");
-    if (mobileSafeReader.matches) {
+    if (stagedListeningReader.matches) {
       releaseScrollToNarration();
       window.scrollTo(0, 0);
     }
@@ -1767,8 +1769,17 @@ addEventListener("resize", () => {
   if (readerMode === "listen") queueViewportFit(160);
 }, { passive: true });
 
-mobileSafeReader.addEventListener("change", syncReaderCapabilities);
-lightweightEffectsReader.addEventListener("change", syncReaderCapabilities);
+const handleReaderCapabilityChange = () => {
+  syncReaderCapabilities();
+  if (readerMode !== "listen" || !playbackRequested) return;
+  stopNarrationLoop();
+  startNarrationLoop();
+  queueViewportFit(80);
+};
+
+mobileSafeReader.addEventListener("change", handleReaderCapabilityChange);
+lightweightEffectsReader.addEventListener("change", handleReaderCapabilityChange);
+stagedListeningReader.addEventListener("change", handleReaderCapabilityChange);
 
 if (matchMedia("(pointer: fine)").matches) {
   addEventListener("pointermove", (event) => {
