@@ -111,7 +111,7 @@ for (const htmlPath of htmlFiles) {
     }
   });
 
-  const localAssets = [...html.matchAll(/(?:src|href)="(\/[^"#?]+)(?:\?[^"]*)?"/g)]
+  const localAssets = [...html.matchAll(/(?:src|href|data-svg-src|data-raster-src)="(\/[^"#?]+)(?:\?[^"]*)?"/g)]
     .map((match) => match[1])
     .filter((assetPath) => !assetPath.endsWith("/"));
 
@@ -158,6 +158,25 @@ if (liveDrawingFiles.length) {
   requireBudget(`largest live drawing (${liveDrawingFiles.length} files)`, largestLiveDrawing, limits.liveDrawing);
   requireBudget("largest live drawing over the wire", largestCompressedDrawing, limits.liveDrawingWire);
   requireBudget("all live drawings over the wire", totalCompressedDrawings, limits.liveDrawingWireTotal);
+  for (const filePath of liveDrawingFiles) {
+    const svg = await readFile(filePath, "utf8");
+    const viewBox = svg.match(/<svg\b[^>]*\bviewBox="([^"]+)"/i)?.[1]
+      ?.trim()
+      .split(/\s+/)
+      .map(Number);
+    if (
+      !viewBox
+      || viewBox.length !== 4
+      || viewBox.some((value) => !Number.isFinite(value))
+      || viewBox[2] <= 0
+      || viewBox[3] <= 0
+    ) {
+      failures.push(`${relative(filePath)} has an invalid SVG viewBox.`);
+    }
+    if (/<svg\b[^>]*\bpreserveAspectRatio="[^"]*\bslice\b/i.test(svg)) {
+      failures.push(`${relative(filePath)} uses a slicing aspect ratio that can crop the drawing.`);
+    }
+  }
 }
 if (mobileDrawingFiles.length) {
   const largestMobileDrawing = Math.max(...await Promise.all(mobileDrawingFiles.map(bytesFor)));

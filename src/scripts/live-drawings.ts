@@ -30,6 +30,50 @@ const mobileSourceFor = (drawing: HTMLElement, source: string) =>
   drawing.dataset.rasterSrc
   || source.replace("/live/", "/mobile/").replace(/\.svg$/, ".webp");
 
+const fitSvgToDrawnBounds = (
+  svg: SVGSVGElement,
+  viewBox: [number, number, number, number],
+) => {
+  const [sourceX, sourceY, sourceWidth, sourceHeight] = viewBox;
+  const sourceRight = sourceX + sourceWidth;
+  const sourceBottom = sourceY + sourceHeight;
+  const graphics = [...svg.querySelectorAll<SVGGraphicsElement>(":scope > .s, :scope > .f")];
+  const boxes = graphics.flatMap((graphic) => {
+    try {
+      const box = graphic.getBBox();
+      return box.width > 0 && box.height > 0 ? [box] : [];
+    } catch {
+      return [];
+    }
+  });
+  if (!boxes.length) return viewBox;
+
+  const contentLeft = Math.min(...boxes.map((box) => box.x));
+  const contentTop = Math.min(...boxes.map((box) => box.y));
+  const contentRight = Math.max(...boxes.map((box) => box.x + box.width));
+  const contentBottom = Math.max(...boxes.map((box) => box.y + box.height));
+  const overflows = (
+    contentLeft < sourceX
+    || contentTop < sourceY
+    || contentRight > sourceRight
+    || contentBottom > sourceBottom
+  );
+  if (!overflows) return viewBox;
+
+  const paddingX = sourceWidth * 0.035;
+  const paddingY = sourceHeight * 0.035;
+  const fittedX = Math.min(sourceX, contentLeft - paddingX);
+  const fittedY = Math.min(sourceY, contentTop - paddingY);
+  const fittedRight = Math.max(sourceRight, contentRight + paddingX);
+  const fittedBottom = Math.max(sourceBottom, contentBottom + paddingY);
+  return [fittedX, fittedY, fittedRight - fittedX, fittedBottom - fittedY] as [
+    number,
+    number,
+    number,
+    number,
+  ];
+};
+
 const desiredRenderMode = (drawing: HTMLElement) => {
   if (!compactReader.matches) return "inline";
   if (reducedMotion.matches || !drawing.hasAttribute("data-mobile-animate")) return "raster";
@@ -125,6 +169,7 @@ const resetDrawing = (drawing: HTMLElement) => {
   delete drawing.dataset.liveRenderMode;
   delete drawing.dataset.liveError;
   delete drawing.dataset.liveRetryCount;
+  delete drawing.dataset.liveViewBoxFitted;
 };
 
 const releaseCompactDrawing = (drawing: HTMLElement) => {
@@ -197,7 +242,13 @@ const injectDrawing = async (drawing: HTMLElement) => {
       if (!svg || !viewBox || viewBox.length !== 4 || viewBox.some((value) => !Number.isFinite(value))) {
         throw new Error(`Drawing ${source} has no valid viewBox.`);
       }
-      svg.style.aspectRatio = `${viewBox[2]} / ${viewBox[3]}`;
+      const fittedViewBox = fitSvgToDrawnBounds(svg, viewBox as [number, number, number, number]);
+      svg.setAttribute("viewBox", fittedViewBox.join(" "));
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      svg.style.aspectRatio = `${fittedViewBox[2]} / ${fittedViewBox[3]}`;
+      if (fittedViewBox.some((value, index) => Math.abs(value - viewBox[index]) > 0.01)) {
+        drawing.dataset.liveViewBoxFitted = "true";
+      }
       drawing.classList.add("is-boil-0");
       drawing.dataset.liveLoaded = "true";
       drawing.dataset.liveRenderMode = "inline";
