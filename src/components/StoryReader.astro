@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import FurtherReadingContent from "./FurtherReadingContent.astro";
 import "../styles/global.css";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
 import type { StoryBookSource } from "../lib/story-book";
@@ -130,6 +131,8 @@ const titleArtwork = windStoryReader.artwork.title;
 const entryIcons = windStoryReader.artwork.entryIcons;
 const companionTitleArtwork = windStoryReader.artwork.companionTitle;
 const endArtwork = windStoryReader.artwork.end;
+const inlineCompanion = companion?.inlineMarkdown;
+const epigraph = book.presentation?.epigraph;
 const experienceDescription = locale === "es"
   ? `Una experiencia inmersiva de lectura. ${windStoryReader.intro}`
   : `${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`;
@@ -538,8 +541,24 @@ const chapterTheme = (chapterNumber: number) =>
           );
         })}
 
+        {epigraph && (
+          <figure id="story-epigraph" class="story-epigraph" aria-label={locale === "es" ? "Epígrafe" : "Epigraph"}>
+            <blockquote>“{epigraph.quote}”</blockquote>
+            <figcaption>
+              <cite>{epigraph.author}, <em>{epigraph.work}</em>, {epigraph.location}</cite>
+              {epigraph.translationNote && <small>{epigraph.translationNote}</small>}
+            </figcaption>
+          </figure>
+        )}
+
+        {inlineCompanion && (
+          <section class="story-grownups" aria-label={locale === "es" ? "Lecturas para adultos" : "Further reading for grown-ups"}>
+            <FurtherReadingContent markdown={inlineCompanion} embedded showFooter={false} locale={locale} />
+          </section>
+        )}
+
         {endArtwork && (
-          <div class="story-endmark" aria-hidden="true">
+          <div id="story-finish" class="story-endmark" aria-hidden="true">
             {endArtwork.kind === "live" ? (
               <div
                 class="living-drawing"
@@ -559,7 +578,7 @@ const chapterTheme = (chapterNumber: number) =>
           </div>
         )}
 
-        {companion && (
+        {companion && !inlineCompanion && (
           <section class="story-after" aria-labelledby="after-title">
             <p class="eyebrow">{companion.eyebrow}</p>
             <h2 id="after-title" class="visually-hidden">{companion.title}</h2>

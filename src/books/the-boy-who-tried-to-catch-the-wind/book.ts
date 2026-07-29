@@ -2,6 +2,7 @@ import storyMarkdown from "./the-boy-who-tried-to-catch-the-wind.md?raw";
 import storyHeadingTimings from "./story-heading-timings.json";
 import storyTimings from "./story-timings.json";
 import storyWordTimings from "./story-word-timings.json";
+import furtherReadingMarkdown from "./further-reading-for-grown-ups.md?raw";
 import { windStoryReader } from "./reader";
 import type { StoryBookSource } from "../../lib/story-book";
 
@@ -100,13 +101,21 @@ export const windStoryBook = {
         next: "#bb835e",
       },
     ],
+    epigraph: {
+      quote: "Maturity means finding again the seriousness we had as children at play.",
+      author: "Friedrich Nietzsche",
+      work: "Beyond Good and Evil",
+      location: "§94",
+      translationNote: "Author’s translation",
+    },
     companion: {
-      href: "/grown-ups/",
+      href: "#grown-ups",
       navLabel: "For grown-ups",
       eyebrow: "The story keeps company",
       title: "There is another room for grown-ups.",
       description: "Seven short notes trace the old ideas underneath the boy’s climb. They are companions to the story, not a key to it.",
       actionLabel: "Enter the grown-ups room",
+      inlineMarkdown: furtherReadingMarkdown,
     },
   },
 } satisfies StoryBookSource;

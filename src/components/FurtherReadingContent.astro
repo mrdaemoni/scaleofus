@@ -1,0 +1,86 @@
+---
+import { inlineMarkdown, parseReadingMarkdown } from "../lib/story";
+
+const {
+  markdown,
+  embedded = false,
+  showFooter = true,
+  locale = "en",
+} = Astro.props as {
+  markdown: string;
+  embedded?: boolean;
+  showFooter?: boolean;
+  locale?: string;
+};
+
+const reading = parseReadingMarkdown(markdown);
+const noteId = (id: string) => embedded ? `grown-${id}` : id;
+const isSpanish = locale === "es";
+const labels = isSpanish
+  ? {
+      eyebrow: "Para lectores curiosos",
+      titleFirst: "Lecturas",
+      titleSecond: "para adultos",
+      explanation: "El cuento se sostiene por sí solo. Estos son lugares a los que puedes ir si quieres seguir leyendo.",
+      chapters: "capítulos",
+      chapter: "Capítulo",
+      rail: "Capítulos de las lecturas para adultos",
+      footer: "Puedes volver al cuento cuando quieras.",
+      action: "Leer el cuento de nuevo",
+    }
+  : {
+      eyebrow: "For curious readers",
+      titleFirst: "Further Reading",
+      titleSecond: "for Grown‑ups",
+      explanation: "The story stands on its own. These are places to go if you want to keep reading.",
+      chapters: "chapters",
+      chapter: "Chapter",
+      rail: "Further reading chapters",
+      footer: "You can return to the story whenever you like.",
+      action: "Read the story again",
+    };
+---
+
+<div class:list={["grown-main", { "grown-main-embedded": embedded }]} id={embedded ? "grown-ups" : undefined}>
+  <section class="grown-hero" aria-labelledby={embedded ? "grown-title-inline" : "grown-title"}>
+    <p class="eyebrow">{labels.eyebrow}</p>
+    <h1 id={embedded ? "grown-title-inline" : "grown-title"}>{labels.titleFirst}<br />{labels.titleSecond}</h1>
+    {reading.intro.map((paragraph) => <p>{paragraph}</p>)}
+    <div class="not-a-key">
+      <span aria-hidden="true">↳</span>
+      <p>{labels.explanation}</p>
+    </div>
+  </section>
+
+  <div class="grown-layout">
+    <aside class="reading-rail" aria-label={labels.rail}>
+      <p>{isSpanish ? reading.chapters.length : reading.chapters.length === 7 ? "Seven" : reading.chapters.length} {labels.chapters}</p>
+      <ol>
+        {reading.chapters.map((chapter) => (
+          <li><a href={`#${noteId(chapter.id)}`}><span>{chapter.numeral}</span>{chapter.title}</a></li>
+        ))}
+      </ol>
+    </aside>
+
+    <div class="reading-notes">
+      {reading.chapters.map((chapter) => (
+        <article id={noteId(chapter.id)} class="reading-note">
+          <header>
+            <p>{labels.chapter} {chapter.numeral}</p>
+            <h2>{chapter.title}</h2>
+          </header>
+          <div class="note-body">
+            {chapter.paragraphs.map((paragraph) => <p><Fragment set:html={inlineMarkdown(paragraph)} /></p>)}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  {showFooter && (
+    <footer class="grown-footer">
+      <p>{labels.footer}</p>
+      <a class="primary-action" href={isSpanish ? "/es/" : "/"}>{labels.action} <span aria-hidden="true">↺</span></a>
+    </footer>
+  )}
+</div>

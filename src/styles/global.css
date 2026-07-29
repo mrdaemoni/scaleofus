@@ -2618,11 +2618,71 @@ body.is-listening .mountain-climber {
   color: var(--paper);
 }
 
+.story-epigraph {
+  min-height: 76svh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: clamp(90px, 14vw, 190px) clamp(28px, 8vw, 120px);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(187, 131, 94, 0.08), transparent 34%),
+    var(--paper);
+  color: var(--ink);
+  text-align: center;
+}
+
+.story-epigraph blockquote {
+  max-width: 27ch;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(28px, 4.4vw, 58px);
+  font-weight: var(--body-weight);
+  font-optical-sizing: auto;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.story-epigraph figcaption {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  color: rgba(27, 36, 33, 0.62);
+}
+
+.story-epigraph cite {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  line-height: 1.55;
+  text-transform: uppercase;
+}
+
+.story-epigraph figcaption small {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.story-grownups {
+  background:
+    radial-gradient(circle at 82% 2%, rgba(183, 126, 140, 0.2), transparent 25%),
+    var(--paper);
+}
+
+.grown-main-embedded {
+  scroll-margin-top: 40px;
+}
+
 .story-endmark {
-  min-height: 34svh;
+  min-height: 70svh;
   display: grid;
   place-items: center;
   padding: clamp(50px, 8vh, 90px) 24px;
+  background: var(--paper);
 }
 
 .story-endmark .living-drawing {
@@ -4265,6 +4325,8 @@ body.story-page[data-staged-listener][data-reader-mode="listen"] .reader-shell,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-chapter,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .chapter-heading,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-beat,
+body.story-page[data-staged-listener][data-reader-mode="listen"] .story-epigraph,
+body.story-page[data-staged-listener][data-reader-mode="listen"] .story-grownups,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-endmark,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-after {
   display: none;

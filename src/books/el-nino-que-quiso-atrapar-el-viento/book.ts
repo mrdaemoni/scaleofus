@@ -2,6 +2,7 @@ import storyMarkdown from "./el-nino-que-quiso-atrapar-el-viento.md?raw";
 import storyHeadingTimings from "./story-heading-timings.json";
 import storyTimings from "./story-timings.json";
 import storyWordTimings from "./story-word-timings.json";
+import furtherReadingMarkdown from "./lecturas-para-adultos.md?raw";
 import { windStoryReader } from "../the-boy-who-tried-to-catch-the-wind/reader";
 import { windStoryBook } from "../the-boy-who-tried-to-catch-the-wind/book";
 import type { StoryBookSource } from "../../lib/story-book";
@@ -93,5 +94,21 @@ export const spanishWindStoryBook = {
       drawingToCome: "Dibujo por venir",
     },
     chapterPalettes: windStoryBook.presentation.chapterPalettes,
+    epigraph: {
+      quote: "La madurez significa reencontrar la seriedad que teníamos de niños al jugar.",
+      author: "Friedrich Nietzsche",
+      work: "Más allá del bien y del mal",
+      location: "§94",
+      translationNote: "Traducción del autor",
+    },
+    companion: {
+      href: "#grown-ups",
+      navLabel: "Para adultos",
+      eyebrow: "La historia sigue acompañada",
+      title: "Hay otra sala para los adultos.",
+      description: "Siete notas breves recorren las viejas ideas que acompañan el ascenso del niño. Son compañeras del cuento, no una clave para descifrarlo.",
+      actionLabel: "Entrar en la sala de los adultos",
+      inlineMarkdown: furtherReadingMarkdown,
+    },
   },
 } satisfies StoryBookSource;

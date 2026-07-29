@@ -1,10 +1,8 @@
 ---
 import Base from "../layouts/Base.astro";
+import FurtherReadingContent from "../components/FurtherReadingContent.astro";
 import "../styles/global.css";
 import readingMarkdown from "../books/the-boy-who-tried-to-catch-the-wind/further-reading-for-grown-ups.md?raw";
-import { inlineMarkdown, parseReadingMarkdown } from "../lib/story";
-
-const reading = parseReadingMarkdown(readingMarkdown);
 ---
 
 <Base
@@ -19,45 +17,7 @@ const reading = parseReadingMarkdown(readingMarkdown);
     <a class="back-to-story" href="/">← Back to the story</a>
   </header>
 
-  <main class="grown-main">
-    <section class="grown-hero" aria-labelledby="grown-title">
-      <p class="eyebrow">For curious readers</p>
-      <h1 id="grown-title">Further Reading<br />for Grown‑ups</h1>
-      {reading.intro.map((paragraph) => <p>{paragraph}</p>)}
-      <div class="not-a-key">
-        <span aria-hidden="true">↳</span>
-        <p>You do not need this page to understand the story. These are places to go if you want to keep reading.</p>
-      </div>
-    </section>
-
-    <div class="grown-layout">
-      <aside class="reading-rail" aria-label="Further reading chapters">
-        <p>Nine chapters</p>
-        <ol>
-          {reading.chapters.map((chapter) => (
-            <li><a href={`#${chapter.id}`}><span>{chapter.numeral}</span>{chapter.title}</a></li>
-          ))}
-        </ol>
-      </aside>
-
-      <div class="reading-notes">
-        {reading.chapters.map((chapter) => (
-          <article id={chapter.id} class="reading-note">
-            <header>
-              <p>Chapter {chapter.numeral}</p>
-              <h2>{chapter.title}</h2>
-            </header>
-            <div class="note-body">
-              {chapter.paragraphs.map((paragraph) => <p><Fragment set:html={inlineMarkdown(paragraph)} /></p>)}
-            </div>
-          </article>
-        ))}
-      </div>
-    </div>
-
-    <footer class="grown-footer">
-      <p>You can return to the story whenever you like.</p>
-      <a class="primary-action" href="/">Read the story again <span aria-hidden="true">↺</span></a>
-    </footer>
+  <main>
+    <FurtherReadingContent markdown={readingMarkdown} />
   </main>
 </Base>

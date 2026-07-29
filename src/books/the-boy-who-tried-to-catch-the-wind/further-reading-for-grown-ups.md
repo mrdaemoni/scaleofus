@@ -1,6 +1,10 @@
 # Further Reading for Grown-ups
 
-*The story is simple, but its questions have been around for a long time. These books and essays helped me think about each chapter. You do not need them to understand the story. They are here if you want to keep reading.*
+*I built Alicia, my personal AI agent, to read my writing and help me notice what I might miss. Alicia helped me make this story. It could return patterns, test a sentence, and point to places where the story was explaining too much. I made the choices. The boy had to learn by walking, making, waiting, and returning.*
+
+*The story comes from working closely with AI. It asks what kind of relationship with a machine leaves a person more able to notice, judge, care, and act. The machine in the story can offer words, remember, and leave room for what it cannot hold. That is close to what I've tried to build with Alicia.*
+
+*The story is simple, but its questions have been around for a long time. These are some of the conversations the story found itself entering. They are here if you want to keep reading.*
 
 ---
 
@@ -22,7 +26,7 @@ Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/th
 
 **[Michael Polanyi, *The Tacit Dimension*](https://press.uchicago.edu/ucp/books/book/chicago/T/bo6035368.html)** — Polanyi says that we know more than we can explain. The boy can walk without being able to describe each movement. The potter's hands know things that do not fit into a sentence.
 
-[Maurice Merleau-Ponty](https://plato.stanford.edu/entries/merleau-ponty/) also treats the body as a way of knowing. [Iain McGilchrist's *The Master and His Emissary*](https://yalebooks.yale.edu/book/9780300247459/the-master-and-his-emissary/) looks at the difference between naming separate parts and attending to a whole living thing.
+[Maurice Merleau-Ponty](https://plato.stanford.edu/entries/merleau-ponty/) also treats the body as a way of knowing. [Richard Sennett's *The Craftsman*](https://yalebooks.yale.edu/book/9780300151190/the-craftsman/) follows that knowledge into work. The hand and head learn together through practice.
 
 Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about learning to notice what takes time to feel.
 
@@ -30,7 +34,7 @@ Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-w
 
 **[Zhuangzi](https://plato.stanford.edu/entries/zhuangzi/)** — A line in the *Zhuangzi* says that still water can act as a mirror. The girl learns by becoming quiet enough to notice what is already there.
 
-Gemma Corradi Fiumara's *The Other Side of Language* treats listening as part of language, not as the empty time before we speak. Max Picard's *The World of Silence* also asks what silence makes possible.
+[Simone Weil's *Waiting for God*](https://www.routledge.com/Waiting-for-God/Weil/p/book/9780367705282) describes attention as a patient readiness to receive what is before us. Gemma Corradi Fiumara's *The Other Side of Language* treats listening as part of language.
 
 Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-weather-between-us/), about attention, slowness, and the space between two people.
 
@@ -54,10 +58,10 @@ Related essay: [The Weather Between Us](https://atthehumanscale.com/essays/the-w
 
 **T. S. Eliot, *Four Quartets*** — Eliot writes about returning to a familiar place and seeing it differently. The boy comes home with the same card, but he is no longer the same reader.
 
-Antonio Machado writes that the path is made by walking. The old Ten Ox-Herding Pictures also end back in ordinary life. [Andy Clark and David Chalmers's “The Extended Mind”](https://consc.net/papers/extended.html) asks how tools outside the body can become part of how we remember and think.
+Antonio Machado writes that the path is made by walking. [Ivan Illich's *Tools for Conviviality*](https://equinoxonlinelibrary.com/book/59227/tools-for-conviviality) asks whether a tool enlarges our freedom and practical knowledge or reorganizes us around itself.
 
 Related essay: [The Humorphic Partnership](https://atthehumanscale.com/essays/the-humorphic-partnership/), about what can happen when a machine gives your own words back to you in a new way.
 
 ---
 
-*The talking machine in the story comes from a real project. I built Alicia to read my writing and help me notice what I might miss. You can read the essays behind this story at [At the Human Scale](https://atthehumanscale.com/essays/).*
+*You can read the essays behind this story at [At the Human Scale](https://atthehumanscale.com/essays/).*

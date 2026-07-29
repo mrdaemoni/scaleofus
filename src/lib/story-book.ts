@@ -93,6 +93,13 @@ export type StoryBookSource = {
     ui?: Partial<StoryReaderUi>;
     languages?: ReadonlyArray<StoryLanguageLink>;
     chapterPalettes?: ReadonlyArray<ChapterPalette>;
+    epigraph?: {
+      quote: string;
+      author: string;
+      work: string;
+      location: string;
+      translationNote?: string;
+    };
     companion?: {
       href: string;
       navLabel: string;
@@ -100,6 +107,7 @@ export type StoryBookSource = {
       title: string;
       description: string;
       actionLabel: string;
+      inlineMarkdown?: string;
     };
   };
 };
