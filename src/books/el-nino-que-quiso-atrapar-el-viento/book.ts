@@ -5,6 +5,13 @@ import storyWordTimings from "../the-boy-who-tried-to-catch-the-wind/story-word-
 import { windStoryReader } from "../the-boy-who-tried-to-catch-the-wind/reader";
 import { windStoryBook } from "../the-boy-who-tried-to-catch-the-wind/book";
 import type { StoryBookSource } from "../../lib/story-book";
+import type { StoryArtworkSource } from "../../lib/story-reader";
+
+const spanishLive = (name: string): StoryArtworkSource => ({
+  src: `/images/wind-story/live/${name}.svg`,
+  mobileSrc: `/images/wind-story/mobile/${name}.webp`,
+  kind: "live",
+});
 
 const spanishReader = {
   ...windStoryReader,
@@ -14,8 +21,16 @@ const spanishReader = {
   narrationAvailable: false,
   artwork: {
     ...windStoryReader.artwork,
-    title: undefined,
-    chapterSources: undefined,
+    title: spanishLive("es-title"),
+    chapterSources: {
+      1: spanishLive("es-title"),
+      2: spanishLive("es-ch-stonecutter"),
+      3: spanishLive("es-ch-potter"),
+      4: spanishLive("es-ch-pond"),
+      5: spanishLive("es-ch-mirrors"),
+      6: spanishLive("es-ch-mountain"),
+      7: spanishLive("es-ch-oneturn"),
+    },
     companionTitle: undefined,
   },
   voices: [],

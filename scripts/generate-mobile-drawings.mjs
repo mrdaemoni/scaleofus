@@ -15,7 +15,7 @@ const makeMobileSvg = (markup) => markup
 
 await mkdir(outputDirectory, { recursive: true });
 const sources = (await readdir(sourceDirectory))
-  .filter((name) => /^(?:n\d{2}|ch-[a-z]+|icon-(?:book|play)|title|grownups|fin)\.svg$/.test(name))
+  .filter((name) => /^(?:n\d{2}|(?:es-)?ch-[a-z]+|icon-(?:book|play)|(?:es-)?title|grownups|fin)\.svg$/.test(name))
   .sort();
 
 let totalBytes = 0;
