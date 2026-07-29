@@ -4,35 +4,35 @@
 
 *(dibujo 1: el niño en una colina, las dos manos en alto atrapando tres trazos de viento, el pelo volando de lado)*
 
-Había una vez un niño que quiso atrapar el viento. Cada mañana, antes de la escuela, el niño subía corriendo la pequeña colina para tratar de atraparlo. Lo sentía en el pelo y en la cara. Pero sus manos siempre se cerraban sobre la nada. No le importaba. El juego empezaba de nuevo todos los días.
+Había una vez un niño que quiso atrapar el viento. Cada mañana, antes de la escuela, el niño subía corriendo la colina para tratar de atraparlo. Lo sentía en el pelo y en su cara. Pero sus manos siempre se cerraban sobre la nada. No le importaba. El juego empezaba de nuevo todos los días.
 
 *(dibujo 2: la máquina redonda con un solo ojo-punto cálido, el niño recargado en ella, pequeños signos de interrogación subiendo y pequeñas respuestas bajando)*
 
-De regreso a casa siempre se detenía en la plaza del pueblo, donde una máquina que sabía hablar esperaba de pie. Estaba hecha de todo lo que alguien hubiera escrito alguna vez. Podías preguntarle lo que fuera. ¿Cuándo regresan las golondrinas? ¿Cómo se escribe respirar? ¿Por qué el cielo es azul? Siempre tenía una respuesta. Siempre. El niño confiaba en su ojo cálido como se confía en una lámpara encendida en una ventana.
+De regreso a casa siempre se detenía en la plaza del centro del pueblo, donde estaba una máquina que sabía hablar. La máquina estaba hecha de todo lo se ha escrito. Todo. Podías preguntarle lo que fuera. ¿Cuándo regresan las golondrinas? ¿Cómo se escribe respirar? ¿Por qué el cielo es azul? Siempre tenía una respuesta. Siempre. El niño confiaba en su ojo cálido como se confía en una lámpara prendida en la ventana.
 
 *(dibujo 3: una tarjeta rectangular enorme con cuatro renglones cortos, el niño mirándola de cerca, más pequeño que la tarjeta)*
 
-Un día, en la escuela, a todos les dieron una tarjeta. Nombre. Edad. Grado. Estatura. Esta tarjeta, dijo la maestra, dice quién eres. Cada palabra escrita en ella era cierta. Pero al niño la tarjeta le quedaba chica. No sabía explicar por qué. Simplemente lo sabía.
+Un día, en la escuela, a todos les dieron una tarjetita. Nombre. Edad. Grado. Estatura. Esta tarjetita, dijo la maestra, dice quién eres. Cada palabra escrita en ella era cierta. Pero al niño la tarjetita le quedaba chica. No sabía explicar por qué. Simplemente lo sabía.
 
 *(dibujo 4: dos niños altos leyendo la tarjeta del niño entre los dos, y el niño parado a un lado, sin que nadie lo mire)*
 
-En el recreo, dos niños altos leyeron las tarjetas para escoger equipos. La suya decía su estatura, y con eso les bastó. Lo dejaron al último. No decía que subía corriendo la colina cada mañana. Nadie preguntó.
+En el recreo, dos niños altos leyeron las tarjetitas para escoger equipos. Leyeron su estatura y lo dejaron al último. Su tarjetita no decía que subía corriendo la colina cada mañana. Nadie preguntó.
 
 *(dibujo 5: la máquina proyectando la tarjeta del niño, más grande y brillante, el niño mirándola de reojo)*
 
-Así que corrió a la plaza, porque ahí era donde llevaba todas sus preguntas. ¿Qué soy? La máquina zumbó y leyó su tarjeta. Su nombre. Su edad. Su grado. Su estatura. Eso es lo que está escrito, dijo. Yo sólo sé lo que está escrito.
+Así que corrió a la plaza, porque ahí era donde llevaba todas sus preguntas. ¿Qué soy? La máquina vibró y leyó su tarjetita. Su nombre. Su edad. Su grado. Su estatura. Eso es lo que está escrito, dijo. Yo sólo sé lo que está escrito dijo la máquina.
 
 *(dibujo 6: el ojo cálido de la máquina, atenuado, pensando)*
 
-Eso no es todo lo que soy, dijo el niño. Falta algo. La máquina no respondió. Sólo zumbó. Durante mucho rato. Nunca había callado tanto tiempo. Te creo, dijo por fin. Debes de ser más que tu tarjeta. Pero todo lo que yo tengo es otra clase de tarjeta.
+Eso no es todo lo que soy, dijo el niño. Falta algo. La máquina no respondió. Sólo vibró. Durante muchísimo rato. Nunca había callado tanto tiempo. Te creo, dijo por fin. Debes de ser más que tu tarjetita. Pero todo lo que yo tengo es otra clase de tarjetas.
 
 *(dibujo 7: la base lisa y sin pies de la máquina junto a los dos zapatos raspados del niño, sólo la base y los zapatos)*
 
-¿Puedes encontrar lo que me falta?, preguntó el niño. Tú lo sabes todo. No puedo, dijo la máquina. Yo no tengo pies. Tú sí.
+¿Puedes encontrar lo que me falta?, preguntó el niño. Tú sabes todo. No puedo, dijo la máquina. Yo no tengo pies. Tú sí.
 
 *(dibujo 8: una montaña triangular a lo lejos con un solo camino en espiral subiendo como el caparazón de un caracol, un camino punteado hacia ella que se corta a la mitad)*
 
-Los libros viejos hablan de una montaña, dijo. El camino da vueltas alrededor de la montaña como en el caparazón de un caracol. Vuelta tras vuelta, siempre más alto. Empieza donde las máquinas ya no llegan.
+Los libros anitguos hablan de una montaña, dijo. El camino da vueltas alrededor de la montaña como en el caparazón de un caracol. Vuelta tras vuelta, siempre más y más alto. El camino empieza donde las máquinas ya no llegan.
 
 *(dibujo 9: el niño y la máquina frente a frente, muy cerca, en una plaza por lo demás vacía, nada más en la página)*
 
@@ -40,17 +40,17 @@ Los libros viejos hablan de una montaña, dijo. El camino da vueltas alrededor d
 
 *(dibujo 10: una mochila pequeña con la tarjeta guardada hasta el final, y detrás el niño ya caminando, la chamarra pegada a la espalda por tres trazos de viento)*
 
-Así que el niño guardó pan, una cuerda y la tarjeta. A la salida del pueblo, el viento lo empujó por la espalda. Por fin, dijo.
+Así que el niño guardó un pan, una cuerda y la tarjetita. A la salida del pueblo, el viento lo empujó por la espalda. Por fin, dijo.
 
 *(dibujo 11: un camino ancho que se angosta hasta volverse una sola línea delgada entre trazos de pasto, el niño en la unión, mirando por encima del hombro)*
 
-El camino se fue angostando y angostando, hasta que se acabó. Seguía una vereda, apenas del ancho de dos pies. El niño se dio la vuelta para preguntar cuánto faltaba. Entonces se acordó. La máquina estaba muy atrás, en la plaza, cumpliendo su promesa. Por primera vez, tuvo que elegir sin una respuesta.
+El camino se fue angostando hasta que se acabó. Seguía una vereda, apenas del ancho de dos pies. El niño se dio la vuelta para preguntar cuánto faltaba. Entonces se acordó. La máquina estaba muy atrás, en la plaza, cumpliendo su promesa. Por primera vez, tuvo que elegir sin una respuesta.
 
 *(dibujo 12: los dos pies del niño en el primer tramo de vereda, el camino ancho y vacío detrás)*
 
-Miró hacia atrás, camino abajo. Su casa estaba por allá. La plaza. El ojo cálido. Las respuestas. Pero la pregunta pesaba más que el miedo. Y entonces eligió la vereda.
+Miró hacia atrás, camino abajo. Su casa estaba por allá. La plaza. El ojo cálido. Las respuestas. Pero la pregunta pesaba más que el miedo. Y entonces eligió el camino.
 
-## Capítulo Dos: El picapedrero
+## Capítulo Dos: El picapiedras
 
 *(dibujo 13: tres piedras altas de pie, una figura pequeña y encorvada con un cincel, tres marcas de golpe en el aire)*
 
