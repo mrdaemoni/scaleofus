@@ -1,0 +1,457 @@
+[
+  {
+    "number": 1,
+    "start": 15.64,
+    "end": 35.72,
+    "words": 55,
+    "exact": 55,
+    "confidence": 1.0,
+    "chapterStart": 8.76
+  },
+  {
+    "number": 2,
+    "start": 40.32,
+    "end": 68.86,
+    "words": 74,
+    "exact": 73,
+    "confidence": 0.986
+  },
+  {
+    "number": 3,
+    "start": 73.4,
+    "end": 94.2,
+    "words": 46,
+    "exact": 45,
+    "confidence": 0.978
+  },
+  {
+    "number": 4,
+    "start": 98.86,
+    "end": 113.62,
+    "words": 33,
+    "exact": 33,
+    "confidence": 1.0
+  },
+  {
+    "number": 5,
+    "start": 117.38,
+    "end": 138.9,
+    "words": 47,
+    "exact": 42,
+    "confidence": 0.894
+  },
+  {
+    "number": 6,
+    "start": 140.06,
+    "end": 165.18,
+    "words": 49,
+    "exact": 46,
+    "confidence": 0.939
+  },
+  {
+    "number": 7,
+    "start": 166.0,
+    "end": 177.7,
+    "words": 23,
+    "exact": 20,
+    "confidence": 0.87
+  },
+  {
+    "number": 8,
+    "start": 178.84,
+    "end": 200.54,
+    "words": 40,
+    "exact": 39,
+    "confidence": 0.975
+  },
+  {
+    "number": 9,
+    "start": 201.34,
+    "end": 214.36,
+    "words": 22,
+    "exact": 18,
+    "confidence": 0.818
+  },
+  {
+    "number": 10,
+    "start": 215.22,
+    "end": 227.02,
+    "words": 27,
+    "exact": 27,
+    "confidence": 1.0
+  },
+  {
+    "number": 11,
+    "start": 228.46,
+    "end": 252.42,
+    "words": 51,
+    "exact": 51,
+    "confidence": 1.0
+  },
+  {
+    "number": 12,
+    "start": 254.1,
+    "end": 270.0,
+    "words": 30,
+    "exact": 30,
+    "confidence": 1.0
+  },
+  {
+    "number": 13,
+    "start": 279.42,
+    "end": 313.88,
+    "words": 52,
+    "exact": 46,
+    "confidence": 0.885,
+    "chapterStart": 275.06
+  },
+  {
+    "number": 14,
+    "start": 315.42,
+    "end": 345.179,
+    "words": 48,
+    "exact": 45,
+    "confidence": 0.938
+  },
+  {
+    "number": 15,
+    "start": 345.18,
+    "end": 363.319,
+    "words": 21,
+    "exact": 20,
+    "confidence": 0.952
+  },
+  {
+    "number": 16,
+    "start": 363.32,
+    "end": 391.94,
+    "words": 45,
+    "exact": 45,
+    "confidence": 1.0
+  },
+  {
+    "number": 17,
+    "start": 402.3,
+    "end": 443.88,
+    "words": 82,
+    "exact": 75,
+    "confidence": 0.915,
+    "chapterStart": 396.5
+  },
+  {
+    "number": 18,
+    "start": 445.02,
+    "end": 466.5,
+    "words": 48,
+    "exact": 41,
+    "confidence": 0.854
+  },
+  {
+    "number": 19,
+    "start": 467.62,
+    "end": 477.279,
+    "words": 17,
+    "exact": 15,
+    "confidence": 0.882
+  },
+  {
+    "number": 20,
+    "start": 477.28,
+    "end": 492.78,
+    "words": 35,
+    "exact": 34,
+    "confidence": 0.971
+  },
+  {
+    "number": 21,
+    "start": 493.88,
+    "end": 515.68,
+    "words": 42,
+    "exact": 35,
+    "confidence": 0.833
+  },
+  {
+    "number": 22,
+    "start": 516.5,
+    "end": 526.419,
+    "words": 22,
+    "exact": 19,
+    "confidence": 0.864
+  },
+  {
+    "number": 23,
+    "start": 526.42,
+    "end": 543.2,
+    "words": 41,
+    "exact": 35,
+    "confidence": 0.854
+  },
+  {
+    "number": 24,
+    "start": 551.56,
+    "end": 567.06,
+    "words": 29,
+    "exact": 29,
+    "confidence": 1.0,
+    "chapterStart": 547.52
+  },
+  {
+    "number": 25,
+    "start": 568.4,
+    "end": 582.1,
+    "words": 23,
+    "exact": 22,
+    "confidence": 0.957
+  },
+  {
+    "number": 26,
+    "start": 583.0,
+    "end": 593.86,
+    "words": 18,
+    "exact": 17,
+    "confidence": 0.944
+  },
+  {
+    "number": 27,
+    "start": 594.68,
+    "end": 611.18,
+    "words": 33,
+    "exact": 32,
+    "confidence": 0.97
+  },
+  {
+    "number": 28,
+    "start": 613.4,
+    "end": 632.02,
+    "words": 38,
+    "exact": 35,
+    "confidence": 0.921
+  },
+  {
+    "number": 29,
+    "start": 633.32,
+    "end": 646.22,
+    "words": 29,
+    "exact": 29,
+    "confidence": 1.0
+  },
+  {
+    "number": 30,
+    "start": 647.68,
+    "end": 660.84,
+    "words": 26,
+    "exact": 23,
+    "confidence": 0.885
+  },
+  {
+    "number": 31,
+    "start": 662.08,
+    "end": 691.32,
+    "words": 57,
+    "exact": 52,
+    "confidence": 0.912
+  },
+  {
+    "number": 32,
+    "start": 692.22,
+    "end": 709.54,
+    "words": 46,
+    "exact": 45,
+    "confidence": 0.978
+  },
+  {
+    "number": 33,
+    "start": 721.9,
+    "end": 751.559,
+    "words": 47,
+    "exact": 34,
+    "confidence": 0.723,
+    "chapterStart": 713.74
+  },
+  {
+    "number": 34,
+    "start": 751.56,
+    "end": 776.62,
+    "words": 41,
+    "exact": 37,
+    "confidence": 0.902
+  },
+  {
+    "number": 35,
+    "start": 777.52,
+    "end": 800.68,
+    "words": 32,
+    "exact": 32,
+    "confidence": 1.0
+  },
+  {
+    "number": 36,
+    "start": 801.68,
+    "end": 825.68,
+    "words": 28,
+    "exact": 22,
+    "confidence": 0.786
+  },
+  {
+    "number": 37,
+    "start": 826.68,
+    "end": 849.16,
+    "words": 46,
+    "exact": 43,
+    "confidence": 0.935
+  },
+  {
+    "number": 38,
+    "start": 850.0,
+    "end": 860.66,
+    "words": 20,
+    "exact": 20,
+    "confidence": 1.0
+  },
+  {
+    "number": 39,
+    "start": 861.46,
+    "end": 888.08,
+    "words": 59,
+    "exact": 59,
+    "confidence": 1.0
+  },
+  {
+    "number": 40,
+    "start": 888.94,
+    "end": 900.379,
+    "words": 27,
+    "exact": 22,
+    "confidence": 0.815
+  },
+  {
+    "number": 41,
+    "start": 900.38,
+    "end": 918.98,
+    "words": 40,
+    "exact": 40,
+    "confidence": 1.0
+  },
+  {
+    "number": 42,
+    "start": 920.2,
+    "end": 936.92,
+    "words": 27,
+    "exact": 27,
+    "confidence": 1.0
+  },
+  {
+    "number": 43,
+    "start": 946.5,
+    "end": 954.62,
+    "words": 19,
+    "exact": 17,
+    "confidence": 0.895,
+    "chapterStart": 941.32
+  },
+  {
+    "number": 44,
+    "start": 955.4,
+    "end": 969.7,
+    "words": 31,
+    "exact": 30,
+    "confidence": 0.968
+  },
+  {
+    "number": 45,
+    "start": 971.7,
+    "end": 985.82,
+    "words": 31,
+    "exact": 30,
+    "confidence": 0.968
+  },
+  {
+    "number": 46,
+    "start": 987.68,
+    "end": 1006.34,
+    "words": 40,
+    "exact": 38,
+    "confidence": 0.95
+  },
+  {
+    "number": 47,
+    "start": 1008.42,
+    "end": 1019.24,
+    "words": 28,
+    "exact": 25,
+    "confidence": 0.893
+  },
+  {
+    "number": 48,
+    "start": 1021.22,
+    "end": 1034.46,
+    "words": 35,
+    "exact": 34,
+    "confidence": 0.971
+  },
+  {
+    "number": 49,
+    "start": 1036.46,
+    "end": 1049.34,
+    "words": 35,
+    "exact": 34,
+    "confidence": 0.971
+  },
+  {
+    "number": 50,
+    "start": 1051.38,
+    "end": 1072.72,
+    "words": 53,
+    "exact": 51,
+    "confidence": 0.962
+  },
+  {
+    "number": 51,
+    "start": 1081.06,
+    "end": 1097.24,
+    "words": 42,
+    "exact": 42,
+    "confidence": 1.0,
+    "chapterStart": 1077.24
+  },
+  {
+    "number": 52,
+    "start": 1097.82,
+    "end": 1116.499,
+    "words": 37,
+    "exact": 36,
+    "confidence": 0.973
+  },
+  {
+    "number": 53,
+    "start": 1116.5,
+    "end": 1141.16,
+    "words": 49,
+    "exact": 48,
+    "confidence": 0.98
+  },
+  {
+    "number": 54,
+    "start": 1142.18,
+    "end": 1159.48,
+    "words": 39,
+    "exact": 35,
+    "confidence": 0.897
+  },
+  {
+    "number": 55,
+    "start": 1160.52,
+    "end": 1185.04,
+    "words": 44,
+    "exact": 43,
+    "confidence": 0.977
+  },
+  {
+    "number": 56,
+    "start": 1185.78,
+    "end": 1203.82,
+    "words": 34,
+    "exact": 32,
+    "confidence": 0.941
+  }
+]

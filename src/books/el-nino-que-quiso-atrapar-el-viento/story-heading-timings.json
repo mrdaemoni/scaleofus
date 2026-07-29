@@ -1,0 +1,135 @@
+{
+  "version": 3,
+  "audioDuration": 1208.554,
+  "cover": {
+    "start": 3.526,
+    "end": 6.28,
+    "words": [
+      { "start": 3.526, "end": 3.74 },
+      { "start": 3.74, "end": 4.08 },
+      { "start": 4.08, "end": 4.4 },
+      { "start": 4.4, "end": 4.86 },
+      { "start": 4.86, "end": 5.48 },
+      { "start": 5.48, "end": 5.76 },
+      { "start": 5.76, "end": 6.28 }
+    ]
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "transitionStart": 6.348,
+      "start": 8.76,
+      "end": 12.78,
+      "labelWords": [
+        { "start": 8.76, "end": 9.44 },
+        { "start": 9.44, "end": 9.78 }
+      ],
+      "titleWords": [
+        { "start": 9.78, "end": 10.68 },
+        { "start": 10.68, "end": 11.06 },
+        { "start": 11.06, "end": 11.28 },
+        { "start": 11.28, "end": 11.64 },
+        { "start": 11.64, "end": 12.08 },
+        { "start": 12.08, "end": 12.28 },
+        { "start": 12.28, "end": 12.78 }
+      ]
+    },
+    {
+      "number": 2,
+      "transitionStart": 270.098,
+      "start": 275.06,
+      "end": 278.7,
+      "labelWords": [
+        { "start": 275.06, "end": 276.12 },
+        { "start": 276.12, "end": 276.72 }
+      ],
+      "titleWords": [
+        { "start": 277.0, "end": 277.56 },
+        { "start": 277.56, "end": 278.7 }
+      ]
+    },
+    {
+      "number": 3,
+      "transitionStart": 392.244,
+      "start": 396.5,
+      "end": 400.42,
+      "labelWords": [
+        { "start": 396.5, "end": 397.4 },
+        { "start": 397.4, "end": 397.96 }
+      ],
+      "titleWords": [
+        { "start": 398.14, "end": 398.7 },
+        { "start": 398.7, "end": 399.44 },
+        { "start": 399.44, "end": 399.86 },
+        { "start": 399.86, "end": 400.02 },
+        { "start": 400.02, "end": 400.42 }
+      ]
+    },
+    {
+      "number": 4,
+      "transitionStart": 543.208,
+      "start": 547.52,
+      "end": 551.02,
+      "labelWords": [
+        { "start": 547.52, "end": 548.36 },
+        { "start": 548.36, "end": 548.88 }
+      ],
+      "titleWords": [
+        { "start": 549.28, "end": 549.72 },
+        { "start": 549.72, "end": 550.18 },
+        { "start": 550.18, "end": 550.42 },
+        { "start": 550.42, "end": 551.02 }
+      ]
+    },
+    {
+      "number": 5,
+      "transitionStart": 709.395,
+      "start": 713.74,
+      "end": 717.26,
+      "labelWords": [
+        { "start": 713.74, "end": 714.34 },
+        { "start": 714.34, "end": 714.82 }
+      ],
+      "titleWords": [
+        { "start": 715.62, "end": 716.02 },
+        { "start": 716.02, "end": 716.38 },
+        { "start": 716.38, "end": 716.54 },
+        { "start": 716.54, "end": 716.76 },
+        { "start": 716.76, "end": 717.26 }
+      ]
+    },
+    {
+      "number": 6,
+      "transitionStart": 936.916,
+      "start": 941.32,
+      "end": 944.52,
+      "labelWords": [
+        { "start": 941.32, "end": 942.0 },
+        { "start": 942.0, "end": 942.44 }
+      ],
+      "titleWords": [
+        { "start": 943.18, "end": 943.26 },
+        { "start": 943.26, "end": 943.64 },
+        { "start": 943.64, "end": 943.82 },
+        { "start": 943.82, "end": 943.92 },
+        { "start": 943.92, "end": 944.52 }
+      ]
+    },
+    {
+      "number": 7,
+      "transitionStart": 1073.183,
+      "start": 1077.24,
+      "end": 1080.5,
+      "labelWords": [
+        { "start": 1077.24, "end": 1077.92 },
+        { "start": 1077.92, "end": 1078.4 }
+      ],
+      "titleWords": [
+        { "start": 1079.1, "end": 1079.3 },
+        { "start": 1079.3, "end": 1079.62 },
+        { "start": 1079.62, "end": 1080.02 },
+        { "start": 1080.02, "end": 1080.5 }
+      ]
+    }
+  ]
+}

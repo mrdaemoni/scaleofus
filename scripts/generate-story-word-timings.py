@@ -36,7 +36,10 @@ def manuscript_beats(markdown: str) -> list[dict]:
     chapter_title = ""
     for raw_line in markdown.splitlines():
         line = raw_line.strip()
-        chapter = re.match(r"^## Chapter ([A-Za-z]+)\s*(?:—|:)\s*(.+)$", line)
+        chapter = re.match(
+            r"^## (?:Chapter|Capítulo) ([A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)\s*(?:—|:)\s*(.+)$",
+            line,
+        )
         if chapter:
             chapter_number += 1
             chapter_title = chapter.group(2)
@@ -44,7 +47,11 @@ def manuscript_beats(markdown: str) -> list[dict]:
             continue
         drawing = (
             re.match(r"^\*\*Drawing (\d+) — \*\((.+)\)\*\*\*$", line)
-            or re.match(r"^\*\(drawing (\d+):\s*(.+)\)\*$", line, re.IGNORECASE)
+            or re.match(
+                r"^\*\((?:drawing|dibujo) (\d+):\s*(.+)\)\*$",
+                line,
+                re.IGNORECASE,
+            )
         )
         if drawing:
             current = {
@@ -59,7 +66,7 @@ def manuscript_beats(markdown: str) -> list[dict]:
             current
             and line
             and line != "---"
-            and not line.startswith("## Chapter")
+            and not line.startswith("## ")
             and not line.startswith("*Cover —")
         ):
             current["paragraphs"].append(line)
@@ -283,6 +290,10 @@ def main() -> None:
     parser.add_argument("--model", default="small.en")
     parser.add_argument("--model-label")
     parser.add_argument(
+        "--chapter-starts",
+        help="Comma-separated spoken chapter-title start times, used when ambience prevents silence detection.",
+    )
+    parser.add_argument(
         "--preserve-speakers",
         action="store_true",
         help="Copy speaker labels from the existing output when its paragraph word counts still match.",
@@ -303,7 +314,19 @@ def main() -> None:
     manuscript = manuscript_beats(args.story.read_text())
     audio_duration = probe_audio_duration(args.audio)
     chapter_count = max(beat["chapter"] for beat in manuscript)
-    chapter_starts = detect_chapter_starts(args.audio, audio_duration, chapter_count)
+    if args.chapter_starts:
+        chapter_starts = [
+            round(float(value.strip()), 3)
+            for value in args.chapter_starts.split(",")
+            if value.strip()
+        ]
+        if len(chapter_starts) != chapter_count:
+            raise SystemExit(
+                f"--chapter-starts supplied {len(chapter_starts)} values for "
+                f"{chapter_count} chapters"
+            )
+    else:
+        chapter_starts = detect_chapter_starts(args.audio, audio_duration, chapter_count)
 
     if args.transcript_json:
         heard_words = words_from_openai_whisper(args.transcript_json)

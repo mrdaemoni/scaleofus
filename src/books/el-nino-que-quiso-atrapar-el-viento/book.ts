@@ -1,7 +1,7 @@
 import storyMarkdown from "./el-nino-que-quiso-atrapar-el-viento.md?raw";
-import storyHeadingTimings from "../the-boy-who-tried-to-catch-the-wind/story-heading-timings.json";
-import storyTimings from "../the-boy-who-tried-to-catch-the-wind/story-timings.json";
-import storyWordTimings from "../the-boy-who-tried-to-catch-the-wind/story-word-timings.json";
+import storyHeadingTimings from "./story-heading-timings.json";
+import storyTimings from "./story-timings.json";
+import storyWordTimings from "./story-word-timings.json";
 import { windStoryReader } from "../the-boy-who-tried-to-catch-the-wind/reader";
 import { windStoryBook } from "../the-boy-who-tried-to-catch-the-wind/book";
 import type { StoryBookSource } from "../../lib/story-book";
@@ -18,7 +18,21 @@ const spanishReader = {
   id: "el-nino-que-quiso-atrapar-el-viento",
   title: "El niño que quiso atrapar el viento",
   intro: "Una historia sobre un niño, una máquina y esa parte de nosotros que ninguna respuesta puede contener.",
-  narrationAvailable: false,
+  narrationAvailable: true,
+  audio: {
+    src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-scored-20260729",
+    sources: [
+      {
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-scored-20260729",
+        type: "audio/mpeg",
+      },
+      {
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a?v=story-es-v1-scored-20260729",
+        type: 'audio/mp4; codecs="mp4a.40.2"',
+      },
+    ],
+    duration: 1208.554,
+  },
   artwork: {
     ...windStoryReader.artwork,
     title: spanishLive("es-title"),
@@ -41,8 +55,8 @@ export const spanishWindStoryBook = {
   locale: "es",
   reader: spanishReader,
   manuscript: storyMarkdown,
-  // The visual stages stay aligned with the English edition even without
-  // Spanish narration, so every drawing retains the same stable page number.
+  // The Spanish narration has its own timing pass while retaining the English
+  // edition's artwork and stable drawing numbers.
   beatTimings: storyTimings,
   headingTimings: storyHeadingTimings,
   wordTimings: storyWordTimings,

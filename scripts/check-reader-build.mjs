@@ -14,11 +14,13 @@ const limits = {
   liveDrawingWire: 96 * 1024,
   liveDrawingWireTotal: 3 * 1024 * 1024,
   mobileDrawing: 128 * 1024,
-  totalBuild: 42 * 1024 * 1024,
+  totalBuildBase: 42 * 1024 * 1024,
+  additionalNarratedEdition: 32 * 1024 * 1024,
 };
 
 const failures = [];
 const metrics = [];
+const narratedEditionRoots = new Set();
 
 const walk = async (directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -125,6 +127,7 @@ for (const htmlPath of htmlFiles) {
       } else if (assetPath.endsWith(".css")) {
         requireBudget(`${relative(htmlPath)} stylesheet`, assetBytes, limits.readerStylesheet);
       } else if (/\.(?:mp3|m4a)$/i.test(assetPath)) {
+        narratedEditionRoots.add(path.posix.dirname(assetPath));
         requireBudget(`${relative(htmlPath)} audio ${path.basename(assetPath)}`, assetBytes, limits.audioFile);
       }
     } catch {
@@ -185,7 +188,10 @@ if (mobileDrawingFiles.length) {
 }
 
 const totalBuildBytes = (await Promise.all(files.map(bytesFor))).reduce((sum, value) => sum + value, 0);
-requireBudget("total deployable build", totalBuildBytes, limits.totalBuild);
+const totalBuildLimit = limits.totalBuildBase
+  + Math.max(0, narratedEditionRoots.size - 1) * limits.additionalNarratedEdition;
+metrics.push(`narrated audio editions: ${narratedEditionRoots.size}`);
+requireBudget("total deployable build", totalBuildBytes, totalBuildLimit);
 
 console.log(metrics.join("\n"));
 if (failures.length) {

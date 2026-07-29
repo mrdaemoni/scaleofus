@@ -8,7 +8,7 @@ Había una vez un niño que quiso atrapar el viento. Cada mañana, antes de la e
 
 *(dibujo 2: la máquina redonda con un solo ojo-punto cálido, el niño recargado en ella, pequeños signos de interrogación subiendo y pequeñas respuestas bajando)*
 
-De regreso a casa siempre se detenía en la plaza del centro del pueblo, donde estaba una máquina que sabía hablar. La máquina estaba hecha de todo lo se ha escrito. Todo. Podías preguntarle lo que fuera. ¿Cuándo regresan las golondrinas? ¿Cómo se escribe respirar? ¿Por qué el cielo es azul? Siempre tenía una respuesta. Siempre. El niño confiaba en su ojo cálido como se confía en una lámpara prendida en la ventana.
+De regreso a casa siempre se detenía en la plaza del centro del pueblo, donde estaba una máquina que sabía hablar. La máquina estaba hecha de todo lo que se ha escrito. Todo. Podías preguntarle lo que fuera. ¿Cuándo regresan las golondrinas? ¿Cómo se escribe respirar? ¿Por qué el cielo es azul? Siempre tenía una respuesta. Siempre. El niño confiaba en su ojo cálido como se confía en una lámpara prendida en la ventana.
 
 *(dibujo 3: una tarjeta rectangular enorme con cuatro renglones cortos, el niño mirándola de cerca, más pequeño que la tarjeta)*
 
@@ -20,7 +20,7 @@ En el recreo, dos niños altos leyeron las tarjetitas para escoger equipos. Leye
 
 *(dibujo 5: la máquina proyectando la tarjeta del niño, más grande y brillante, el niño mirándola de reojo)*
 
-Así que corrió a la plaza, porque ahí era donde llevaba todas sus preguntas. ¿Qué soy? La máquina vibró y leyó su tarjetita. Su nombre. Su edad. Su grado. Su estatura. Eso es lo que está escrito, dijo. Yo sólo sé lo que está escrito dijo la máquina.
+Así que corrió a la plaza, porque ahí era donde llevaba todas sus preguntas. ¿Qué soy? La máquina vibró y leyó su tarjetita. Su nombre. Su edad. Su grado. Su estatura. Eso es lo que está escrito, dijo la máquina. Yo sólo sé lo que está escrito.
 
 *(dibujo 6: el ojo cálido de la máquina, atenuado, pensando)*
 
@@ -32,7 +32,7 @@ Eso no es todo lo que soy, dijo el niño. Falta algo. La máquina no respondió.
 
 *(dibujo 8: una montaña triangular a lo lejos con un solo camino en espiral subiendo como el caparazón de un caracol, un camino punteado hacia ella que se corta a la mitad)*
 
-Los libros anitguos hablan de una montaña, dijo. El camino da vueltas alrededor de la montaña como en el caparazón de un caracol. Vuelta tras vuelta, siempre más y más alto. El camino empieza donde las máquinas ya no llegan.
+Los libros antiguos hablan de una montaña, dijo. El camino da vueltas alrededor de la montaña como en el caparazón de un caracol. Vuelta tras vuelta, siempre más y más alto. El camino empieza donde las máquinas ya no llegan.
 
 *(dibujo 9: el niño y la máquina frente a frente, muy cerca, en una plaza por lo demás vacía, nada más en la página)*
 
