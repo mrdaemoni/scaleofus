@@ -1,448 +1,455 @@
 [
   {
     "number": 1,
-    "start": 13.12,
-    "end": 28.36,
-    "words": 43,
-    "exact": 43,
-    "confidence": 1.0
+    "start": 13.66,
+    "end": 32.48,
+    "words": 54,
+    "exact": 54,
+    "confidence": 1.0,
+    "chapterStart": 8.28
   },
   {
     "number": 2,
-    "start": 29.0,
-    "end": 52.16,
-    "words": 67,
-    "exact": 67,
-    "confidence": 1.0
+    "start": 34.12,
+    "end": 58.32,
+    "words": 73,
+    "exact": 72,
+    "confidence": 0.986
   },
   {
     "number": 3,
-    "start": 52.94,
-    "end": 68.94,
-    "words": 42,
-    "exact": 42,
+    "start": 59.78,
+    "end": 77.56,
+    "words": 45,
+    "exact": 45,
     "confidence": 1.0
   },
   {
     "number": 4,
-    "start": 69.72,
-    "end": 81.54,
+    "start": 78.94,
+    "end": 90.78,
     "words": 37,
     "exact": 37,
     "confidence": 1.0
   },
   {
     "number": 5,
-    "start": 82.06,
-    "end": 95.6,
-    "words": 34,
-    "exact": 32,
-    "confidence": 0.941
+    "start": 91.4,
+    "end": 114.12,
+    "words": 42,
+    "exact": 40,
+    "confidence": 0.952
   },
   {
     "number": 6,
-    "start": 96.88,
-    "end": 118.32,
-    "words": 48,
-    "exact": 46,
-    "confidence": 0.958
+    "start": 115.24,
+    "end": 145.24,
+    "words": 52,
+    "exact": 45,
+    "confidence": 0.865
   },
   {
     "number": 7,
-    "start": 119.52,
-    "end": 129.14,
-    "words": 24,
-    "exact": 21,
-    "confidence": 0.875
+    "start": 146.02,
+    "end": 156.68,
+    "words": 25,
+    "exact": 19,
+    "confidence": 0.76
   },
   {
     "number": 8,
-    "start": 130.02,
-    "end": 145.34,
-    "words": 32,
-    "exact": 30,
-    "confidence": 0.938
+    "start": 157.36,
+    "end": 174.56,
+    "words": 35,
+    "exact": 33,
+    "confidence": 0.943
   },
   {
     "number": 9,
-    "start": 146.74,
-    "end": 159.22,
+    "start": 175.6,
+    "end": 186.4,
     "words": 24,
-    "exact": 19,
-    "confidence": 0.792
+    "exact": 17,
+    "confidence": 0.708
   },
   {
     "number": 10,
-    "start": 160.5,
-    "end": 172.06,
+    "start": 187.84,
+    "end": 199.8,
     "words": 24,
     "exact": 24,
     "confidence": 1.0
   },
   {
     "number": 11,
-    "start": 172.96,
-    "end": 195.78,
-    "words": 52,
-    "exact": 52,
+    "start": 201.5,
+    "end": 228.86,
+    "words": 59,
+    "exact": 59,
     "confidence": 1.0
   },
   {
     "number": 12,
-    "start": 196.42,
-    "end": 209.78,
+    "start": 230.28,
+    "end": 245.68,
     "words": 29,
     "exact": 29,
     "confidence": 1.0
   },
   {
     "number": 13,
-    "start": 216.6,
-    "end": 242.96,
+    "start": 254.22,
+    "end": 280.36,
     "words": 48,
-    "exact": 43,
-    "confidence": 0.896
+    "exact": 42,
+    "confidence": 0.875,
+    "chapterStart": 249.48
   },
   {
     "number": 14,
-    "start": 244.74,
-    "end": 268.42,
+    "start": 282.08,
+    "end": 305.56,
     "words": 56,
-    "exact": 53,
-    "confidence": 0.946
+    "exact": 50,
+    "confidence": 0.893
   },
   {
     "number": 15,
-    "start": 269.68,
-    "end": 285.3,
+    "start": 306.96,
+    "end": 319.28,
     "words": 24,
     "exact": 23,
     "confidence": 0.958
   },
   {
     "number": 16,
-    "start": 286.58,
-    "end": 312.56,
-    "words": 40,
-    "exact": 40,
+    "start": 320.5,
+    "end": 345.96,
+    "words": 41,
+    "exact": 41,
     "confidence": 1.0
   },
   {
     "number": 17,
-    "start": 320.24,
-    "end": 351.22,
+    "start": 356.8,
+    "end": 393.0,
     "words": 78,
-    "exact": 74,
-    "confidence": 0.949
+    "exact": 72,
+    "confidence": 0.923,
+    "chapterStart": 350.22
   },
   {
     "number": 18,
-    "start": 352.6,
-    "end": 374.52,
+    "start": 394.36,
+    "end": 416.94,
     "words": 53,
-    "exact": 48,
-    "confidence": 0.906
+    "exact": 45,
+    "confidence": 0.849
   },
   {
     "number": 19,
-    "start": 375.8,
-    "end": 384.0,
+    "start": 418.28,
+    "end": 426.38,
     "words": 18,
     "exact": 17,
     "confidence": 0.944
   },
   {
     "number": 20,
-    "start": 384.92,
-    "end": 399.32,
+    "start": 427.17,
+    "end": 440.86,
     "words": 34,
     "exact": 31,
     "confidence": 0.912
   },
   {
     "number": 21,
-    "start": 400.6,
-    "end": 422.64,
+    "start": 442.94,
+    "end": 465.839,
     "words": 47,
-    "exact": 42,
-    "confidence": 0.894
+    "exact": 38,
+    "confidence": 0.809
   },
   {
     "number": 22,
-    "start": 423.36,
-    "end": 433.199,
-    "words": 23,
-    "exact": 21,
-    "confidence": 0.913
+    "start": 465.84,
+    "end": 477.159,
+    "words": 22,
+    "exact": 20,
+    "confidence": 0.909
   },
   {
     "number": 23,
-    "start": 433.2,
-    "end": 449.86,
+    "start": 477.16,
+    "end": 497.06,
     "words": 43,
     "exact": 41,
     "confidence": 0.953
   },
   {
     "number": 24,
-    "start": 458.2,
-    "end": 471.08,
+    "start": 508.44,
+    "end": 525.8,
     "words": 28,
-    "exact": 28,
-    "confidence": 1.0
+    "exact": 25,
+    "confidence": 0.893,
+    "chapterStart": 501.98
   },
   {
     "number": 25,
-    "start": 472.5,
-    "end": 483.96,
+    "start": 527.2,
+    "end": 542.04,
     "words": 24,
     "exact": 24,
     "confidence": 1.0
   },
   {
     "number": 26,
-    "start": 484.84,
-    "end": 494.34,
-    "words": 18,
-    "exact": 18,
+    "start": 543.3,
+    "end": 557.84,
+    "words": 22,
+    "exact": 22,
     "confidence": 1.0
   },
   {
     "number": 27,
-    "start": 495.16,
-    "end": 510.02,
-    "words": 35,
-    "exact": 32,
-    "confidence": 0.914
+    "start": 559.06,
+    "end": 584.1,
+    "words": 36,
+    "exact": 31,
+    "confidence": 0.861
   },
   {
     "number": 28,
-    "start": 511.02,
-    "end": 523.16,
+    "start": 584.78,
+    "end": 595.2,
     "words": 33,
-    "exact": 29,
-    "confidence": 0.879
+    "exact": 27,
+    "confidence": 0.818
   },
   {
     "number": 29,
-    "start": 524.62,
-    "end": 536.04,
+    "start": 596.74,
+    "end": 607.58,
     "words": 26,
     "exact": 26,
     "confidence": 1.0
   },
   {
     "number": 30,
-    "start": 538.64,
-    "end": 550.0,
+    "start": 613.34,
+    "end": 625.16,
     "words": 22,
     "exact": 19,
     "confidence": 0.864
   },
   {
     "number": 31,
-    "start": 551.16,
-    "end": 577.04,
+    "start": 626.26,
+    "end": 649.14,
     "words": 56,
-    "exact": 51,
-    "confidence": 0.911
+    "exact": 46,
+    "confidence": 0.821
   },
   {
     "number": 32,
-    "start": 578.44,
-    "end": 597.14,
+    "start": 650.1,
+    "end": 670.72,
     "words": 46,
-    "exact": 46,
-    "confidence": 1.0
+    "exact": 44,
+    "confidence": 0.957
   },
   {
     "number": 33,
-    "start": 605.14,
-    "end": 625.759,
+    "start": 680.97,
+    "end": 702.079,
     "words": 41,
-    "exact": 35,
-    "confidence": 0.854
+    "exact": 33,
+    "confidence": 0.805,
+    "chapterStart": 674.58
   },
   {
     "number": 34,
-    "start": 625.76,
-    "end": 648.86,
+    "start": 702.08,
+    "end": 722.46,
     "words": 43,
-    "exact": 38,
-    "confidence": 0.884
+    "exact": 40,
+    "confidence": 0.93
   },
   {
     "number": 35,
-    "start": 649.85,
-    "end": 666.88,
+    "start": 723.58,
+    "end": 738.48,
     "words": 31,
     "exact": 31,
     "confidence": 1.0
   },
   {
     "number": 36,
-    "start": 667.98,
-    "end": 688.66,
+    "start": 741.92,
+    "end": 757.74,
     "words": 30,
-    "exact": 27,
-    "confidence": 0.9
+    "exact": 26,
+    "confidence": 0.867
   },
   {
     "number": 37,
-    "start": 689.6,
-    "end": 707.28,
-    "words": 44,
-    "exact": 44,
+    "start": 759.34,
+    "end": 781.54,
+    "words": 46,
+    "exact": 46,
     "confidence": 1.0
   },
   {
     "number": 38,
-    "start": 708.06,
-    "end": 716.78,
+    "start": 783.18,
+    "end": 794.76,
     "words": 18,
     "exact": 18,
     "confidence": 1.0
   },
   {
     "number": 39,
-    "start": 717.8,
-    "end": 738.76,
+    "start": 797.5,
+    "end": 831.379,
     "words": 54,
-    "exact": 54,
-    "confidence": 1.0
+    "exact": 50,
+    "confidence": 0.926
   },
   {
     "number": 40,
-    "start": 740.34,
-    "end": 751.899,
+    "start": 831.38,
+    "end": 843.799,
     "words": 28,
-    "exact": 25,
-    "confidence": 0.893
+    "exact": 23,
+    "confidence": 0.821
   },
   {
     "number": 41,
-    "start": 751.9,
-    "end": 768.9,
+    "start": 843.8,
+    "end": 863.58,
     "words": 45,
     "exact": 44,
     "confidence": 0.978
   },
   {
     "number": 42,
-    "start": 769.8,
-    "end": 784.6,
+    "start": 864.62,
+    "end": 882.24,
+    "words": 36,
+    "exact": 36,
+    "confidence": 1.0
+  },
+  {
+    "number": 43,
+    "start": 890.88,
+    "end": 899.16,
+    "words": 19,
+    "exact": 19,
+    "confidence": 1.0,
+    "chapterStart": 886.34
+  },
+  {
+    "number": 44,
+    "start": 900.1,
+    "end": 913.58,
     "words": 30,
     "exact": 30,
     "confidence": 1.0
   },
   {
-    "number": 43,
-    "start": 792.6,
-    "end": 800.58,
-    "words": 19,
-    "exact": 19,
-    "confidence": 1.0
-  },
-  {
-    "number": 44,
-    "start": 801.46,
-    "end": 814.16,
-    "words": 30,
-    "exact": 29,
-    "confidence": 0.967
-  },
-  {
     "number": 45,
-    "start": 814.9,
-    "end": 828.44,
+    "start": 914.22,
+    "end": 931.22,
     "words": 33,
     "exact": 33,
     "confidence": 1.0
   },
   {
     "number": 46,
-    "start": 829.2,
-    "end": 846.62,
+    "start": 932.68,
+    "end": 956.56,
     "words": 46,
-    "exact": 46,
-    "confidence": 1.0
+    "exact": 45,
+    "confidence": 0.978
   },
   {
     "number": 47,
-    "start": 847.72,
-    "end": 856.86,
-    "words": 26,
-    "exact": 26,
-    "confidence": 1.0
+    "start": 958.28,
+    "end": 974.62,
+    "words": 33,
+    "exact": 32,
+    "confidence": 0.97
   },
   {
     "number": 48,
-    "start": 857.82,
-    "end": 869.86,
+    "start": 976.3,
+    "end": 995.38,
     "words": 34,
-    "exact": 34,
-    "confidence": 1.0
+    "exact": 21,
+    "confidence": 0.618
   },
   {
     "number": 49,
-    "start": 870.8,
-    "end": 881.98,
+    "start": 997.24,
+    "end": 1014.34,
     "words": 39,
     "exact": 39,
     "confidence": 1.0
   },
   {
     "number": 50,
-    "start": 882.98,
-    "end": 900.86,
+    "start": 1016.26,
+    "end": 1046.1,
     "words": 47,
     "exact": 47,
     "confidence": 1.0
   },
   {
     "number": 51,
-    "start": 908.86,
-    "end": 922.68,
+    "start": 1057.44,
+    "end": 1074.8,
     "words": 37,
     "exact": 37,
-    "confidence": 1.0
+    "confidence": 1.0,
+    "chapterStart": 1050.22
   },
   {
     "number": 52,
-    "start": 923.66,
-    "end": 942.439,
+    "start": 1077.65,
+    "end": 1102.539,
     "words": 42,
-    "exact": 40,
-    "confidence": 0.952
+    "exact": 35,
+    "confidence": 0.833
   },
   {
     "number": 53,
-    "start": 942.44,
-    "end": 969.78,
-    "words": 52,
-    "exact": 50,
-    "confidence": 0.962
+    "start": 1102.54,
+    "end": 1136.5,
+    "words": 54,
+    "exact": 47,
+    "confidence": 0.87
   },
   {
     "number": 54,
-    "start": 970.78,
-    "end": 985.36,
+    "start": 1137.4,
+    "end": 1154.94,
     "words": 36,
     "exact": 33,
     "confidence": 0.917
   },
   {
     "number": 55,
-    "start": 986.18,
-    "end": 1001.28,
-    "words": 38,
+    "start": 1155.78,
+    "end": 1173.799,
+    "words": 40,
     "exact": 38,
-    "confidence": 1.0
+    "confidence": 0.95
   },
   {
     "number": 56,
-    "start": 1002.08,
-    "end": 1015.34,
+    "start": 1173.8,
+    "end": 1193.72,
     "words": 36,
     "exact": 36,
     "confidence": 1.0

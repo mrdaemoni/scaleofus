@@ -4,15 +4,15 @@
 
 *(drawing 1: the boy on a hill, both hands up grabbing at three wind strokes, hair blown sideways)*
 
-Every morning, before school, the boy raced up the little hill to try to catch the wind. He could feel it in his hair and on his face. But his hands always closed on nothing. He didn't mind. The game began every day.
+Once there was a boy who tried to catch the wind. Every morning, before school, the boy raced up the little hill to try to catch the wind. He could feel it in his hair and on his face. But his hands always closed on nothing. He didn't mind. The game began every day.
 
 *(drawing 2: the round machine with one warm dot-eye, the boy leaning against it, tiny question marks floating up and tiny answers floating down)*
 
-On the way home he always stopped in the town square, where a machine that could talk stood waiting. It was made from everything anyone had ever written down. When do the swallows come back? How do you spell breathe? Why is the sky blue? It always had an answer. Always. The boy trusted its warm eye the way you trust a lamp glowing in a window.
+On the way home he always stopped in the town square, where a machine that could talk stood waiting. It was made from everything anyone had ever written down. You could ask it any question. When do the swallows come back? How do you spell breathe? Why is the sky blue? It always had an answer. Always. The boy trusted its warm eye the way you trust a lamp glowing in a window.
 
 *(drawing 3: one oversized rectangle card with four short ruled lines, the boy peering at it, smaller than the card)*
 
-Then one day at school, everyone got a card. Name. Age. Grade. Height. This card, said the teacher, says who you are. Every word on it was true. But the card was too small. The boy couldn't explain how. He just knew.
+Then one day at school, everyone got a card. Name. Age. Grade. Height. This card, said the teacher, says who you are. Every word on it was true. But to the boy the card was too small. The boy couldn't explain how. He just knew.
 
 *(drawing 4: two tall kids reading the boy's card between them, and the boy standing off to the side, not being looked at)*
 
@@ -20,19 +20,19 @@ At recess, two tall kids read the cards to pick teams. His card gave his height,
 
 *(drawing 5: the machine projecting the boy's card, larger and glowing, the boy looking at it sideways)*
 
-So he ran to the square, because that was where he took every question. What am I? The machine hummed and read his card. That's what's written, it said. I only know what's written.
+So he ran to the square, because that was where he took every question. What am I? The machine hummed and read his card. His name. His age. His grade. His height. That's what's written, it said. I only know what's written.
 
 *(drawing 6: the machine's warm eye, dimmed to thinking)*
 
-It's not all of me, said the boy. Something's missing. The machine hummed for a long time. In his whole life, it had never been quiet this long. I believe you, it said. Then you are more than your card. Everything I have is another kind of card.
+That's not all I am, said the boy. Something's missing. The machine didn't answer. Instead it hummed. For a long time. It had never been quiet this long. I believe you, it said at last. You must be more than just your card. But everything I have is another kind of card.
 
 *(drawing 7: the machine's smooth footless base next to the boy's two scuffed shoes, just the base and the shoes)*
 
-Then find the rest of me, said the boy. You know everything. I can't, said the machine. I have no feet. But you do.
+Can you find the rest of me? asked the boy. You know everything. I can't, said the machine. I have no feet. But you do.
 
 *(drawing 8: a far triangle mountain with one spiral path curling up it like a snail shell, a dotted road toward it that stops partway)*
 
-The old books tell of a mountain, it said. The path curls around the mountain like a snail shell. Around and around, always a little higher. It begins where machines stop going.
+The old books tell of a mountain, it said. A path winds around it like the spiral on a snail's shell. Around and around, a little higher each time. It begins where machines stop going.
 
 *(drawing 9: the boy and the machine face to face, very close, in an otherwise empty square, nothing else on the page)*
 
@@ -44,7 +44,7 @@ So the boy packed bread, a rope, and the card. At the edge of town, the wind pus
 
 *(drawing 11: a wide road narrowing into a single thin line between grass strokes, the boy at the joint, looking back over his shoulder)*
 
-The road grew narrower and narrower, until it ended. A path continued, just wide enough for feet. The boy turned to ask how far was left. Then he remembered. The machine was far behind him, in the square, keeping its promise. For the first time, he had to choose without an answer.
+The road grew narrower and narrower, until it ended. A path continued, just wide enough for feet. The boy turned to ask the machine how much farther he had to go. Then he remembered. The machine was far behind him in the square, waiting as it had promised. For the first time, he had to choose without an answer.
 
 *(drawing 12: the boy's two feet on the first foot-width of path, the wide empty road behind them)*
 
@@ -66,7 +66,7 @@ He pointed at the stream. I gave it that name forty years ago. The name is still
 
 *(drawing 16: an open palm holding one small oval, and in the background a stone carved with a spiral and the words KEEP GOING)*
 
-He pressed a pebble into the boy's hand. When someone gives you a name that's too small, hold this and say: That's a rock. I'm a river. On the last stone, beneath a carved spiral, were two words: KEEP GOING.
+He pressed a pebble into the boy's hand. When someone gives you a name that feels too small, hold this and say: That's a rock. I'm a river. On the last stone, beneath a carved spiral, were two words: KEEP GOING.
 
 ## Chapter Three: The Potter and the Fire
 
@@ -98,7 +98,7 @@ My hand knew, said the boy.
 
 *(drawing 22: the boy looking down into a soup bowl, and behind him the kiln's shadow on the wall, round, with one dot, the shape of the machine)*
 
-He told her about the machine that had run out of words. The potter watched the fire. Then it was honest, she said.
+He told her that the machine couldn't answer his question. The potter watched the fire. Then the machine was honest, she said.
 
 *(drawing 23: the crooked bowl and a candle stub with one match, together in two open hands)*
 
@@ -116,11 +116,11 @@ He waited badly. Then the pond went perfectly still, and he saw the bottom, a sl
 
 *(drawing 26: the same pond as a scribbled brown swirl, the stick in the boy's hand, everything in the reflection torn to pieces)*
 
-She handed him her stick. Go on. Ruin it. He stirred, and everything vanished into a brown swirl.
+She handed him her stick. Go on. Ruin it. He stirred the water, and the whole reflection vanished into a brown swirl.
 
 *(drawing 27: three small pond circles in a row, swirl, haze, glass, with the mountain coming back in the last one)*
 
-How do we get it back? asked the boy. He raised the stick again. She caught his wrist. Watch, she said. Then she did nothing. The mud settled by itself, and the world came back.
+How do we get the reflection back? asked the boy. He raised the stick again. She caught his wrist. Watch, she said. Then she did nothing. The mud settled by itself, and the reflection came back.
 
 *(drawing 28: the boy's face, close up, taking something in, the girl pointing gently at him)*
 
@@ -168,7 +168,7 @@ We know what you are, said the voice. Stay. We'll write you a new card, a perfec
 
 *(drawing 37: the boy's hand reaching for the card, and above his head three thought-shapes fading to almost nothing, a triangle mountain, a circle with a dot, a crooked bowl)*
 
-The boy reached for it. It was the thing he had walked all this way to find. He tried to remember why that felt wrong, and couldn't. A mountain? A machine? A crooked bowl? It was all going soft, like a dream after breakfast.
+The boy reached for it. It promised the answer he had walked all this way to find. He tried to remember why taking it felt wrong, but he couldn't. A mountain? A machine? A crooked bowl? It was all going soft, like a dream after breakfast.
 
 *(drawing 38: one mirror-boy alone, statue-still, smiling, already holding the golden card, drawn entirely with straight lines)*
 
@@ -190,7 +190,7 @@ Staying would've been easy. That's what made the door heavy. Thank you for the c
 
 *(drawing 42: the house behind him, dark and flat against the slope like a photograph of a house, and in his hands, the bowl, its water line wobbling again)*
 
-He looked back once. From outside, no windows were lit. He climbed the last turn with the water trembling in his bowl. Every tiny tremble seemed to say: Alive. Alive.
+He looked back once. From outside, the house was dark. None of its windows were lit. He climbed the last turn with the water trembling in his bowl. Every tiny tremble seemed to say: Alive. Alive.
 
 ## Chapter Six: The Top of the Mountain
 
@@ -212,7 +212,7 @@ When he was done crying, his hands needed something to do. He laid out his gifts
 
 *(drawing 47: the boy's open hand held high, the seed just leaving it, a tiny dotted arc sailing over the edge into the huge sky)*
 
-Then he remembered the seed. Take it to the top. You'll know. He knew. He opened his hand, and the wind carried it over the edge.
+Then he remembered the girl's words. Take the seed to the top. You'll know what to do. Now he knew. He opened his hand, and the wind carried the seed over the edge.
 
 *(drawing 48: the boy in profile, one small cloud of breath leaving his mouth, drawn bolder than anything else on the page, the low sun a single circle on the horizon)*
 
@@ -238,7 +238,7 @@ The machine was waiting, one warm eye on. It had kept its promise. Did you find 
 
 *(drawing 53: the boy leaning close, one small breath cloud curling in front of the machine's warm eye, the eye drawn slightly bigger than usual)*
 
-And the top? What was at the top? The boy smiled. Nothing, he said. Wind. He leaned close and breathed out. The machine stayed quiet longer than ever before. I've read every description of wind ever written, it said. This is the first time anyone has brought me a little of it.
+What did you find at the top? asked the machine. The boy smiled. Nothing, he said. Wind. He leaned close and breathed out. The machine stayed quiet longer than ever before. I've read every description of wind ever written, it said. This is the first time anyone has brought me a little of it.
 
 *(drawing 54: a page coming out of the machine, half-filled with ruled writing lines, with the bottom half blank)*
 
@@ -246,7 +246,7 @@ I can't feel it, said the machine. I won't pretend. But I can leave room for wha
 
 *(drawing 55: the boy a little older holding a stack of cards while choosing teams, pointing first to the shortest child in the class, who is holding a ball while the other children look on)*
 
-He kept the pebble. Later, when it was his turn to pick teams, he read the cards. Then he looked up. He had seen the shortest child catch a ball everybody else had missed. You first, he said.
+He kept the pebble. Later, when it was his turn to pick teams, he read the cards. Then he looked past them at the children. The shortest child had caught a ball everybody else had missed. You first, he said.
 
 *(drawing 56: the boy on the little hill on a cold morning, scarf on, one bright breath cloud rising, three wind strokes moving everything on the page, a little)*
 
