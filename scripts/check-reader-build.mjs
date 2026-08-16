@@ -1,6 +1,7 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { gzipSync } from "node:zlib";
+import { cloudflareWebAnalyticsToken } from "../site.config.mjs";
 
 const projectRoot = process.cwd();
 const distRoot = path.join(projectRoot, "dist");
@@ -41,6 +42,18 @@ const requireBudget = (label, actual, limit) => {
 const files = await walk(distRoot);
 const htmlFiles = files.filter((filePath) => filePath.endsWith(".html"));
 const readerPages = [];
+
+for (const htmlPath of htmlFiles) {
+  const html = await readFile(htmlPath, "utf8");
+  const beaconCount = (html.match(/static\.cloudflareinsights\.com\/beacon\.min\.js/g) ?? []).length;
+  if (cloudflareWebAnalyticsToken) {
+    if (beaconCount !== 1 || !html.includes(`&quot;token&quot;:&quot;${cloudflareWebAnalyticsToken}&quot;`)) {
+      failures.push(`${relative(htmlPath)} does not contain the configured Cloudflare analytics beacon exactly once.`);
+    }
+  } else if (beaconCount !== 0) {
+    failures.push(`${relative(htmlPath)} contains an analytics beacon without a configured token.`);
+  }
+}
 
 for (const htmlPath of htmlFiles) {
   const html = await readFile(htmlPath, "utf8");

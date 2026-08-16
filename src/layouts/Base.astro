@@ -2,6 +2,7 @@
 import "@fontsource-variable/playwrite-ie";
 import "@fontsource-variable/newsreader/standard.css";
 import "@fontsource-variable/newsreader/standard-italic.css";
+import { cloudflareWebAnalyticsToken } from "../../site.config.mjs";
 
 const {
   title = "Scale of Us",
@@ -45,6 +46,13 @@ const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageUrl} />
+    {cloudflareWebAnalyticsToken && (
+      <script
+        type="module"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cloudflareWebAnalyticsToken })}
+      ></script>
+    )}
   </head>
   <body class={bodyClass}>
     <slot />
