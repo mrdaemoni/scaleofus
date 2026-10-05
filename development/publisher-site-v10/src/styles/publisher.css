@@ -642,7 +642,7 @@ main { overflow-x:clip; }
  .publisher-identity .wordmark { font-size:34px; }
  .publisher-identity .wordmark em { font-size:28px; }
  .title-wind { width:38px; height:40px; margin-right:10px; }
- .catalogue-section .series-path { width:150px; height:145px; right:-3px; top:-60px; }
+ .catalogue-section .series-path { width:150px; height:145px; right:-3px; top:-25px; }
  .catalogue-section .section-heading { padding-right:0; padding-top:30px; min-height:140px; align-items:end; }
 }
 @media(prefers-reduced-motion:reduce) { .brand .brand-us { transform:none!important; } }
