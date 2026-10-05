@@ -1,0 +1,21 @@
+---
+import Publisher from '../layouts/Publisher.astro';
+import StoryShelf from '../components/StoryShelf.astro';
+import StoryFeature from '../components/StoryFeature.astro';
+import DrawnArt from '../components/DrawnArt.astro';
+---
+<Publisher>
+  <section class="first-book wrap" id="first-story">
+    <header class="release-heading">
+      <p class="eyebrow">INTRODUCING OUR FIRST BOOK</p>
+      <h1><DrawnArt name="n00" class="title-wind" eager />The Boy Who Tried to Catch the Wind</h1>
+      <p class="story-intro">A story about a boy, a machine, and the part of us no answer can hold.</p>
+    </header>
+    <StoryFeature />
+  </section>
+  <section class="catalogue-section wrap" id="stories">
+    <div class="section-heading"><div><p class="eyebrow">THE SERIES CONTINUES</p><h2>More to discover.</h2></div><DrawnArt name="n11" class="series-path" /></div>
+    <StoryShelf upcomingOnly />
+  </section>
+  <section class="publisher-note wrap"><DrawnArt name="n02" class="publisher-pair" /><div><p class="eyebrow">WORDS, DRAWINGS, AND THE SPACE BETWEEN</p><h2>A publisher with<br /><em>a human hand.</em></h2><p>A child can follow the boy. A grown-up can keep company with his questions. The same hand carries through every story.</p><a class="text-link" href="/about/">About Scale of Us <span aria-hidden="true">↗</span></a></div></section>
+</Publisher>

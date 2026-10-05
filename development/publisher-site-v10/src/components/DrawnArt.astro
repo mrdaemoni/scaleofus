@@ -1,0 +1,11 @@
+---
+import bookIcon from '../../../../public/images/wind-story/live/icon-book.svg?raw';
+import playIcon from '../../../../public/images/wind-story/live/icon-play.svg?raw';
+const cropSources = import.meta.glob<string>('../../../../public/images/wind-story/live/*.svg', { query:'?raw', import:'default', eager:true });
+const { name, class: className = '', crop, eager = false } = Astro.props;
+const iconMarkup = name === 'icon-book' ? bookIcon : name === 'icon-play' ? playIcon : null;
+const sourceFrame = crop ? cropSources[`../../../../public/images/wind-story/live/${name}.svg`]?.match(/viewBox="([^"]+)"/)?.[1].split(' ').map(Number) : null;
+---
+<span class={`drawn-art ${className}`} aria-hidden="true" data-publisher-art data-art-name={name} data-art-crop={crop} data-art-loaded={iconMarkup ? 'true' : undefined} data-art-frame={iconMarkup ? 'static' : undefined}>
+  {iconMarkup ? <Fragment set:html={iconMarkup} /> : sourceFrame ? <svg viewBox={crop} focusable="false" aria-hidden="true"><image href={`/images/wind-story/mobile/${name}.webp`} x={sourceFrame[0]} y={sourceFrame[1]} width={sourceFrame[2]} height={sourceFrame[3]} /></svg> : <img src={`/images/wind-story/mobile/${name}.webp`} alt="" loading={eager ? 'eager' : 'lazy'} />}
+</span>

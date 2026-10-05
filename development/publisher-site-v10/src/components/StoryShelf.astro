@@ -1,0 +1,10 @@
+---
+import { stories } from '../data/stories';
+import DrawnArt from './DrawnArt.astro';
+import DrawnButton from './DrawnButton.astro';
+import HandShape from './HandShape.astro';
+const { upcomingOnly = false } = Astro.props;
+const first = stories[0];
+---
+{!upcomingOnly && <article class="catalogue-book"><figure class="organic-photo"><HandShape /><a href={`/stories/${first.slug}/`}><img src="/edition/closed.webp" alt="The first book, bound in blue cloth with gold lettering" width="1600" height="1200" loading="lazy" /></a></figure><div><p class="eyebrow">STORY 01 · NOW IN PRINT</p><h2>{first.title}</h2><p>{first.intro}</p><p class="edition-small">Printed book · Free online reading · Immersive reading</p><DrawnButton href={`/stories/${first.slug}/`}>Discover the story</DrawnButton></div></article>}
+<ol class="future-stories" start="2">{stories.slice(1).map(story => <li class={story.color}><HandShape variant={story.number === '02' ? 'cloud' : 'leaf'} /><a href={`/stories/${story.slug}/`}><div class="future-top"><span class="eyebrow">STORY {story.number} · FORTHCOMING</span><span class="future-subject">{story.subject}</span></div><h3>{story.title}</h3><span class="text-link">Meet the next story <span aria-hidden="true">↗</span></span></a></li>)}</ol>

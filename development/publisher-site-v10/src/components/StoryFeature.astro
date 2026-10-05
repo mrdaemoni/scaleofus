@@ -1,0 +1,112 @@
+---
+import BookGallery from './BookGallery.astro';
+import DrawnArt from './DrawnArt.astro';
+import PurchaseButton from './PurchaseButton.astro';
+import { windSlug } from '../data/stories';
+import { windEdition } from '../data/edition';
+import manuscript from '../../../../src/books/the-boy-who-tried-to-catch-the-wind/the-boy-who-tried-to-catch-the-wind.md?raw';
+import timings from '../../../../src/books/the-boy-who-tried-to-catch-the-wind/story-word-timings.json';
+import { windStoryReader } from '../../../../src/books/the-boy-who-tried-to-catch-the-wind/reader';
+const passage = manuscript.split(/\n\s*\n/).find(p => p.startsWith('Once there was'))!;
+const beat = timings.beats[0];
+const words = passage.split(/\s+/);
+const cues = beat.paragraphs[0].words;
+const { purchaseHere = false } = Astro.props;
+const duration = `${Math.floor(windStoryReader.audio.duration/60)}:${String(Math.floor(windStoryReader.audio.duration%60)).padStart(2,'0')}`;
+---
+<div class="story-feature" data-story-feature>
+  <div class="story-tabs" role="tablist" aria-label="Choose a story format">
+    <button type="button" role="tab" id="book-tab" data-format="print" aria-selected="true" aria-controls="book-panel" tabindex="0"><DrawnArt name="icon-book" class="tab-art" /><span>Book</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
+    <button type="button" role="tab" id="digital-tab" data-format="digital" aria-selected="false" aria-controls="digital-panel" tabindex="-1"><DrawnArt name="icon-play" class="tab-art" /><span>Read or listen online</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
+  </div>
+  <div class="feature-panels">
+    <div class="feature-panel is-preview-active" role="tabpanel" id="book-panel" aria-labelledby="book-tab" data-format-panel="print" aria-hidden="false">
+      <div class="feature-preview"><BookGallery eager /></div>
+      <div class="feature-details">
+        <a class="text-link feature-reviews" href={`/stories/${windSlug}/#reviews`}>Reviews & reader responses →</a>
+        <div class="book-description">{windEdition.description.map(paragraph => <p>{paragraph}</p>)}</div>
+        <div id={purchaseHere ? 'purchase' : undefined}><PurchaseButton href={purchaseHere ? undefined : `/stories/${windSlug}/#purchase`} data-purchase-preview={purchaseHere ? '' : undefined}>Buy the book</PurchaseButton>
+          {purchaseHere && <><p class="subtle purchase-note">Preview · price to be confirmed.</p><div class="purchase-message" role="status" hidden><strong>A copy of your own.</strong><p>The final checkout will show the price, shipping, and available copies. This preview takes no payment.</p><a href="/help/#delivery">Purchase details →</a></div></>}
+        </div>
+      </div>
+    </div>
+    <div class="feature-panel" role="tabpanel" id="digital-panel" aria-labelledby="digital-tab" data-format-panel="digital" aria-hidden="true" inert>
+      <div class="feature-preview listening-peek">
+        <DrawnArt name="n01" class="peek-drawing" />
+        <p class="peek-passage" data-preview-passage>{words.map((word,i) => <><span data-cue-start={cues[i]?.start} data-cue-end={cues[i]?.end}>{word}</span>{' '}</>)}</p>
+        <div class="peek-playback">
+          <button type="button" class="peek-play" data-preview-play aria-label="Listen to the opening" aria-pressed="false"><span aria-hidden="true" data-play-icon>▷</span><span data-play-label>Listen to the opening</span></button>
+          <progress data-preview-progress value="0" max={beat.end-beat.start} aria-label="Opening passage playback" /><span class="peek-duration">19 sec</span>
+        </div>
+        <p class="peek-status" role="status" data-preview-status></p>
+        <audio data-preview-audio preload="none" src={windStoryReader.audio.src} data-start={beat.start} data-end={beat.end}></audio>
+      </div>
+      <div class="feature-details" id="reading">
+        <p class="feature-description">Seven chapters with live illustrations, narration, and sound. Read and listen together, or take the story at your own pace.</p>
+        <div class="digital-actions"><a href="/immerse/wind/" class="digital-action"><span>Listen to the whole story</span><small>{duration} min</small></a><a href="/read/wind/#story" class="digital-action">Read at your own pace</a></div>
+        <p class="subtle digital-language">Free, in English and Spanish.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const preview = document.querySelector<HTMLElement>('[data-story-feature]')!;
+  const tabs = [...preview.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+  const panels = [...preview.querySelectorAll<HTMLElement>('[data-format-panel]')];
+  const audio = preview.querySelector<HTMLAudioElement>('[data-preview-audio]')!;
+  const play = preview.querySelector<HTMLButtonElement>('[data-preview-play]')!;
+  const label = preview.querySelector<HTMLElement>('[data-play-label]')!;
+  const icon = preview.querySelector<HTMLElement>('[data-play-icon]')!;
+  const progress = preview.querySelector<HTMLProgressElement>('[data-preview-progress]')!;
+  const status = preview.querySelector<HTMLElement>('[data-preview-status]')!;
+  const words = [...preview.querySelectorAll<HTMLElement>('[data-cue-start]')];
+  const start = Number(audio.dataset.start), end = Number(audio.dataset.end);
+  function show(format: string) {
+    if (format !== 'digital') audio.pause();
+    panels.forEach(panel => {
+      const selected = panel.dataset.formatPanel === format;
+      panel.classList.toggle('is-preview-active',selected); panel.inert = !selected;
+      panel.setAttribute('aria-hidden',String(!selected));
+    });
+    tabs.forEach(tab => {
+      const selected = tab.dataset.format === format;
+      tab.setAttribute('aria-selected',String(selected)); tab.tabIndex = selected ? 0 : -1;
+    });
+  }
+  tabs.forEach((tab,index) => {
+    tab.addEventListener('click', () => show(tab.dataset.format!));
+    tab.addEventListener('keydown',event => {
+      let next: number;
+      if(event.key === 'ArrowRight') next = (index+1)%tabs.length;
+      else if(event.key === 'ArrowLeft') next = (index+tabs.length-1)%tabs.length;
+      else if(event.key === 'Home') next = 0;
+      else if(event.key === 'End') next = tabs.length-1;
+      else return;
+      event.preventDefault(); show(tabs[next].dataset.format!); tabs[next].focus();
+    });
+  });
+  function playbackState(playing: boolean) {
+    play.setAttribute('aria-pressed',String(playing));
+    label.textContent = playing ? 'Pause the opening' : 'Listen to the opening';
+    play.setAttribute('aria-label',label.textContent);
+    icon.textContent = playing ? 'Ⅱ' : '▷';
+  }
+  audio.addEventListener('loadedmetadata', () => { audio.currentTime = start; });
+  audio.addEventListener('play', () => playbackState(true));
+  audio.addEventListener('pause', () => { playbackState(false); words.forEach(word => word.classList.remove('is-spoken')); });
+  audio.addEventListener('ended', () => playbackState(false));
+  audio.addEventListener('timeupdate', () => {
+    const time = audio.currentTime;
+    progress.value = Math.max(0,Math.min(end-start,time-start));
+    words.forEach(word => word.classList.toggle('is-spoken',!audio.paused && time >= Number(word.dataset.cueStart) && time < Number(word.dataset.cueEnd)));
+    if(time >= end) { audio.pause(); words.forEach(word => word.classList.remove('is-spoken')); }
+  });
+  play.addEventListener('click', () => {
+    if(!audio.paused) { audio.pause(); return; }
+    status.textContent = '';
+    if(audio.readyState && (audio.currentTime < start || audio.currentTime >= end)) audio.currentTime = start;
+    void audio.play().catch(() => { playbackState(false); status.textContent = 'The preview could not play. You can still enter the full story below.'; });
+  });
+  document.addEventListener('visibilitychange', () => { if(document.hidden) audio.pause(); });
+  new IntersectionObserver(entries => { if(!entries[0].isIntersecting) audio.pause(); }).observe(preview);
+</script>

@@ -1,0 +1,10 @@
+---
+import DrawnArt from './DrawnArt.astro';
+const { href, art = 'icon-book', secondary = false, class: className = '', ...attributes } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+<Tag href={href} type={href ? undefined : 'button'} class={`button drawn-button ${secondary ? 'secondary' : ''} ${className}`} {...attributes}>
+  <svg class="button-outline" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"><path d="M7 4 Q140 1 291 5 Q298 23 294 54 Q151 58 6 54 Q2 31 7 4 Z" vector-effect="non-scaling-stroke" /></svg>
+  <DrawnArt name={art} class="button-art" crop={art === 'n06' ? '-720 1580 535 505' : undefined} />
+  <span><slot /></span>
+</Tag>

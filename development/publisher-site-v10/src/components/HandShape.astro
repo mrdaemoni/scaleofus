@@ -1,0 +1,10 @@
+---
+const { variant = 'paper', class: className = '' } = Astro.props;
+const paths = {
+  paper: 'M37 38 L117 27 Q158 20 193 29 L271 20 Q333 30 391 21 L479 31 Q541 24 558 53 L566 133 Q558 183 571 225 L558 305 Q563 359 532 367 L439 375 Q391 366 334 378 L233 369 Q190 383 127 371 L48 380 Q22 369 29 327 L20 244 Q31 201 22 158 L30 88 Q22 53 37 38 Z',
+  cloud: 'M37 74 Q55 40 111 47 Q141 24 193 38 Q236 17 283 37 Q332 20 371 43 Q441 25 461 56 Q521 41 550 89 Q577 131 554 171 Q580 209 552 257 Q570 309 518 329 Q497 361 441 354 Q391 383 345 360 Q287 378 248 360 Q188 382 142 351 Q80 362 63 326 Q17 312 35 270 Q13 226 31 193 Q14 145 39 122 Q22 98 37 74 Z',
+  leaf: 'M31 137 Q46 75 101 62 Q147 38 211 46 Q255 25 315 41 Q370 31 423 59 Q488 48 531 97 Q569 126 550 177 Q574 222 546 263 Q542 308 491 334 Q445 367 384 354 Q333 379 280 361 Q224 378 174 351 Q110 360 75 323 Q23 304 34 259 Q12 219 31 179 Q20 154 31 137 Z'
+};
+const d = paths[variant] || paths.paper;
+---
+<svg class={`hand-shape ${className}`} viewBox="0 0 590 400" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d={d} class="shape-wash" /><path d={d} class="shape-pencil" vector-effect="non-scaling-stroke" /><path d={d} class="shape-echo" transform="translate(1.7 -1.4)" vector-effect="non-scaling-stroke" /></svg>

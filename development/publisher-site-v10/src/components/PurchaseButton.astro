@@ -1,0 +1,5 @@
+---
+const { href, ...attributes } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+<Tag href={href} type={href ? undefined : 'button'} class="purchase-button" {...attributes}><slot /></Tag>

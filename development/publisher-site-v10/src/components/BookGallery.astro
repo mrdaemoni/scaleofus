@@ -1,0 +1,40 @@
+---
+import { bookPhotos } from '../data/photos';
+const { mode = 'thumbnails', eager = false } = Astro.props;
+---
+<div class={`book-gallery gallery-${mode}`} data-book-gallery role="region" aria-roledescription="carousel" aria-label="Photographs of the printed book" tabindex="0">
+  <figure>
+    <div class="photo-stage"><button class="photo-open" type="button" data-gallery-zoom aria-label="Enlarge book photograph"><img data-gallery-image src={bookPhotos[0].src} alt={bookPhotos[0].alt} width="1600" height="1200" loading={eager ? 'eager' : 'lazy'} /><span class="zoom-mark" aria-hidden="true">＋</span></button></div>
+    <figcaption class="gallery-announcement" data-gallery-caption aria-live="polite">{bookPhotos[0].label} — 1 / {bookPhotos.length}</figcaption>
+  </figure>
+  <div class="gallery-thumbs" aria-label="Choose a photograph">{bookPhotos.map((photo,index) => <button type="button" data-gallery-photo data-index={index} data-src={photo.src} data-alt={photo.alt} data-caption={photo.label} aria-label={photo.label} aria-pressed={index === 0 ? 'true' : 'false'}><img src={photo.src} alt="" width="120" height="90" loading="lazy" /></button>)}</div>
+  <dialog class="photo-dialog" aria-label="Book photograph enlarged"><button type="button" class="dialog-close" aria-label="Close enlarged photograph">Close ×</button><img alt="" /></dialog>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-book-gallery]').forEach(gallery => {
+    const photos = [...gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-photo]')];
+    const image = gallery.querySelector<HTMLImageElement>('[data-gallery-image]')!;
+    const caption = gallery.querySelector<HTMLElement>('[data-gallery-caption]')!;
+    const dialog = gallery.querySelector<HTMLDialogElement>('dialog')!;
+    let current = 0;
+    function select(index: number) {
+      current = (index + photos.length) % photos.length;
+      const photo = photos[current];
+      image.src = photo.dataset.src!; image.alt = photo.dataset.alt!;
+      caption.replaceChildren(document.createTextNode(photo.dataset.caption! + ' '));
+      const count = document.createElement('small'); count.textContent = `${current+1} / ${photos.length}`; caption.append(count);
+      photos.forEach((button,i) => button.setAttribute('aria-pressed',String(i === current)));
+    }
+    photos.forEach((button,index) => button.addEventListener('click', () => select(index)));
+    gallery.addEventListener('keydown',event => {
+      if (dialog.open || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+      event.preventDefault(); select(current+(event.key === 'ArrowRight' ? 1 : -1));
+    });
+    gallery.querySelector('[data-gallery-zoom]')!.addEventListener('click', () => {
+      const enlarged = dialog.querySelector<HTMLImageElement>('img')!;
+      enlarged.src = image.src; enlarged.alt = image.alt; dialog.showModal();
+    });
+    dialog.querySelector('.dialog-close')!.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => { if(event.target === dialog) dialog.close(); });
+  });
+</script>

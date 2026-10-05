@@ -1,0 +1,54 @@
+---
+import '@fontsource-variable/newsreader/standard.css';
+import '@fontsource-variable/newsreader/standard-italic.css';
+import '@fontsource-variable/playwrite-ie';
+import '../styles/publisher.css';
+import DrawnArt from '../components/DrawnArt.astro';
+const { title = 'Scale of Us — Stories at the human scale', description = 'Stories about being human in the age of AI. In print, online, and in immersive reading.', active = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-palette="pink">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fff5f9" />
+    <link rel="icon" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header wrap">
+      <div class="publisher-identity"><a class="wordmark brand" href="/" aria-label="Scale of Us home"><DrawnArt name="n30" class="brand-scene" eager /><span class="brand-name">Scale <em>of</em> <span class="brand-us">Us<span aria-hidden="true">.</span></span></span></a><p class="publisher-description">Stories about being human in the <span class="statement-ending">age of AI.</span></p></div>
+      <nav aria-label="Main navigation">
+        <a href="/stories/" aria-current={active === 'stories' ? 'page' : undefined}>The stories</a>
+        <a href="/about/" aria-current={active === 'about' ? 'page' : undefined}>About us</a>
+        <a class="nav-edition" href="/stories/the-boy-who-tried-to-catch-the-wind/">The printed book <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <svg class="footer-edge" viewBox="0 0 1440 65" preserveAspectRatio="none" aria-hidden="true"><path d="M0 39 L45 36 Q80 39 109 34 L187 37 Q244 26 289 31 L355 27 Q411 34 461 25 L532 30 Q590 23 647 28 L718 22 Q774 28 825 24 L891 31 Q954 25 1004 29 L1078 26 Q1135 35 1194 29 L1260 36 Q1326 28 1382 38 L1440 35 L1440 65 L0 65 Z" /></svg>
+      <div class="footer-world wrap"><p>A little world.<br /><em>Room to grow.</em></p><DrawnArt name="n51" class="footer-town" /></div>
+      <div class="wrap footer-top"><div><a class="wordmark brand" href="/" aria-label="Scale of Us home"><DrawnArt name="n30" class="brand-scene" /><span>Scale <em>of</em> <span class="brand-us">Us<span>.</span></span></span></a><p>Stories about what it means to be human.</p></div><div class="footer-links"><a href="/stories/">The stories</a><a href="/about/">The publisher</a><a href="/press/">Press & review copies</a><a href="/help/">Delivery & reader support</a></div></div>
+      <div class="wrap footer-bottom"><span>© 2026 Scale of Us</span><span>Publisher preview</span></div>
+    </footer>
+    <details class="preview-tools"><summary aria-label="Compare pastel colour palettes">Colours</summary><div class="preview-tool-panel"><p>DESIGN PREVIEW · 10</p><div class="palette-picker" role="group" aria-label="Preview pastel palettes"><button type="button" data-palette="sky" aria-pressed="false" aria-label="Pale blue palette"><span></span>Sky</button><button type="button" data-palette="pink" aria-pressed="true" aria-label="Blush pink palette"><span></span>Pink</button><button type="button" data-palette="lilac" aria-pressed="false" aria-label="Soft lilac palette"><span></span>Lilac</button></div></div></details>
+  </body>
+</html>
+<script>
+  import '../scripts/drawings';
+  const paletteButtons = [...document.querySelectorAll<HTMLButtonElement>('button[data-palette]')];
+  function applyPalette(value: string) {
+    document.documentElement.dataset.palette = value;
+    paletteButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.palette === value)));
+  }
+  // These controls compare local design proposals; no preference is transmitted.
+  try { applyPalette(sessionStorage.getItem('publisher-palette') || 'pink'); } catch { applyPalette('pink'); }
+  paletteButtons.forEach(button => button.addEventListener('click', () => {
+    applyPalette(button.dataset.palette!);
+    try { sessionStorage.setItem('publisher-palette', button.dataset.palette!); } catch { /* Palette still works without storage. */ }
+  }));
+</script>

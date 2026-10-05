@@ -1,0 +1,20 @@
+---
+const { slug } = Astro.props;
+---
+<details class="review-disclosure"><summary class="button secondary">Write a review <span aria-hidden="true">+</span></summary>
+  <form class="review-form" data-review-form data-story={slug}>
+    <p class="local-notice">LOCAL PREVIEW · Try the review flow. This draft is saved only in this browser and is never sent or published. Use example details.</p>
+    <div class="form-grid"><label>Your public name<input name="name" required maxlength="80" autocomplete="off" /></label><label>Email for verification (private)<input name="email" type="email" required maxlength="150" autocomplete="off" /><small>In this preview, your email is discarded when you save.</small></label></div>
+    <div class="form-grid"><label>Which experience did you read?<select name="format" required><option value="">Choose an experience</option><option value="print">Printed edition</option><option value="online">Online reading</option><option value="immersive">Immersive reading</option></select></label><label>How did you receive it?<select name="source" required><option value="">Choose one</option><option value="purchased">I purchased a copy</option><option value="gifted">I received a complimentary copy</option><option value="borrowed">I borrowed a copy</option><option value="free-digital">I read the free digital story</option></select></label></div>
+    <label>Any relationship to the author?<select name="relationship" required><option value="">Choose one</option><option value="none">No personal or professional relationship</option><option value="friend">Friend of the author</option><option value="family">Family member</option><option value="colleague">Colleague or collaborator</option></select></label>
+    <label>Rating (optional)<select name="rating"><option value="">Words only</option><option value="5">5 out of 5</option><option value="4">4 out of 5</option><option value="3">3 out of 5</option><option value="2">2 out of 5</option><option value="1">1 out of 5</option></select></label>
+    <label>Your review<textarea name="review" required minlength="10" maxlength="3000" rows="5"></textarea></label>
+    <label class="check-row"><input name="consent" type="checkbox" required /><span>I’ve read this story. I agree that Scale of Us may publish my review and chosen name, with my edition and any relevant relationship disclosed.</span></label>
+    <p class="form-error" role="alert" hidden></p><button class="button" type="submit">Save a local review draft</button>
+    <noscript><p>JavaScript is needed to save a local draft. No review is submitted by this preview.</p></noscript>
+  </form>
+  <div class="saved-review" aria-live="polite" hidden><p class="eyebrow">LOCAL DRAFT · AWAITING MODERATION IN THE PROPOSED FLOW</p><p data-review-label></p><blockquote data-review-text></blockquote><small>This draft is visible only in this browser. No purchase has been verified.</small><button class="text-link" type="button" data-delete-review>Delete this local draft</button></div>
+</details>
+<script>
+  import '../scripts/reviews';
+</script>

@@ -50,3 +50,10 @@ rules.
 
 Run `npm run build:pages`, commit the source changes and generated `docs/`
 folder, then push `main`. GitHub Pages publishes from `main` and `/docs`.
+
+The publisher preview is published separately at `/publisher/`. Its source lives
+in `development/publisher-site-v10/`. `npm run build:publisher` rebuilds only
+`docs/publisher/`, checks that existing production files remain unchanged, and
+reuses the current story’s artwork and audio. `build:pages` also regenerates this
+preview so future story releases preserve it. The original homepage and reading
+addresses remain in place until the publisher migration is approved.

@@ -1,0 +1,11 @@
+---
+import StoryReader from '../../../../../src/components/StoryReader.astro';
+import { windStoryBook } from '../../../../../src/books/the-boy-who-tried-to-catch-the-wind/book';
+import { spanishWindStoryBook } from '../../../../../src/books/el-nino-que-quiso-atrapar-el-viento/book';
+export function getStaticPaths(){ return [{params:{language:'wind'},props:{source:windStoryBook}},{params:{language:'es'},props:{source:spanishWindStoryBook}}]; }
+const {source} = Astro.props;
+const book = {...source,presentation:{...source.presentation,canonicalPath:Astro.url.pathname,languages:[{locale:'en',label:'EN',href:'/read/wind/'},{locale:'es',label:'ES',href:'/read/es/'}]}};
+---
+<StoryReader book={book} />
+<a class="publisher-return" href="/stories/the-boy-who-tried-to-catch-the-wind/">← Book & edition</a>
+<style>.publisher-return{position:fixed;right:35px;top:75px;z-index:20;font:10px system-ui;text-decoration:underline;text-underline-offset:4px;color:#585052}@media(max-width:700px){.publisher-return{right:20px;top:70px}}</style>

@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build && node scripts/prune-build-assets.mjs && node scripts/check-reader-build.mjs",
-    "build:pages": "npm run build && node scripts/sync-pages.mjs",
+    "build:pages": "npm run build && node scripts/sync-pages.mjs && npm run build:publisher",
     "check:reader": "node scripts/check-reader-build.mjs",
     "new:book": "node scripts/scaffold-book.mjs",
     "prepare:audio": "node scripts/prepare-book-audio.mjs",
@@ -16,7 +16,8 @@
     "render:sketches": "node scripts/render-remarkable-sketches.mjs",
     "render:mobile-drawings": "node scripts/generate-mobile-drawings.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:publisher": "node scripts/build-publisher-preview.mjs"
   },
   "dependencies": {
     "@fontsource-variable/newsreader": "^5.2.10",
