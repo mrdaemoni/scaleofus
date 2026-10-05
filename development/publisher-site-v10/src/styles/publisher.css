@@ -605,7 +605,7 @@ main { overflow-x:clip; }
 .publisher-identity { position:relative; flex:1; min-width:0; max-width:790px; padding-left:129px; min-height:100px; display:flex; flex-direction:column; justify-content:center; }
 .publisher-identity .brand-scene { position:absolute; left:0; top:0; }
 .publisher-description,.release-heading>.story-intro { font-family:var(--serif); font-size:22px; font-weight:300; line-height:1.45; letter-spacing:0; }
-.publisher-description { margin-top:7px; max-width:640px; }
+.publisher-description { margin-top:3px; max-width:640px; }
 .site-header nav { flex-shrink:0; }
 .first-book { padding-top:18px; }
 .release-heading>.eyebrow { font-size:9px; }
@@ -617,7 +617,7 @@ main { overflow-x:clip; }
  .publisher-identity { flex-basis:100%; padding-left:0; max-width:none; }
  .publisher-identity .brand-scene { position:static; }
  .publisher-description,.release-heading>.story-intro { font-size:21px; }
- .publisher-description { margin-top:10px; }
+ .publisher-description { margin-top:4px; }
  .site-header { gap:20px; padding-bottom:22px; }
  .site-header nav { gap:22px; }
  .first-book { padding-top:12px; }
@@ -628,6 +628,7 @@ main { overflow-x:clip; }
 .publisher-identity { padding-left:126px; min-height:100px; max-width:750px; }
 .publisher-identity .brand-scene { width:112px; height:100px; }
 .publisher-identity .wordmark { font-size:36px; }
+.publisher-identity .brand-name { transform:translateY(4px); }
 .publisher-identity .wordmark em { font-size:30px; }
 .brand .brand-us { display:inline-block; color:var(--heading); transform-origin:50% 80%; }
 .brand[data-brand-frame="0"] .brand-us { transform:translate(0,0) rotate(-.35deg); }
