@@ -13,21 +13,21 @@
 .publisher-identity { grid-column:span 8; padding-left:112px; min-height:96px; max-width:none; }
 .publisher-identity .brand-scene { width:96px; height:96px; }
 .wordmark,.publisher-identity .wordmark { font-size:58px; font-weight:350; }
-.brand .brand-name { display:inline-flex; align-items:baseline; gap:.08em; color:var(--heading); line-height:1; letter-spacing:-.045em; }
+.brand .brand-name { display:inline-flex; align-items:baseline; gap:.12em; color:var(--heading); line-height:1; letter-spacing:-.012em; }
 .brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
 .brand-scale>span,.brand-of>span { color:inherit; }
-/* Optical sizes account for the taller l, f, and capital U on one shared baseline. */
-.brand-scale>span:nth-child(1) { font-size:.27em; }
-.brand-scale>span:nth-child(2) { font-size:.33em; }
-.brand-scale>span:nth-child(3) { font-size:.39em; }
-.brand-scale>span:nth-child(4) { font-size:.45em; }
-.brand-scale>span:nth-child(5) { font-size:.67em; }
-.brand-of>span:nth-child(1) { font-size:.76em; }
-.brand-of>span:nth-child(2) { font-size:.66em; }
-.brand .brand-us { display:inline-flex; align-items:baseline; font-size:1em; letter-spacing:-.045em; }
+/* A gentle rise leaves the typeface’s natural proportions and word spaces intact. */
+.brand-scale>span:nth-child(1) { font-size:.42em; }
+.brand-scale>span:nth-child(2) { font-size:.46em; }
+.brand-scale>span:nth-child(3) { font-size:.50em; }
+.brand-scale>span:nth-child(4) { font-size:.54em; }
+.brand-scale>span:nth-child(5) { font-size:.60em; }
+.brand-of>span:nth-child(1) { font-size:.64em; }
+.brand-of>span:nth-child(2) { font-size:.65em; }
+.brand .brand-us { display:inline-flex; align-items:baseline; font-size:1em; letter-spacing:-.018em; }
 .brand .brand-us>span { color:inherit; }
-.brand-us>span:nth-child(1) { font-size:.82em; }
-.brand-us>span:nth-child(2) { font-size:1.2em; }
+.brand-us>span:nth-child(1) { font-size:.76em; }
+.brand-us>span:nth-child(2) { font-size:1.1em; }
 .brand-us>span:nth-child(3) { font-size:.4em; }
 .site-footer .wordmark { font-size:52px; }
 .publisher-description { margin-top:4px; font-size:21px; line-height:1.4; }
@@ -157,5 +157,6 @@
 }
 @media(max-width:360px) {
   :root { --page-gutter:16px; }
+  .publisher-identity .wordmark { font-size:48px; }
   .gallery-thumbs { gap:4px; }
 }
