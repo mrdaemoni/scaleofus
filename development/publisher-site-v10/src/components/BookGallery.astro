@@ -4,10 +4,10 @@ const { mode = 'thumbnails', eager = false } = Astro.props;
 ---
 <div class={`book-gallery gallery-${mode}`} data-book-gallery role="region" aria-roledescription="carousel" aria-label="Photographs of the printed book" tabindex="0">
   <figure>
-    <div class="photo-stage"><button class="photo-open" type="button" data-gallery-zoom aria-label="Enlarge book photograph"><img data-gallery-image src={bookPhotos[0].src} alt={bookPhotos[0].alt} width="1600" height="1200" loading={eager ? 'eager' : 'lazy'} /><span class="zoom-mark" aria-hidden="true">＋</span></button></div>
+    <div class="photo-stage"><button class="photo-open" type="button" data-gallery-zoom aria-label="Enlarge book photograph"><img data-gallery-image src={bookPhotos[0].src} alt={bookPhotos[0].alt} width="960" height="1280" loading={eager ? 'eager' : 'lazy'} /><span class="zoom-mark" aria-hidden="true">＋</span></button></div>
     <figcaption class="gallery-announcement" data-gallery-caption aria-live="polite">{bookPhotos[0].label} — 1 / {bookPhotos.length}</figcaption>
   </figure>
-  <div class="gallery-thumbs" aria-label="Choose a photograph">{bookPhotos.map((photo,index) => <button type="button" data-gallery-photo data-index={index} data-src={photo.src} data-alt={photo.alt} data-caption={photo.label} aria-label={photo.label} aria-pressed={index === 0 ? 'true' : 'false'}><img src={photo.src} alt="" width="120" height="90" loading="lazy" /></button>)}</div>
+  <div class="gallery-thumbs" aria-label="Choose a photograph">{bookPhotos.map((photo,index) => <button type="button" data-gallery-photo data-index={index} data-src={photo.src} data-alt={photo.alt} data-caption={photo.label} aria-label={photo.label} aria-pressed={index === 0 ? 'true' : 'false'}><img src={photo.thumbnail} alt="" width="120" height="160" loading="lazy" /></button>)}</div>
   <dialog class="photo-dialog" aria-label="Book photograph enlarged"><button type="button" class="dialog-close" aria-label="Close enlarged photograph">Close ×</button><img alt="" /></dialog>
 </div>
 <script>

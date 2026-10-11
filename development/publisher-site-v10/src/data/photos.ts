@@ -1,8 +1,8 @@
 export const bookPhotos = [
-  { src:'/edition/closed.webp', label:'Cover & spine', alt:'The first printed book in blue cloth with gold lettering on the cover and spine' },
-  { src:'/edition/cover.webp', label:'Cloth & lettering', alt:'A close view of the cloth texture and handwritten gold title' },
-  { src:'/edition/spread.webp', label:'Inside the story', alt:'An open illustrated spread with the boy at the top of the mountain' },
-  { src:'/edition/drawing.webp', label:'Words & drawings', alt:'The boy beside an open door, with blue endpapers visible' },
-  { src:'/edition/epigraph.webp', label:'Opening pages', alt:'The opening quotation of the printed book' },
-  { src:'/edition/detail.webp', label:'A closer look', alt:'An illustrated page showing the boy, wind, and clouds' }
+  { src:'/edition/photo-01.webp', thumbnail:'/edition/photo-01-thumb.webp', label:'Cover & spine', alt:'The blue clothbound book on a grey surface, with the handwritten title and wind motif in gold on its cover and spine' },
+  { src:'/edition/photo-02.webp', thumbnail:'/edition/photo-02-thumb.webp', label:'The wind on paper', alt:'A close view of the hand-drawn wind motif in black and pale blue on a cream page' },
+  { src:'/edition/photo-03.webp', thumbnail:'/edition/photo-03-thumb.webp', label:'Title & endpapers', alt:'The handwritten title page beside blue endpapers patterned with gold wind drawings' },
+  { src:'/edition/photo-04.webp', thumbnail:'/edition/photo-04-thumb.webp', label:'The boy & the wind', alt:'A close view of the boy carrying a bag, with the wind curling around him on an illustrated page' },
+  { src:'/edition/photo-05.webp', thumbnail:'/edition/photo-05-thumb.webp', label:'Words & drawings', alt:'Page 37 of the book, pairing the story text with hand-drawn illustrations of the boy and the machine’s card' },
+  { src:'/edition/photo-06.webp', thumbnail:'/edition/photo-06-thumb.webp', label:'Cloth & endpapers', alt:'A close view of blue cloth binding and blue endpapers printed with gold wind motifs' }
 ];
