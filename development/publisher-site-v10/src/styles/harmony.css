@@ -14,16 +14,21 @@
 .publisher-identity .brand-scene { width:96px; height:96px; }
 .wordmark,.publisher-identity .wordmark { font-size:58px; font-weight:350; }
 .brand .brand-name { display:inline-flex; align-items:baseline; gap:.08em; color:var(--heading); line-height:1; letter-spacing:-.045em; }
-.brand-scale { display:inline-flex; align-items:baseline; color:inherit!important; }
-.brand-scale>span { color:inherit; }
-.brand-scale>span:nth-child(1) { font-size:.40em; }
-.brand-scale>span:nth-child(2) { font-size:.45em; }
-.brand-scale>span:nth-child(3) { font-size:.50em; }
-.brand-scale>span:nth-child(4) { font-size:.55em; }
-.brand-scale>span:nth-child(5) { font-size:.60em; }
-.brand .brand-name em,.publisher-identity .brand-name em { font-size:.66em; font-weight:350; }
-.brand .brand-us { font-size:1em; letter-spacing:-.055em; }
+.brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
+.brand-scale>span,.brand-of>span { color:inherit; }
+/* Optical sizes account for the taller l, f, and capital U on one shared baseline. */
+.brand-scale>span:nth-child(1) { font-size:.27em; }
+.brand-scale>span:nth-child(2) { font-size:.33em; }
+.brand-scale>span:nth-child(3) { font-size:.39em; }
+.brand-scale>span:nth-child(4) { font-size:.45em; }
+.brand-scale>span:nth-child(5) { font-size:.67em; }
+.brand-of>span:nth-child(1) { font-size:.76em; }
+.brand-of>span:nth-child(2) { font-size:.66em; }
+.brand .brand-us { display:inline-flex; align-items:baseline; font-size:1em; letter-spacing:-.045em; }
 .brand .brand-us>span { color:inherit; }
+.brand-us>span:nth-child(1) { font-size:.82em; }
+.brand-us>span:nth-child(2) { font-size:1.2em; }
+.brand-us>span:nth-child(3) { font-size:.4em; }
 .site-footer .wordmark { font-size:52px; }
 .publisher-description { margin-top:4px; font-size:21px; line-height:1.4; }
 .site-header nav { grid-column:span 4; width:auto; max-width:none; justify-content:flex-end; gap:24px; }
@@ -102,9 +107,8 @@
   .site-header { position:relative; padding-block:16px 24px; gap:24px; }
   .publisher-identity { padding-left:0; min-height:0; }
   .publisher-identity .brand-scene { position:static; width:80px; height:80px; }
-  .publisher-identity .brand { gap:16px; width:fit-content; }
+  .publisher-identity .brand { gap:12px; width:fit-content; }
   .publisher-identity .wordmark { font-size:54px; }
-  .publisher-identity .brand-name em { font-size:.66em; }
   .publisher-description { margin-top:8px; font-size:21px; line-height:1.4; }
   .site-header nav { position:absolute; top:34px; right:0; width:max-content; font-size:11px; }
   .site-header nav>a { display:inline-flex; align-items:center; min-height:44px; }
