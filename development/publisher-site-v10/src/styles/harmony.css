@@ -23,7 +23,7 @@
 .brand-scale>span:nth-child(4) { font-size:.52em; }
 .brand-scale>span:nth-child(5) { font-size:.59em; }
 .brand-of>span:nth-child(1) { font-size:.66em; }
-.brand-of>span:nth-child(2) { font-size:.73em; }
+.brand-of>span:nth-child(2) { font-size:.66em; }
 .brand .brand-us { display:inline-flex; align-items:baseline; transform:none; font-size:1em; letter-spacing:-.018em; }
 .brand .brand-us>span { color:inherit; }
 .brand-us>span:nth-child(1) { font-size:.81em; }
