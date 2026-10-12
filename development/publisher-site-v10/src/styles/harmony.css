@@ -16,18 +16,18 @@
 .brand .brand-name { display:inline-flex; align-items:baseline; gap:.115em; color:var(--heading); font-weight:340; line-height:1; letter-spacing:-.008em; }
 .brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
 .brand-scale>span,.brand-of>span { color:inherit; }
-/* A restrained rise, with optical spacing between the three words. */
-.brand-scale>span:nth-child(1) { font-size:.43em; }
-.brand-scale>span:nth-child(2) { font-size:.47em; }
-.brand-scale>span:nth-child(3) { font-size:.51em; }
-.brand-scale>span:nth-child(4) { font-size:.55em; }
-.brand-scale>span:nth-child(5) { font-size:.61em; }
-.brand-of>span:nth-child(1) { font-size:.65em; }
-.brand-of>span:nth-child(2) { font-size:.66em; }
+/* Shared capital heights let the rise progress evenly across all three words. */
+.brand-scale>span:nth-child(1) { font-size:.34em; }
+.brand-scale>span:nth-child(2) { font-size:.40em; }
+.brand-scale>span:nth-child(3) { font-size:.46em; }
+.brand-scale>span:nth-child(4) { font-size:.52em; }
+.brand-scale>span:nth-child(5) { font-size:.59em; }
+.brand-of>span:nth-child(1) { font-size:.66em; }
+.brand-of>span:nth-child(2) { font-size:.73em; }
 .brand .brand-us { display:inline-flex; align-items:baseline; transform:none; font-size:1em; letter-spacing:-.018em; }
 .brand .brand-us>span { color:inherit; }
-.brand-us>span:nth-child(1) { font-size:.78em; }
-.brand-us>span:nth-child(2) { font-size:1.08em; margin-left:-.012em; }
+.brand-us>span:nth-child(1) { font-size:.81em; }
+.brand-us>span:nth-child(2) { font-size:.90em; margin-left:-.012em; }
 .brand-us>span:nth-child(3) { font-size:.36em; margin-left:.035em; }
 .site-footer .wordmark { font-size:52px; }
 .publisher-description { margin-top:4px; font-size:21px; line-height:1.4; }
@@ -108,7 +108,7 @@
   .publisher-identity { padding-left:0; min-height:0; }
   .publisher-identity .brand-scene { position:static; width:80px; height:80px; }
   .publisher-identity .brand { gap:12px; width:fit-content; }
-  .publisher-identity .wordmark { font-size:54px; }
+  .publisher-identity .wordmark { font-size:clamp(40px,calc(20vw - 24px),54px); }
   .publisher-description { margin-top:8px; font-size:21px; line-height:1.4; }
   .site-header nav { position:absolute; top:34px; right:0; width:max-content; font-size:11px; }
   .site-header nav>a { display:inline-flex; align-items:center; min-height:44px; }
