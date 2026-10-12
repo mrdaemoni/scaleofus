@@ -6,19 +6,13 @@ const active = new Set<HTMLElement>();
 const cache = new Map<string, Promise<string>>();
 let frame = 0;
 let timer: number | undefined;
-function syncWordmark(node: HTMLElement) {
-  if(node.classList.contains('brand-scene')) {
-    const brand = node.closest<HTMLElement>('.brand');
-    if(brand) brand.dataset.brandFrame = node.dataset.artFrame;
-  }
-}
 function updateMotion() {
   if (timer) window.clearInterval(timer);
   timer = undefined;
   if (reduced.matches || document.hidden || !active.size) return;
   timer = window.setInterval(() => {
     frame = (frame + 1) % 3;
-    active.forEach(node => { node.dataset.artFrame = String(frame); syncWordmark(node); });
+    active.forEach(node => { node.dataset.artFrame = String(frame); });
   }, 180);
 }
 async function load(node: HTMLElement) {
@@ -39,7 +33,7 @@ async function load(node: HTMLElement) {
     svg.setAttribute('aria-hidden', 'true');
     node.replaceChildren(svg);
     node.dataset.artLoaded = 'true';
-    node.dataset.artFrame = reduced.matches ? 'static' : String(frame); syncWordmark(node);
+    node.dataset.artFrame = reduced.matches ? 'static' : String(frame);
   } catch {
     // The original lightweight image remains if a drawing cannot load.
     delete node.dataset.artLoaded;
@@ -56,7 +50,7 @@ const observer = new IntersectionObserver(entries => {
 }, { rootMargin: '40px', threshold: 0.02 });
 art.forEach(node => observer.observe(node));
 reduced.addEventListener('change', () => {
-  art.forEach(node => { node.dataset.artFrame = reduced.matches ? 'static' : String(frame); syncWordmark(node); });
+  art.forEach(node => { node.dataset.artFrame = reduced.matches ? 'static' : String(frame); });
   updateMotion();
 });
 document.addEventListener('visibilitychange', updateMotion);

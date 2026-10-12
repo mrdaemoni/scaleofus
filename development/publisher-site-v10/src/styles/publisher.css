@@ -624,16 +624,12 @@ main { overflow-x:clip; }
  .book-description { font-size:22px; }
 }
 
-/* The mark shares the drawing’s quiet frame changes. */
+/* The publisher identity and story illustrations. */
 .publisher-identity { padding-left:126px; min-height:100px; max-width:750px; }
 .publisher-identity .brand-scene { width:112px; height:100px; }
 .publisher-identity .wordmark { font-size:36px; }
 .publisher-identity .brand-name { transform:translateY(4px); }
 .publisher-identity .wordmark em { font-size:30px; }
-.brand .brand-us { display:inline-block; color:var(--heading); transform-origin:50% 80%; }
-.brand[data-brand-frame="0"] .brand-us { transform:translate(0,0) rotate(-.35deg); }
-.brand[data-brand-frame="1"] .brand-us { transform:translate(.35px,-.3px) rotate(.25deg); }
-.brand[data-brand-frame="2"] .brand-us { transform:translate(-.3px,.2px) rotate(-.1deg); }
 .title-wind { display:inline-block; width:55px; height:56px; margin-right:18px; vertical-align:middle; }
 .catalogue-section .series-path { position:absolute; right:0; top:-68px; width:265px; height:200px; }
 .catalogue-section .section-heading { padding-right:295px; min-height:100px; }
@@ -646,4 +642,3 @@ main { overflow-x:clip; }
  .catalogue-section .series-path { width:150px; height:145px; right:-3px; top:-25px; }
  .catalogue-section .section-heading { padding-right:0; padding-top:30px; min-height:140px; align-items:end; }
 }
-@media(prefers-reduced-motion:reduce) { .brand .brand-us { transform:none!important; } }

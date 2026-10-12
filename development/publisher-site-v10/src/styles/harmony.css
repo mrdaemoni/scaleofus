@@ -13,22 +13,8 @@
 .publisher-identity { grid-column:span 8; padding-left:112px; min-height:96px; max-width:none; }
 .publisher-identity .brand-scene { width:96px; height:96px; }
 .wordmark,.publisher-identity .wordmark { font-size:58px; font-weight:350; }
-.brand .brand-name { display:inline-flex; align-items:baseline; gap:.12em; color:var(--heading); line-height:1; letter-spacing:-.012em; }
-.brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
-.brand-scale>span,.brand-of>span { color:inherit; }
-/* A gentle rise leaves the typeface’s natural proportions and word spaces intact. */
-.brand-scale>span:nth-child(1) { font-size:.42em; }
-.brand-scale>span:nth-child(2) { font-size:.46em; }
-.brand-scale>span:nth-child(3) { font-size:.50em; }
-.brand-scale>span:nth-child(4) { font-size:.54em; }
-.brand-scale>span:nth-child(5) { font-size:.60em; }
-.brand-of>span:nth-child(1) { font-size:.64em; }
-.brand-of>span:nth-child(2) { font-size:.65em; }
-.brand .brand-us { display:inline-flex; align-items:baseline; font-size:1em; letter-spacing:-.018em; }
-.brand .brand-us>span { color:inherit; }
-.brand-us>span:nth-child(1) { font-size:.76em; }
-.brand-us>span:nth-child(2) { font-size:1.1em; }
-.brand-us>span:nth-child(3) { font-size:.4em; }
+.brand .brand-name { display:block; width:3.3em; color:var(--heading); line-height:0; }
+.brand-name>svg { display:block; width:100%; height:auto; overflow:visible; }
 .site-footer .wordmark { font-size:52px; }
 .publisher-description { margin-top:4px; font-size:21px; line-height:1.4; }
 .site-header nav { grid-column:span 4; width:auto; max-width:none; justify-content:flex-end; gap:24px; }
@@ -109,6 +95,7 @@
   .publisher-identity .brand-scene { position:static; width:80px; height:80px; }
   .publisher-identity .brand { gap:12px; width:fit-content; }
   .publisher-identity .wordmark { font-size:54px; }
+  .publisher-identity .brand-name { width:3.4em; }
   .publisher-description { margin-top:8px; font-size:21px; line-height:1.4; }
   .site-header nav { position:absolute; top:34px; right:0; width:max-content; font-size:11px; }
   .site-header nav>a { display:inline-flex; align-items:center; min-height:44px; }
@@ -158,5 +145,6 @@
 @media(max-width:360px) {
   :root { --page-gutter:16px; }
   .publisher-identity .wordmark { font-size:48px; }
+  .publisher-identity .brand-name { width:2.9em; }
   .gallery-thumbs { gap:4px; }
 }
