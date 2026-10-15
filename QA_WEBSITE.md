@@ -127,3 +127,28 @@ footer destinations, touch target, horizontal overflow and page errors. All
 1,733 local HTML/CSS references pass. Screenshots were visually inspected.
 Evidence: `development/publisher-site-v10/proof/about-and-horizon/` (ignored).
 These changes and the preceding bilingual-entry revision remain unpublished.
+
+## Follow-up: perspective and source notes (local, awaiting publication)
+
+The repeated footer logo/tagline block is removed. The horizon caption now reads
+“Scale for humans. A wider view.” The homepage publisher section introduces
+“A publishing house for human questions.” About explains scale as gaining
+perspective and a reread as a chance to see a question differently.
+
+A numbered source reference follows “thinkers and philosophers.” A small note
+after the final paragraph identifies six authors/works already listed in the
+first story’s canonical reading notes: Alfred Korzybski, Martin Buber, Michael
+Polanyi, Zhuangzi, Simone Weil, and T. S. Eliot. The note explicitly names the
+first story, links to the full notes, and provides a return link. It does not
+claim these sources for unpublished stories. Hector’s writing skill was applied.
+
+Root and `/publisher/` share these changes. The header wordmark and existing
+story/artwork remain intact. The color boundary remains free of an outline.
+
+Validation: `npm run build:pages` passed all reader budgets. Twelve browser
+cases cover home/About, root/publisher, and 320/390/1440px layouts. Keyboard
+source/reference navigation, source text, both full-reading-note destinations,
+footer links and overflow passed. All 1,703 local references pass, as does
+`git diff --check`. Screenshots were visually reviewed. Evidence is saved in
+`development/publisher-site-v10/proof/publisher-perspective/` (ignored).
+This revision has not been pushed or deployed.

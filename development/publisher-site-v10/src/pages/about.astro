@@ -1,7 +1,7 @@
 ---
 import Publisher from '../layouts/Publisher.astro';
 import DrawnArt from '../components/DrawnArt.astro';
-// Thesis: accessible stories can help us find our bearings as we learn to live with AI.
+// Thesis: scale means gaining perspective through accessible stories about human questions.
 ---
 <Publisher title="About Scale of Us" description="A publishing house bringing ideas from thinkers and philosophers into illustrated stories about being human in the age of AI." active="about">
   <section class="about-simple wrap" id="beginning">
@@ -12,8 +12,13 @@ import DrawnArt from '../components/DrawnArt.astro';
     <div class="about-body">
       <div class="about-copy" id="creator">
         <p>We’re learning to live with AI. We need stories that help us find our bearings: who we are, what matters to us, and how we live together.</p>
-        <p>Scale of Us is a publishing house built around those questions. We bring ideas from thinkers and philosophers across time into illustrated stories anyone can read.</p>
-        <p id="formats">You can follow a boy trying to catch the wind, or sit with his question to a machine: Who am I? We hope each reading gives you something new to notice in your own life.</p>
+        <p>Scale of Us is a publishing house built around those questions. We bring ideas from thinkers and philosophers<sup><a class="about-source-ref" href="#about-source-1" id="about-source-ref-1" role="doc-noteref" aria-label="Source 1: reading behind the first story">1</a></sup> across time into illustrated stories anyone can read.</p>
+        <p id="formats">For us, scale means gaining perspective. A boy’s question to a machine can become a question about your own life. Each reading is a chance to see it differently.</p>
+        <aside class="about-sources" aria-label="Sources" role="doc-endnotes">
+          <ol>
+            <li id="about-source-1" tabindex="-1">The reading notes for <em>The Boy Who Tried to Catch the Wind</em> include Alfred Korzybski (<em>Science and Sanity</em>), Martin Buber (<em>I and Thou</em>), Michael Polanyi (<em>The Tacit Dimension</em>), Zhuangzi, Simone Weil (<em>Waiting for God</em>), and T. S. Eliot (<em>Four Quartets</em>). <a href="/read/wind/#grown-ups">See the full reading notes</a>. <a href="#about-source-ref-1" role="doc-backlink" aria-label="Back to source reference 1">↩</a></li>
+          </ol>
+        </aside>
       </div>
       <DrawnArt name="n09" class="about-inquiry" eager />
     </div>
