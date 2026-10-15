@@ -16,18 +16,20 @@
 .brand .brand-name { display:inline-flex; align-items:baseline; gap:.115em; color:var(--heading); font-weight:340; line-height:1; letter-spacing:-.008em; }
 .brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
 .brand-scale>span,.brand-of>span { color:inherit; }
-/* Shared capital heights let the rise progress evenly across all three words. */
-.brand-scale>span:nth-child(1) { font-size:.34em; }
-.brand-scale>span:nth-child(2) { font-size:.40em; }
-.brand-scale>span:nth-child(3) { font-size:.46em; }
-.brand-scale>span:nth-child(4) { font-size:.52em; }
-.brand-scale>span:nth-child(5) { font-size:.59em; }
-.brand-of>span:nth-child(1) { font-size:.66em; }
-.brand-of>span:nth-child(2) { font-size:.66em; }
+.brand-scale { transform:translateY(-.06em); }
+.brand-of { transform:translateY(-.03em); }
+/* Smaller words recede toward the left; US comes forward at full scale. */
+.brand-scale>span:nth-child(1) { font-size:.23em; }
+.brand-scale>span:nth-child(2) { font-size:.275em; }
+.brand-scale>span:nth-child(3) { font-size:.32em; }
+.brand-scale>span:nth-child(4) { font-size:.365em; }
+.brand-scale>span:nth-child(5) { font-size:.41em; }
+.brand-of>span:nth-child(1) { font-size:.49em; }
+.brand-of>span:nth-child(2) { font-size:.49em; }
 .brand .brand-us { display:inline-flex; align-items:baseline; transform:none; font-size:1em; letter-spacing:-.018em; }
 .brand .brand-us>span { color:inherit; }
-.brand-us>span:nth-child(1) { font-size:.81em; }
-.brand-us>span:nth-child(2) { font-size:.90em; margin-left:-.012em; }
+.brand-us>span:nth-child(1) { font-size:1em; }
+.brand-us>span:nth-child(2) { font-size:1.12em; margin-left:-.012em; }
 .brand-us>span:nth-child(3) { font-size:.36em; margin-left:.035em; }
 .site-footer .wordmark { font-size:52px; }
 .publisher-description { margin-top:4px; font-size:21px; line-height:1.4; }
