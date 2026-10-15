@@ -1,3 +1,4 @@
+import { windArtworkDescriptions } from "../the-boy-who-tried-to-catch-the-wind/artwork-descriptions";
 import storyMarkdown from "./the-boy-who-tried-to-catch-the-wind.md?raw";
 import storyHeadingTimings from "./story-heading-timings.json";
 import storyTimings from "./story-timings.json";
@@ -11,11 +12,12 @@ export const windStoryBook = {
   locale: "en",
   reader: windStoryReader,
   manuscript: storyMarkdown,
+  artworkDescriptions: windArtworkDescriptions.en,
   beatTimings: storyTimings,
   headingTimings: storyHeadingTimings,
   wordTimings: storyWordTimings,
   presentation: {
-    canonicalPath: "/",
+    canonicalPath: "/books/the-boy-who-tried-to-catch-the-wind/",
     socialImage: "/images/wind-story/og-wind-drawing-01.png",
     socialImageWidth: 1200,
     socialImageHeight: 630,
@@ -26,7 +28,7 @@ export const windStoryBook = {
       homeLabel: "The Boy Who Tried to Catch the Wind",
     },
     languages: [
-      { locale: "en", label: "EN", href: "/" },
+      { locale: "en", label: "EN", href: "/books/the-boy-who-tried-to-catch-the-wind/" },
       { locale: "es", label: "ES", href: "/es/" },
     ],
     chapterPalettes: [

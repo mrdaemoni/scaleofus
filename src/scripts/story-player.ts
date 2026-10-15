@@ -1,9 +1,18 @@
 const app = document.querySelector<HTMLElement>("[data-story-app]");
+const spanish = app?.dataset.readerLocale === "es";
+const playerText = {
+  play: spanish ? "Reproducir narración" : "Play narration",
+  pause: spanish ? "Pausar narración" : "Pause narration",
+  resume: spanish ? "Reanudar narración" : "Resume narration",
+  expand: spanish ? "Ampliar controles" : "Expand story controls",
+  minimize: spanish ? "Minimizar controles" : "Minimize story controls",
+  following: spanish ? "Siguiendo el viento" : "Following the wind",
+};
 const chapterLabel = app?.dataset.readerChapterLabel ?? "Chapter";
 const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
 const dock = document.querySelector<HTMLElement>("[data-audio-dock]");
 const dockChapterNav = document.querySelector<HTMLElement>(".dock-chapters");
-const playButtons = document.querySelectorAll<HTMLButtonElement>("[data-play], [data-hero-play]");
+const playButtons = document.querySelectorAll<HTMLButtonElement>("[data-play], [data-hero-play], [data-reader-listen]");
 const readModeTriggers = document.querySelectorAll<HTMLAnchorElement>("[data-reader-read]");
 const dockPlay = document.querySelector<HTMLButtonElement>("[data-play]");
 const playIcon = document.querySelector<HTMLElement>("[data-play-icon]");
@@ -475,9 +484,15 @@ const clearFittedBeatStyles = () => {
 };
 
 const setReadingCompassVisible = (visible: boolean) => {
+  if (!visible && readerMode === "read" && (mobileSafeReader.matches || readingCompass?.contains(document.activeElement))) return;
   readingCompass?.classList.toggle("is-visible", visible);
   readingCompass?.setAttribute("aria-hidden", String(!visible));
+  if (readingCompass) readingCompass.inert = !visible;
 };
+
+readingCompass?.addEventListener("focusin", () => {
+  if (readingCompassHideTimer) window.clearTimeout(readingCompassHideTimer);
+});
 
 const showReadingCompass = (duration = 2600) => {
   if (readerMode !== "read") return;
@@ -485,7 +500,7 @@ const showReadingCompass = (duration = 2600) => {
   if (readingCompassHideTimer) window.clearTimeout(readingCompassHideTimer);
   readingCompassHideTimer = window.setTimeout(() => {
     readingCompassHideTimer = 0;
-    setReadingCompassVisible(false);
+    if (!readingCompass?.contains(document.activeElement)) setReadingCompassVisible(false);
   }, duration);
 };
 
@@ -1083,7 +1098,7 @@ const updatePlayState = () => {
   if (playIcon) playIcon.textContent = mediaIsBuffering ? "↻" : playing ? "❚❚" : "▶";
   dockPlay?.setAttribute(
     "aria-label",
-    mediaIsBuffering ? "Resume narration" : playing ? "Pause narration" : "Play narration",
+    mediaIsBuffering ? playerText.resume : playing ? playerText.pause : playerText.play,
   );
 };
 
@@ -1111,6 +1126,9 @@ const togglePlayback = async (event?: Event) => {
   void loadStoryAtmosphere();
   const trigger = event?.currentTarget as HTMLElement | null;
   if (trigger?.hasAttribute("data-hero-play")) wakeCoverWind();
+  // Capture intent before mobile listening switches to a fixed stage at scrollY 0.
+  // The dock always resumes the selected media time; only Listen on the cover restarts.
+  const startsFromCover = Boolean(trigger?.hasAttribute("data-hero-play"));
   setReaderMode("listen");
   if (!audio.paused && mediaIsBuffering) {
     releaseScrollToNarration();
@@ -1125,10 +1143,6 @@ const togglePlayback = async (event?: Event) => {
     return;
   }
   if (audio.paused) {
-    const startsFromCover = Boolean(
-      trigger?.hasAttribute("data-hero-play")
-      || scrollY <= Math.min(innerHeight * 0.3, 240),
-    );
     if (manualScrollActive && !startsFromCover) {
       autoScrollActive = false;
       autoScrollTarget = -1;
@@ -1182,7 +1196,7 @@ const setDockCompact = (compact: boolean) => {
   if ((dock?.classList.contains("is-compact") ?? false) === compact) return;
   dock?.classList.toggle("is-compact", compact);
   collapse?.setAttribute("aria-expanded", String(!compact));
-  collapse?.setAttribute("aria-label", compact ? "Expand story controls" : "Minimize story controls");
+  collapse?.setAttribute("aria-label", compact ? playerText.expand : playerText.minimize);
   if (collapse) collapse.textContent = compact ? "⌃" : "⌄";
   queueViewportFit();
 };
@@ -1288,6 +1302,7 @@ const beginManualScroll = (event: Event) => {
 
 const updateCinematicMotion = () => {
   cinematicFrame = 0;
+  if (reducedMotion.matches) return;
   cinematicFrames.forEach((frame, index) => {
     const rect = frame.getBoundingClientRect();
     if (rect.bottom < -innerHeight * 0.35 || rect.top > innerHeight * 1.35) return;
@@ -1301,7 +1316,7 @@ const updateCinematicMotion = () => {
 };
 
 const requestCinematicMotion = () => {
-  if (!desktopReader.matches) return;
+  if (!desktopReader.matches || reducedMotion.matches) return;
   if (!cinematicFrame) cinematicFrame = requestAnimationFrame(updateCinematicMotion);
 };
 
@@ -1329,6 +1344,8 @@ const goToReadingChapter = (index: number) => {
   autoScrollActive = false;
   autoScrollTarget = -1;
   setChapter(index);
+  // A chapter chosen while reading is also the next listening position.
+  if (audio) requestMediaSeek(chapter.start + 0.02);
   history.replaceState(null, "", `#${chapter.id}`);
   element.querySelector<HTMLElement>("[data-chapter-heading]")?.scrollIntoView({
     behavior: reducedMotion.matches || !desktopReader.matches ? "auto" : "smooth",
@@ -1342,7 +1359,7 @@ const setChapterSeekBusy = (busy: boolean, index = -1) => {
   dock?.classList.toggle("is-seeking", busy);
   dock?.setAttribute("aria-busy", String(busy));
   if (dock) {
-    if (busy && index >= 0) dock.dataset.seekLabel = `Following the wind · Chapter ${index + 1}`;
+    if (busy && index >= 0) dock.dataset.seekLabel = `${playerText.following} · ${chapterLabel} ${index + 1}`;
     else delete dock.dataset.seekLabel;
   }
   if (busy) {

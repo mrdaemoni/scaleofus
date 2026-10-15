@@ -17,8 +17,8 @@ This creates `src/books/a-lowercase-slug/` and registers it in
 - build-time story validation
 - the shared reading and listening experience
 
-The root route remains the special entrance for *The Boy Who Tried to Catch
-the Wind*. Future books use their `/books/<slug>/` route.
+The root route is the publisher landing page. Readers use `/books/<slug>/`;
+the first book also retains its publisher reading and immersive routes.
 
 ## Book folder contract
 
@@ -29,7 +29,9 @@ Each book folder contains:
 - `story-timings.json`: the start and end of each reading beat
 - `story-word-timings.json`: word-level narration timing
 - `story-heading-timings.json`: spoken cover and chapter-title timing
-- `book.ts`: assembles the files and presentation metadata
+- `book.ts`: assembles the files and presentation metadata, with optional
+  `artworkDescriptions` providing one finished-art description per beat in the
+  edition’s language. Authoring prompts remain separate from published alt text.
 
 The manuscript uses `## Chapter …` headings and
 `**Drawing 1 — description**` markers. Each drawing marker starts one reading

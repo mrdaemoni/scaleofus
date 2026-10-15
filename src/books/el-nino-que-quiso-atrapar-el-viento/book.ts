@@ -1,3 +1,4 @@
+import { windArtworkDescriptions } from "../the-boy-who-tried-to-catch-the-wind/artwork-descriptions";
 import storyMarkdown from "./el-nino-que-quiso-atrapar-el-viento.md?raw";
 import storyHeadingTimings from "./story-heading-timings.json";
 import storyTimings from "./story-timings.json";
@@ -56,6 +57,7 @@ export const spanishWindStoryBook = {
   locale: "es",
   reader: spanishReader,
   manuscript: storyMarkdown,
+  artworkDescriptions: windArtworkDescriptions.es,
   // The Spanish narration has its own timing pass while retaining the English
   // edition's artwork and stable drawing numbers.
   beatTimings: storyTimings,
@@ -73,7 +75,7 @@ export const spanishWindStoryBook = {
       homeLabel: "El niño que quiso atrapar el viento",
     },
     languages: [
-      { locale: "en", label: "EN", href: "/" },
+      { locale: "en", label: "EN", href: "/books/the-boy-who-tried-to-catch-the-wind/" },
       { locale: "es", label: "ES", href: "/es/" },
     ],
     ui: {

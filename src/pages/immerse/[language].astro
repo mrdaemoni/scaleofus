@@ -1,0 +1,5 @@
+---
+import Page, { getStaticPaths as paths } from "../../../development/publisher-site-v10/src/pages/immerse/[language].astro";
+export const getStaticPaths = paths;
+---
+<Page {...Astro.props} />

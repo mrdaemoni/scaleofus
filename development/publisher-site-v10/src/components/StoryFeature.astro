@@ -15,9 +15,11 @@ const { purchaseHere = false } = Astro.props;
 const duration = `${Math.floor(windStoryReader.audio.duration/60)}:${String(Math.floor(windStoryReader.audio.duration%60)).padStart(2,'0')}`;
 ---
 <div class="story-feature" data-story-feature>
-  <div class="story-tabs" role="tablist" aria-label="Choose a story format">
+  <div class="story-format-actions"><div class="story-tabs" role="tablist" aria-label="Choose a story format">
     <button type="button" role="tab" id="book-tab" data-format="print" aria-selected="true" aria-controls="book-panel" tabindex="0"><DrawnArt name="icon-book" class="tab-art" /><span>Book</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
     <button type="button" role="tab" id="digital-tab" data-format="digital" aria-selected="false" aria-controls="digital-panel" tabindex="-1"><DrawnArt name="icon-play" class="tab-art" /><span>Read or listen online</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
+  </div>
+    <a class="spanish-reader-link" href="/immerse/es/" lang="es">Lee o escucha en línea</a>
   </div>
   <div class="feature-panels">
     <div class="feature-panel is-preview-active" role="tabpanel" id="book-panel" aria-labelledby="book-tab" data-format-panel="print" aria-hidden="false">

@@ -1,8 +1,10 @@
 # Scale of Us publisher preview 10
 
-The publisher preview is isolated at https://scaleofus.com/publisher/.
+The publisher preview remains at https://scaleofus.com/publisher/. The main site
+now reuses these pages at the root, retaining the preview and all reader URLs.
 Versions 01–09 remain preserved locally. The original drawings, manuscripts,
-timings, audio, production homepage, and reading addresses remain unchanged.
+timings, audio, and reading addresses remain unchanged. The former root reader is available at
+`/books/the-boy-who-tried-to-catch-the-wind/`, including forwarded root fragments.
 
 ## Development and publication
 
@@ -14,7 +16,7 @@ production paths. Original production files are checked byte for byte before
 and after packaging. The usual `build:pages` command preserves this preview.
 
 GitHub Pages publishes the committed `docs/` folder from main. This preview adds
-only a separate section. It does not migrate or redirect the original story.
+only a separate section. Root story fragments forward to the English book reader.
 
 ## Design changes
 

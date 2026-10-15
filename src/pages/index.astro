@@ -1,6 +1,14 @@
 ---
-import StoryReader from "../components/StoryReader.astro";
-import { windStoryBook } from "../books/the-boy-who-tried-to-catch-the-wind/book";
+import PublisherHome from "../../development/publisher-site-v10/src/pages/index.astro";
 ---
-
-<StoryReader book={windStoryBook} />
+<PublisherHome />
+<script is:inline>
+  // Preserve bookmarks to the former root reader, including their query string.
+  const preserveReaderLink = () => {
+    if (/^#(?:chapter-|beat-|story(?:$|-)|grown-ups$|top$)/.test(location.hash)) {
+      location.replace('/books/the-boy-who-tried-to-catch-the-wind/' + location.search + location.hash);
+    }
+  };
+  preserveReaderLink();
+  addEventListener('hashchange', preserveReaderLink);
+</script>

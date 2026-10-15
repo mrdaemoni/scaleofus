@@ -55,5 +55,11 @@ The publisher preview is published separately at `/publisher/`. Its source lives
 in `development/publisher-site-v10/`. `npm run build:publisher` rebuilds only
 `docs/publisher/`, checks that existing production files remain unchanged, and
 reuses the current story’s artwork and audio. `build:pages` also regenerates this
-preview so future story releases preserve it. The original homepage and reading
-addresses remain in place until the publisher migration is approved.
+preview so future story releases preserve it. The root homepage shares the publisher design and links to reading as a secondary
+experience. `/publisher/`, `/publisher/read/{wind,es}/`, and
+`/publisher/immerse/{wind,es}/` remain available. The former English root reader
+lives at `/books/the-boy-who-tried-to-catch-the-wind/`; old root chapter, beat,
+and story fragment links forward there. `/es/`, `/library/`, and `/grown-ups/`
+remain available. Root publisher routes reuse the v10 source, and `public/edition`
+and `public/press` link to its existing assets. See [QA_WEBSITE.md](./QA_WEBSITE.md)
+for local validation and the publication boundary.

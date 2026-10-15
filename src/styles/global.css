@@ -4465,3 +4465,21 @@ body.story-page[data-staged-listener][data-reader-mode="listen"] .story-beat.is-
     animation: none;
   }
 }
+
+/* Reader navigation and player controls remain usable by touch and keyboard. */
+.reader-skip-link { position:fixed; z-index:200; top:8px; left:8px; padding:12px 18px; background:var(--paper); color:var(--ink); transform:translateY(-160%); }
+.reader-skip-link:focus { transform:none; }
+.story-page :is(a,button,input):focus-visible { outline:2px solid currentColor; outline-offset:4px; }
+.audio-dock .dock-play, .audio-dock .dock-collapse { min-width:44px; min-height:44px; }
+.audio-dock .dock-player { grid-template-columns:46px minmax(0,1fr) 44px; }
+.audio-dock .dock-chapters a, .audio-dock.is-compact .dock-chapters a { min-height:44px; min-width:44px; }
+.audio-dock .dock-track input { min-height:44px; }
+@media (prefers-reduced-motion:reduce) {
+  .story-page *, .story-page *::before, .story-page *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+
+.dock-options { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 12px; font-size:12px; }
+.dock-options a { display:inline-flex; align-items:center; min-height:44px; text-decoration:underline; text-underline-offset:3px; }
+.audio-dock.is-compact .dock-options { display:none; }
+
+.reading-compass button, .reading-compass a { min-width:44px; min-height:44px; }

@@ -10,11 +10,22 @@ const docs = path.join(root, 'docs');
 const target = path.join(docs, 'publisher');
 const dist = path.join(source, 'dist');
 const shared = new Set(['audio', 'images', 'books']);
-const tracked = execFileSync('git', ['ls-files', '-z', 'docs'], {cwd:root, encoding:'utf8'})
-  .split('\0').filter(file => file && !file.startsWith('docs/publisher/'));
+// Snapshot the actual build, whose hashed bundle names can change after sync-pages.
+// Include new files as well as tracked files, excluding only the preview we replace.
+async function productionFiles(directory = docs) {
+  const result = [];
+  for (const entry of await readdir(directory, {withFileTypes:true})) {
+    const file = path.join(directory, entry.name);
+    if (file === target) continue;
+    result.push(...(entry.isDirectory() ? await productionFiles(file) : [file]));
+  }
+  return result.sort();
+}
+const protectedFiles = await productionFiles();
 async function hashes() {
-  return Object.fromEntries(await Promise.all(tracked.map(async file =>
-    [file, createHash('sha256').update(await readFile(path.join(root,file))).digest('hex')])));
+  const files = await productionFiles();
+  return Object.fromEntries(await Promise.all(files.map(async file =>
+    [path.relative(root,file), createHash('sha256').update(await readFile(file)).digest('hex')])));
 }
 const before = await hashes();
 execFileSync('npm', ['run', 'build'], {
@@ -36,6 +47,11 @@ async function walk(directory) {
   return result;
 }
 const files=await walk(target);
+// Astro adds its base to CSS URLs, but shared media live at their original root paths.
+for (const file of files.filter(file => file.endsWith('.css'))) {
+  const css = await readFile(file, 'utf8');
+  await writeFile(file, css.replace(/\/publisher\/(images|audio|books)\//g, '/$1/'));
+}
 for(const file of files.filter(file=>file.endsWith('.html'))) {
   let html=await readFile(file,'utf8');
   html=html.replace(/\b(href|src|action|data-src)="(\/[^"<>]*)"/g, (match,attribute,url)=> {
@@ -47,7 +63,7 @@ for(const file of files.filter(file=>file.endsWith('.html'))) {
 }
 const after=await hashes();
 if(JSON.stringify(before)!==JSON.stringify(after)) throw new Error('Existing production files changed.');
-const report={protectedProductionFiles:tracked.length, unchanged:true,
+const report={protectedProductionFiles:protectedFiles.length, unchanged:true,
   publisherPages:files.filter(file=>file.endsWith('.html')).length,
   url:'https://scaleofus.com/publisher/'};
 await mkdir(path.join(source,'proof'),{recursive:true});

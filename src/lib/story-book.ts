@@ -76,6 +76,7 @@ export type StoryBookSource = {
   locale?: string;
   reader: StoryReaderConfig;
   manuscript: string;
+  artworkDescriptions?: ReadonlyArray<string>;
   beatTimings: ReadonlyArray<StoryBeatTiming>;
   headingTimings: StoryHeadingTimings;
   wordTimings: StoryWordTimings;

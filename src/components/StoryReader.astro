@@ -44,12 +44,16 @@ const ui = {
   drawingToCome: "Drawing to come",
   ...book.presentation?.ui,
 };
+const isSpanish = locale === "es";
 const narrationAvailable = windStoryReader.narrationAvailable !== false;
 const duration = windStoryReader.audio.duration;
 const chapters = parseStoryMarkdown(storyMarkdown, duration, storyTimings);
 if (narrationAvailable) {
   validateVoicePassages(chapters, windStoryReader);
   validateStoryWordTimings(chapters, storyWordTimings.beats, duration, windStoryReader);
+}
+if (book.artworkDescriptions && (book.artworkDescriptions.length !== chapters.flatMap(chapter => chapter.beats).length || book.artworkDescriptions.some(description => !description.trim()))) {
+  throw new Error("Finished artwork needs one nonempty description per drawing.");
 }
 const staticWordCues = (value: string, time: number) => value.trim().split(/\s+/).map(() => ({
   start: time,
@@ -182,17 +186,19 @@ const chapterTheme = (chapterNumber: number) =>
   lang={locale}
   alternateLanguages={languageLinks}
 >
+  <a class="reader-skip-link" href="#story" data-reader-read>{isSpanish ? "Saltar al cuento" : "Skip to story"}</a>
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 
   <header class="story-nav" data-story-nav>
     <a class="wordmark" href="#top" aria-label={`Scale of Us, ${ui.backToBeginning.toLowerCase()}`} data-reader-home>
       <span>Scale</span><i>of</i><span>Us</span>
     </a>
-    <nav aria-label="Story links">
+    <nav aria-label={isSpanish ? "Enlaces del cuento" : "Story links"}>
       <a href="#story" data-reader-read>{ui.read}</a>
+      {narrationAvailable && <button type="button" data-reader-listen>{ui.listen}</button>}
       {companion && <a href={companion.href}>{companion.navLabel}</a>}
       {languageLinks.length > 1 && (
-        <span class="language-switch" aria-label="Language">
+        <span class="language-switch" aria-label={isSpanish ? "Idioma" : "Language"}>
           {languageLinks.map((language) => (
             <a
               href={language.href}
@@ -274,7 +280,7 @@ const chapterTheme = (chapterNumber: number) =>
           <p class="cover-title-fallback" aria-hidden="true">{windStoryReader.title}</p>
         )}
         <p class="cover-intro">{windStoryReader.intro}</p>
-        <div class={`cover-story-entry ${narrationAvailable ? "" : "is-read-only"}`} role="group" aria-label={narrationAvailable ? `${ui.read} or ${ui.listen}` : ui.read}>
+        <div class={`cover-story-entry ${narrationAvailable ? "" : "is-read-only"}`} role="group" aria-label={narrationAvailable ? `${ui.read} ${isSpanish ? "o" : "or"} ${ui.listen}` : ui.read}>
           <a class="entry-read" href="#story" data-reader-read>
             {entryIcons?.read ? (
               <span class="entry-art-icon" aria-hidden="true">
@@ -309,7 +315,7 @@ const chapterTheme = (chapterNumber: number) =>
       <a class="scroll-cue" href="#story" aria-label={ui.scrollIntoStory} data-reader-read><span></span></a>
     </section>
 
-    <div class="reader-shell" id="story">
+    <div class="reader-shell" id="story" tabindex="-1">
       <aside class="chapter-rail" aria-label={ui.chapters}>
         {navigation.kind === "mountain" && (
           <div class="mountain-nav-art" data-mountain-art aria-hidden="true">
@@ -438,6 +444,7 @@ const chapterTheme = (chapterNumber: number) =>
                 const paragraphStart = alignedWords[0]?.start ?? beat.start;
                 const paragraphEnd = alignedWords.at(-1)?.end ?? beat.end;
                 const artworkSrc = artForBeat(beat.number);
+                const artDescription = book.artworkDescriptions?.[beat.number - 1] ?? beat.prompt;
                 const mobileArtwork = mobileArtForBeat(beat.number) ?? artworkSrc;
                 const artworkKind = artKindForBeat(beat.number);
                 const isOriginalArtwork = artworkKind === "original";
@@ -468,12 +475,12 @@ const chapterTheme = (chapterNumber: number) =>
                           class="art-placeholder"
                           role="img"
                           aria-hidden={artworkSrc ? "true" : "false"}
-                          aria-label={`${ui.drawing} ${beat.number} ${ui.drawingNeeded}: ${beat.prompt}`}
+                          aria-label={`${ui.drawing} ${beat.number} ${ui.drawingNeeded}: ${artDescription}`}
                         >
                           <span>{String(beat.number).padStart(2, "0")}</span>
                           <div class="placeholder-wind"><i></i><i></i><i></i></div>
                           <strong>{ui.drawingToCome}</strong>
-                          <small>{beat.prompt}</small>
+                          <small>{artDescription}</small>
                         </div>
                         {artworkSrc && isLiveArtwork && (
                           <div
@@ -483,7 +490,7 @@ const chapterTheme = (chapterNumber: number) =>
                             data-svg-src={artworkSrc}
                             data-raster-src={mobileArtwork}
                             role="img"
-                            aria-label={`${ui.drawing} ${beat.number}: ${beat.prompt}`}
+                            aria-label={`${ui.drawing} ${beat.number}: ${artDescription}`}
                           ></div>
                         )}
                         {artworkSrc && !isLiveArtwork && (
@@ -492,7 +499,7 @@ const chapterTheme = (chapterNumber: number) =>
                             <img
                               class={isOriginalArtwork ? "is-hand-sketch" : undefined}
                               src={artworkSrc}
-                              alt={`${ui.drawing} ${beat.number}: ${beat.prompt}`}
+                              alt={`${ui.drawing} ${beat.number}: ${artDescription}`}
                               data-story-art
                               loading={beat.number === 1 ? "eager" : "lazy"}
                               decoding="async"
@@ -619,7 +626,7 @@ const chapterTheme = (chapterNumber: number) =>
         <source src={source.src} type={source.type} />
       ))}
     </audio>
-    <nav class="dock-chapters" aria-label="Story chapters">
+    <nav class="dock-chapters" id="dock-chapters" aria-label={ui.chapters}>
       <ol>
         {chapters.map((chapter) => (
           <li>
@@ -638,12 +645,16 @@ const chapterTheme = (chapterNumber: number) =>
         ))}
       </ol>
     </nav>
+    <div class="dock-options" id="dock-options">
+      <a href="#story" data-reader-read>{isSpanish ? "Leer a tu ritmo" : "Read at your pace"}</a>
+      <a href="#top" data-reader-home>{ui.backToBeginning}</a>
+    </div>
     <div class="dock-player">
-      <button class="dock-play" type="button" data-play aria-label="Play narration">
+      <button class="dock-play" type="button" data-play aria-label={isSpanish ? "Reproducir narración" : "Play narration"}>
         <span data-play-icon aria-hidden="true">▶</span>
       </button>
       <div class="dock-now">
-        <small>Now in the story</small>
+        <small>{isSpanish ? "Ahora en el cuento" : "Now in the story"}</small>
         <strong data-current-chapter>{ui.chapter} 1 · {windStoryReader.title}</strong>
       </div>
       <div class="dock-track">
@@ -655,16 +666,16 @@ const chapterTheme = (chapterNumber: number) =>
           value="0"
           step="0.1"
           data-seek
-          aria-label="Narration position"
+          aria-label={isSpanish ? "Posición de la narración" : "Narration position"}
         />
         <div class="dock-time"><span data-current-time>0:00</span><span>{formatTime(duration)}</span></div>
       </div>
-      <button class="dock-collapse" type="button" data-collapse aria-label="Expand story controls" aria-expanded="false">⌃</button>
+      <button class="dock-collapse" type="button" data-collapse aria-label={isSpanish ? "Ampliar controles" : "Expand story controls"} aria-controls="dock-chapters dock-options" aria-expanded="false">⌃</button>
     </div>
   </div>
   )}
 
-  <nav class="reading-compass" data-reading-compass aria-label={ui.readingNavigation} aria-hidden="true">
+  <nav class="reading-compass" data-reading-compass aria-label={ui.readingNavigation} aria-hidden="true" inert>
     <button type="button" data-reader-previous aria-label={ui.previousChapter}>←</button>
     <a href="#top" data-reader-home>{ui.home}</a>
     <span data-reader-chapter-position>{ui.chapter} 1</span>
