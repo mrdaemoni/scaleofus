@@ -77,3 +77,31 @@ mobile emulation; a physical iPhone/Safari listening pass remains advisable befo
 publishing. No AGENTS.md or additional software-engineering skill was found in
 the repository/ancestor directories; README and STORY_READER_TEMPLATE guidance
 were followed. Pre-existing untracked authoring files were left untouched.
+
+## Follow-up: bilingual entrance presentation (local, awaiting publication)
+
+Branch `fix/bilingual-entry-presentation` adds a matching drawn, gently pulsing
+play icon to the Spanish entrance. Both entrances share typography, spacing,
+icon size, focus treatment and reduced-motion behavior. Spanish text is not
+underlined. On mobile, both language entrances stay side by side beneath Book;
+the English format tab and Spanish reader destination keep their behavior.
+
+The shared Reviews & reader responses link has been removed. No generated page
+links to `#reviews` or offers a Read the responses link; the existing review
+section anchor remains intact for old bookmarks. Printing-count references have
+been removed from the shared edition description/details, About, Help, Press,
+and downloadable information sheet, in both root and publisher output. The
+English print-language fact and other book specifications remain unchanged.
+
+Verification: `npm run build:pages` passes all performance and content budgets;
+12 browser cases cover root and `/publisher/` at 320, 390 and 1440 pixels with
+reduced motion on/off, matching icons/styles, side-by-side layout, keyboard
+activation/focus, both language destinations, no horizontal overflow, and no
+page errors. All generated HTML and information sheets were scanned for removed
+wording and review links. 1,785 local HTML/CSS references pass with no broken
+links. `git diff --check` passes.
+
+Screenshots and logs: `development/publisher-site-v10/proof/bilingual-entry-revision/`
+(ignored local evidence). No push or deployment is authorized for this follow-up;
+publication requires a fresh confirmation. Hector reports that the earlier live
+reader fixes work on his phone; this follow-up was checked in Chrome emulation.

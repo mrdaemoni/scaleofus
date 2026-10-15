@@ -17,15 +17,14 @@ const duration = `${Math.floor(windStoryReader.audio.duration/60)}:${String(Math
 <div class="story-feature" data-story-feature>
   <div class="story-format-actions"><div class="story-tabs" role="tablist" aria-label="Choose a story format">
     <button type="button" role="tab" id="book-tab" data-format="print" aria-selected="true" aria-controls="book-panel" tabindex="0"><DrawnArt name="icon-book" class="tab-art" /><span>Book</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
-    <button type="button" role="tab" id="digital-tab" data-format="digital" aria-selected="false" aria-controls="digital-panel" tabindex="-1"><DrawnArt name="icon-play" class="tab-art" /><span>Read or listen online</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
+    <button type="button" role="tab" id="digital-tab" class="reader-entry" lang="en" data-format="digital" aria-selected="false" aria-controls="digital-panel" tabindex="-1"><DrawnArt name="icon-play" class="tab-art" /><span>Read or listen online</span><svg class="tab-stroke" viewBox="0 0 120 10" aria-hidden="true"><path d="M3 8 L19 3 Q60 0 115 2" /></svg></button>
   </div>
-    <a class="spanish-reader-link" href="/immerse/es/" lang="es">Lee o escucha en línea</a>
+    <a class="spanish-reader-link reader-entry" href="/immerse/es/" lang="es"><DrawnArt name="icon-play" class="tab-art" /><span>Lee o escucha en línea</span></a>
   </div>
   <div class="feature-panels">
     <div class="feature-panel is-preview-active" role="tabpanel" id="book-panel" aria-labelledby="book-tab" data-format-panel="print" aria-hidden="false">
       <div class="feature-preview"><BookGallery eager /></div>
       <div class="feature-details">
-        <a class="text-link feature-reviews" href={`/stories/${windSlug}/#reviews`}>Reviews & reader responses →</a>
         <div class="book-description">{windEdition.description.map(paragraph => <p>{paragraph}</p>)}</div>
         <div id={purchaseHere ? 'purchase' : undefined}><PurchaseButton href={purchaseHere ? undefined : `/stories/${windSlug}/#purchase`} data-purchase-preview={purchaseHere ? '' : undefined}>Buy the book</PurchaseButton>
           {purchaseHere && <><p class="subtle purchase-note">Preview · price to be confirmed.</p><div class="purchase-message" role="status" hidden><strong>A copy of your own.</strong><p>The final checkout will show the price, shipping, and available copies. This preview takes no payment.</p><a href="/help/#delivery">Purchase details →</a></div></>}

@@ -162,8 +162,20 @@
   .gallery-thumbs { gap:4px; }
 }
 
-/* Keep both language entrances together, including on narrow screens. */
+/* Both language entrances use the same drawing, pulse, spacing and type. */
 .story-format-actions { grid-column:1 / -1; display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; }
 .story-format-actions .story-tabs { margin-bottom:0; }
-.spanish-reader-link { flex:0 0 auto; white-space:nowrap; font-size:12px; display:inline-flex; align-items:center; min-height:44px; padding:8px 12px; text-decoration:underline; text-underline-offset:5px; }
+.story-format-actions .reader-entry { position:relative; display:inline-flex; align-items:center; justify-content:flex-start; gap:12px; min-height:48px; padding:8px 0; border:0; background:transparent; color:inherit; font-size:12px; line-height:1.4; text-decoration:none; white-space:nowrap; }
+.reader-entry .tab-art { flex-shrink:0; transform-origin:center; animation:reader-entry-pulse 2.4s ease-in-out infinite; }
 .spanish-reader-link:focus-visible { outline:2px solid currentColor; outline-offset:4px; }
+@keyframes reader-entry-pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.09); } }
+@media(max-width:700px) {
+  .story-format-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .story-format-actions .story-tabs { grid-column:1 / -1; grid-row:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .story-format-actions #book-tab { grid-column:1 / -1; justify-self:start; }
+  .story-format-actions #digital-tab { grid-column:1; }
+  .story-format-actions .spanish-reader-link { grid-column:2; grid-row:1; align-self:end; }
+  .story-format-actions .reader-entry { width:100%; min-height:56px; gap:8px; white-space:normal; text-align:left; }
+  .story-format-actions .reader-entry .tab-art { width:28px; height:28px; }
+}
+@media(prefers-reduced-motion:reduce) { .reader-entry .tab-art { animation:none; } }
