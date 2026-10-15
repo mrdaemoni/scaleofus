@@ -105,3 +105,25 @@ Screenshots and logs: `development/publisher-site-v10/proof/bilingual-entry-revi
 (ignored local evidence). No push or deployment is authorized for this follow-up;
 publication requires a fresh confirmation. Hector reports that the earlier live
 reader fixes work on his phone; this follow-up was checked in Chrome emulation.
+
+## Follow-up: simple About page and horizon footer (local, awaiting publication)
+
+The About page now has three short paragraphs centered on finding our bearings
+with AI, making ideas from thinkers and philosophers accessible through stories,
+and noticing something new on each reading. It follows the Hector writing skill:
+one thesis, plain language, a concrete story example, and an invitation to
+inquiry. The biography, book-format tour, photo and section navigation have been
+removed. Existing About fragment targets remain available for old links.
+
+The boy-and-machine drawing accompanies the copy. The shared footer now uses a
+smooth, drawn horizon between light paper and darker pink, with the existing
+mountain/town drawing spanning it. Footer navigation contains only About. The book
+page's former Meet the author link now says About Scale of Us and opens the
+simplified publisher page. Root and `/publisher/` share all of these changes.
+
+Validation: production build and reader budgets passed. 24 browser cases cover
+home/About, root/publisher, 320/390/1440px widths, reduced motion on/off, content,
+footer destinations, touch target, horizontal overflow and page errors. All
+1,733 local HTML/CSS references pass. Screenshots were visually inspected.
+Evidence: `development/publisher-site-v10/proof/about-and-horizon/` (ignored).
+These changes and the preceding bilingual-entry revision remain unpublished.

@@ -179,3 +179,36 @@
   .story-format-actions .reader-entry .tab-art { width:28px; height:28px; }
 }
 @media(prefers-reduced-motion:reduce) { .reader-entry .tab-art { animation:none; } }
+
+/* A short publisher note, with the story's own drawings doing the rest. */
+.about-simple { padding-block:32px 64px; }
+.about-simple header { max-width:780px; margin-bottom:40px; }
+.about-simple h1 { font-size:clamp(40px,5.3vw,72px); line-height:1.08; }
+.about-body { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:64px; align-items:center; }
+.about-copy { max-width:650px; font-family:var(--serif); font-size:clamp(22px,2.1vw,26px); line-height:1.5; }
+.about-copy p+p { margin-top:24px; }
+.about-inquiry { width:100%; height:280px; }
+/* The mountain stays in light paper; a round horizon carries the town into pink. */
+.site-footer { padding-top:0; margin-top:32px; }
+.footer-landscape { position:relative; height:360px; background:var(--paper); }
+.footer-horizon { position:absolute; inset:auto 0 0; width:100%; height:320px; }
+.horizon-ground { fill:var(--wash); }
+.horizon-line { fill:none; stroke:var(--heading); stroke-width:1.3; opacity:.38; vector-effect:non-scaling-stroke; }
+.footer-landscape .footer-world { position:relative; height:100%; padding-block:0; align-items:flex-end; }
+.footer-world>p { z-index:1; padding-bottom:44px; }
+.footer-world .footer-town { width:420px; height:340px; margin:0 8% 0 auto; align-self:flex-start; }
+.footer-links { display:flex; align-items:center; gap:0; }
+.footer-links a { display:inline-flex; align-items:center; min-height:44px; padding:8px 0; font-size:12px; }
+@media(max-width:700px) {
+  .about-simple { padding-block:16px 40px; }
+  .about-simple header { margin-bottom:24px; }
+  .about-body { grid-template-columns:1fr; gap:24px; }
+  .about-copy { font-size:23px; }
+  .about-copy p+p { margin-top:20px; }
+  .about-inquiry { width:220px; height:180px; justify-self:center; }
+  .footer-landscape { height:280px; }
+  .footer-horizon { height:260px; }
+  .footer-landscape .footer-world { gap:16px; }
+  .footer-world>p { width:110px; font-size:25px; padding-bottom:26px; }
+  .footer-world .footer-town { width:calc(100% - 110px); height:270px; margin:0; }
+}
