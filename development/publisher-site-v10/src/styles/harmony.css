@@ -13,22 +13,20 @@
 .publisher-identity { grid-column:span 8; padding-left:112px; min-height:96px; max-width:none; }
 .publisher-identity .brand-scene { width:96px; height:96px; }
 .wordmark,.publisher-identity .wordmark { font-size:58px; font-weight:350; }
-.brand .brand-name { display:inline-flex; align-items:baseline; gap:.115em; color:var(--heading); font-weight:340; line-height:1; letter-spacing:-.008em; }
+.brand .brand-name { display:inline-flex; align-items:baseline; gap:.08em; color:var(--heading); font-weight:400; line-height:1; letter-spacing:-.018em; }
 .brand-scale,.brand-of { display:inline-flex; align-items:baseline; color:inherit!important; }
 .brand-scale>span,.brand-of>span { color:inherit; }
-.brand-scale { transform:translateY(-.06em); }
-.brand-of { transform:translateY(-.03em); }
-/* Smaller words recede toward the left; US comes forward at full scale. */
-.brand-scale>span:nth-child(1) { font-size:.23em; }
-.brand-scale>span:nth-child(2) { font-size:.275em; }
-.brand-scale>span:nth-child(3) { font-size:.32em; }
-.brand-scale>span:nth-child(4) { font-size:.365em; }
-.brand-scale>span:nth-child(5) { font-size:.41em; }
-.brand-of>span:nth-child(1) { font-size:.49em; }
-.brand-of>span:nth-child(2) { font-size:.49em; }
-.brand .brand-us { display:inline-flex; align-items:baseline; transform:none; font-size:1em; letter-spacing:-.018em; }
+/* The supplied wordmark mock uses a flat baseline and a pronounced foreground US. */
+.brand-scale>span:nth-child(1) { font-size:.31em; }
+.brand-scale>span:nth-child(2) { font-size:.36em; }
+.brand-scale>span:nth-child(3) { font-size:.41em; }
+.brand-scale>span:nth-child(4) { font-size:.46em; }
+.brand-scale>span:nth-child(5) { font-size:.52em; }
+.brand-of>span:nth-child(1) { font-size:.56em; }
+.brand-of>span:nth-child(2) { font-size:.56em; }
+.brand .brand-us { display:inline-flex; align-items:baseline; transform:none; color:var(--accent); font-size:1em; letter-spacing:-.04em; }
 .brand .brand-us>span { color:inherit; }
-.brand-us>span:nth-child(1) { font-size:1em; }
+.brand-us>span:nth-child(1) { font-size:.98em; }
 .brand-us>span:nth-child(2) { font-size:1.12em; margin-left:-.012em; }
 .brand-us>span:nth-child(3) { font-size:.36em; margin-left:.035em; }
 .site-footer .wordmark { font-size:52px; }
