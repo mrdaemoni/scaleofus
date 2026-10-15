@@ -163,6 +163,7 @@
 /* Both language entrances use the same drawing, pulse, spacing and type. */
 .story-format-actions { grid-column:1 / -1; display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; }
 .story-format-actions .story-tabs { margin-bottom:0; }
+.story-format-actions .book-entry,
 .story-format-actions .reader-entry { position:relative; display:inline-flex; align-items:center; justify-content:flex-start; gap:12px; min-height:48px; padding:8px 0; border:0; background:transparent; color:inherit; font-size:12px; line-height:1.4; text-decoration:none; white-space:nowrap; }
 .reader-entry .tab-art { flex-shrink:0; transform-origin:center; animation:reader-entry-pulse 2.4s ease-in-out infinite; }
 .spanish-reader-link:focus-visible { outline:2px solid currentColor; outline-offset:4px; }
@@ -170,7 +171,7 @@
 @media(max-width:700px) {
   .story-format-actions { flex-wrap:nowrap; gap:8px; }
   .story-format-actions .story-tabs { display:flex; flex-shrink:0; gap:8px; }
-  .story-format-actions .story-tabs [role=tab],
+  .story-format-actions .book-entry,
   .story-format-actions .reader-entry { flex-shrink:0; min-height:48px; gap:4px; padding:8px 0; font-size:11px; line-height:1.4; white-space:nowrap; }
   .story-format-actions .tab-art { width:18px; height:18px; }
 }
@@ -222,3 +223,5 @@
 .about-simple .about-page-title { font-family:var(--sans); font-size:10px; line-height:1.4; font-weight:650; letter-spacing:.16em; }
 .source-backlink { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 .source-backlink:focus { position:static; width:auto; height:auto; overflow:visible; clip-path:none; white-space:normal; }
+
+.book-entry .tab-stroke { visibility:visible; }

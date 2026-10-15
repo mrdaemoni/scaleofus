@@ -174,3 +174,29 @@ Both English and Spanish destinations were followed at 320px in both sections.
 All 1,703 local references pass. Screenshots were visually reviewed. Evidence:
 `development/publisher-site-v10/proof/phone-entry-row/` (ignored).
 The user explicitly authorized publishing this revision for phone testing.
+
+## Follow-up: About opening and direct English reader (local, awaiting publication)
+
+About begins with the exact requested paragraph: “We are learning to live with
+each other. We’re learning to live with AI. We need stories that help us find our
+bearings: who we are, what matters to us, and how we live together.”
+
+The English entrance is now a normal direct link, matching Spanish:
+- Root: `/immerse/wind/` (English), `/immerse/es/` (Spanish).
+- Publisher: `/publisher/immerse/wind/` (English), `/publisher/immerse/es/` (Spanish).
+
+The on-page English sample/alternate panel, its audio element, and sample player
+logic are removed. All three entrances are now links. Book opens the existing
+printed-book panel. Old `#reading` and `#digital-panel` bookmarks on pages that
+used the removed panel forward to that section’s English immersive reader.
+Manual `/read/wind/` and `/read/es/` URLs, their publisher equivalents, book
+readers, artwork, narration, and chapter bookmarks remain available.
+
+Validation: build and reader budgets pass. Twelve new desktop/mobile cases cover
+root/publisher home/book pages, direct language links, one-row layout, keyboard
+navigation, and English/Spanish narration starting and pausing. Exact About copy,
+legacy fragment redirects and manual reader URLs pass. The existing 16-case
+reader suite passes, including all chapters, pause/resume, reduced motion and
+old root chapter bookmarks. All 1,691 local references pass. Evidence:
+`development/publisher-site-v10/proof/direct-english-reader/` (ignored).
+No push or deployment is authorized for this follow-up.

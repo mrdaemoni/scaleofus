@@ -82,9 +82,12 @@ for(const width of [320,390,1440]){
   assert.equal(await page.locator('meta[name=robots]').count(),0);
   assert.equal(await page.getByRole('link',{name:'Lee o escucha en línea'}).getAttribute('href'),'/immerse/es/');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.getByRole('tab',{name:'Read or listen online'}).click();
-  assert.equal(await page.locator('#digital-panel').getAttribute('aria-hidden'),'false');
   await page.screenshot({path:`${output}/landing-${width}.png`});
+  assert.equal(await page.getByRole('link',{name:'Read or listen online'}).getAttribute('href'),'/immerse/wind/');
+  await page.getByRole('link',{name:'Read or listen online'}).click();
+  await page.waitForURL('**/immerse/wind/');
+  assert.equal(await page.locator('html').getAttribute('lang'),'en');
+  assert.equal(await page.locator('[data-hero-play]').count(),1);
  });
  await page.close();
 }
