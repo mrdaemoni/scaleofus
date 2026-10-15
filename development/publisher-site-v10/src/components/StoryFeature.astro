@@ -18,7 +18,9 @@ const { purchaseHere = false } = Astro.props;
       <div class="feature-preview"><BookGallery eager /></div>
       <div class="feature-details">
         <div class="book-description">{windEdition.description.map(paragraph => <p>{paragraph}</p>)}</div>
-        <div id={purchaseHere ? 'purchase' : undefined}><PurchaseButton href={purchaseHere ? undefined : `/stories/${windSlug}/#purchase`} data-purchase-preview={purchaseHere ? '' : undefined}>Buy the book</PurchaseButton>
+        <div id={purchaseHere ? 'purchase' : undefined}><div class="purchase-actions"><PurchaseButton href={purchaseHere ? undefined : `/stories/${windSlug}/#purchase`} data-purchase-preview={purchaseHere ? '' : undefined}>Buy the book</PurchaseButton>
+          <a class="purchase-button pdf-download" href={`/books/${windSlug}/The-Boy-Who-Tried-to-Catch-the-Wind.pdf`} download="The-Boy-Who-Tried-to-Catch-the-Wind.pdf">Download the free PDF</a>
+          </div>
           {purchaseHere && <><p class="subtle purchase-note">Preview · price to be confirmed.</p><div class="purchase-message" role="status" hidden><strong>A copy of your own.</strong><p>The final checkout will show the price, shipping, and available copies. This preview takes no payment.</p><a href="/help/#delivery">Purchase details →</a></div></>}
         </div>
       </div>

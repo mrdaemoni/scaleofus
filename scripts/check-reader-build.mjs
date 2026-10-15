@@ -15,6 +15,7 @@ const limits = {
   liveDrawingWire: 96 * 1024,
   liveDrawingWireTotal: 3 * 1024 * 1024,
   mobileDrawing: 128 * 1024,
+  downloadableBookPdf: 8 * 1024 * 1024,
   totalBuildBase: 42 * 1024 * 1024,
   additionalNarratedEdition: 32 * 1024 * 1024,
 };
@@ -200,9 +201,13 @@ if (mobileDrawingFiles.length) {
   requireBudget(`largest mobile drawing (${mobileDrawingFiles.length} files)`, largestMobileDrawing, limits.mobileDrawing);
 }
 
+// Optional book downloads have a separate bounded allowance; reader budgets stay fixed.
+const bookPdf = files.find(file => relative(file) === "books/the-boy-who-tried-to-catch-the-wind/The-Boy-Who-Tried-to-Catch-the-Wind.pdf");
+if (bookPdf) requireBudget("downloadable book PDF", await bytesFor(bookPdf), limits.downloadableBookPdf);
 const totalBuildBytes = (await Promise.all(files.map(bytesFor))).reduce((sum, value) => sum + value, 0);
 const totalBuildLimit = limits.totalBuildBase
-  + Math.max(0, narratedEditionRoots.size - 1) * limits.additionalNarratedEdition;
+  + Math.max(0, narratedEditionRoots.size - 1) * limits.additionalNarratedEdition
+  + (bookPdf ? limits.downloadableBookPdf : 0);
 metrics.push(`narrated audio editions: ${narratedEditionRoots.size}`);
 requireBudget("total deployable build", totalBuildBytes, totalBuildLimit);
 
