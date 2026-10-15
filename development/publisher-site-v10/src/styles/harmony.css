@@ -168,14 +168,13 @@
 .spanish-reader-link:focus-visible { outline:2px solid currentColor; outline-offset:4px; }
 @keyframes reader-entry-pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.09); } }
 @media(max-width:700px) {
-  .story-format-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-  .story-format-actions .story-tabs { grid-column:1 / -1; grid-row:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-  .story-format-actions #book-tab { grid-column:1 / -1; justify-self:start; }
-  .story-format-actions #digital-tab { grid-column:1; }
-  .story-format-actions .spanish-reader-link { grid-column:2; grid-row:1; align-self:end; }
-  .story-format-actions .reader-entry { width:100%; min-height:56px; gap:8px; white-space:normal; text-align:left; }
-  .story-format-actions .reader-entry .tab-art { width:28px; height:28px; }
+  .story-format-actions { flex-wrap:nowrap; gap:8px; }
+  .story-format-actions .story-tabs { display:flex; flex-shrink:0; gap:8px; }
+  .story-format-actions .story-tabs [role=tab],
+  .story-format-actions .reader-entry { flex-shrink:0; min-height:48px; gap:4px; padding:8px 0; font-size:11px; line-height:1.4; white-space:nowrap; }
+  .story-format-actions .tab-art { width:18px; height:18px; }
 }
+@media(max-width:360px) { .entry-label-detail { display:none; } }
 @media(prefers-reduced-motion:reduce) { .reader-entry .tab-art { animation:none; } }
 
 /* A short publisher note, with the story's own drawings doing the rest. */
@@ -219,3 +218,7 @@
 .about-sources a { text-decoration:underline; text-underline-offset:3px; }
 .about-copy a:focus-visible { outline:2px solid currentColor; outline-offset:3px; }
 .site-footer .footer-top { padding-block:8px 16px; justify-content:flex-start; }
+
+.about-simple .about-page-title { font-family:var(--sans); font-size:10px; line-height:1.4; font-weight:650; letter-spacing:.16em; }
+.source-backlink { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.source-backlink:focus { position:static; width:auto; height:auto; overflow:visible; clip-path:none; white-space:normal; }

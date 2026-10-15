@@ -152,3 +152,25 @@ footer links and overflow passed. All 1,703 local references pass, as does
 `git diff --check`. Screenshots were visually reviewed. Evidence is saved in
 `development/publisher-site-v10/proof/publisher-perspective/` (ignored).
 This revision has not been pushed or deployed.
+
+## Follow-up: one-row phone entrances and About cleanup (approved for publication)
+
+The attached screenshots identify the three format/language entrances, the
+repeated About tagline, and the bibliography return-arrow glyph. Book, English,
+and Spanish now stay on one horizontal row on phones. Below 361px the visible
+labels omit “online” and “en línea”; full accessible names and both destinations
+remain intact. All controls retain at least 48px height, legible 11px labels,
+matching play icons and reduced-motion behavior.
+
+About keeps its logo and a small semantic “About Scale of Us” h1. The large
+repeated tagline is removed. The bibliography's visible arrow is replaced by a
+screen-reader-accessible return link that appears as descriptive text on keyboard
+focus. The numbered reference and full reading-notes link are preserved.
+
+`npm run build:pages` passes all reader budgets. Twelve cases cover root and
+publisher pages at 320/360/375/390/430/1440px, one-row geometry, overflow, keyboard
+format/source navigation, matching animation reduction, and About content.
+Both English and Spanish destinations were followed at 320px in both sections.
+All 1,703 local references pass. Screenshots were visually reviewed. Evidence:
+`development/publisher-site-v10/proof/phone-entry-row/` (ignored).
+The user explicitly authorized publishing this revision for phone testing.
