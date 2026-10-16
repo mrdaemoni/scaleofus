@@ -77,6 +77,8 @@
 .future-stories { gap:32px; }
 .future-stories .forthcoming-card { padding:48px; min-height:288px; }
 .future-stories .future-top { margin-bottom:24px; }
+.future-symbol { display:block; flex:0 0 72px; width:72px; height:76px; }
+.future-symbol>img { display:block; width:100%; height:100%; }
 .future-stories h3 { margin-bottom:24px; }
 .publisher-note { grid-template-columns:repeat(12,minmax(0,1fr)); gap:24px; padding-block:64px var(--section-space); }
 .publisher-note>.publisher-pair { grid-column:span 5; height:288px; }
@@ -143,6 +145,7 @@
   .future-stories { grid-template-columns:1fr; gap:32px; }
   .future-stories .forthcoming-card { padding:32px; min-height:256px; }
   .future-stories h3 { font-size:30px; }
+  .future-symbol { flex-basis:64px; width:64px; height:68px; }
   .publisher-note { grid-template-columns:1fr; gap:32px; padding-block:32px 64px; }
   .publisher-note>.publisher-pair,.publisher-note>div { grid-column:1; }
   .publisher-note>.publisher-pair { height:208px; }
