@@ -1,6 +1,7 @@
 ---
 import Publisher from '../layouts/Publisher.astro';
 import DrawnArt from '../components/DrawnArt.astro';
+import { windPublication } from '../../../../src/content/publication';
 // Thesis: scale means gaining perspective through accessible stories about human questions.
 ---
 <Publisher title="About Scale of Us" description="A publishing house bringing ideas from thinkers and philosophers into illustrated stories about being human in the age of AI." active="about">
@@ -13,6 +14,7 @@ import DrawnArt from '../components/DrawnArt.astro';
         <p>We are learning to live with each other. We’re learning to live with AI. We need stories that help us find our bearings: who we are, what matters to us, and how we live together.</p>
         <p>Scale of Us is a publishing house built around those questions. We bring ideas from thinkers and philosophers<sup><a class="about-source-ref" href="#about-source-1" id="about-source-ref-1" role="doc-noteref" aria-label="Source 1: reading behind the first story">1</a></sup> across time into illustrated stories anyone can read.</p>
         <p id="formats">For us, scale means gaining perspective. A boy’s question to a machine can become a question about your own life. Each reading is a chance to see it differently.</p>
+        <p><strong>Scale of Us was created by {windPublication.author},</strong> the writer, illustrator, and designer of its first story and the author of both its English and Spanish versions.</p>
         <aside class="about-sources" aria-label="Sources" role="doc-endnotes">
           <ol>
             <li id="about-source-1" tabindex="-1">The reading notes for <em>The Boy Who Tried to Catch the Wind</em> include Alfred Korzybski (<em>Science and Sanity</em>), Martin Buber (<em>I and Thou</em>), Michael Polanyi (<em>The Tacit Dimension</em>), Zhuangzi, Simone Weil (<em>Waiting for God</em>), and T. S. Eliot (<em>Four Quartets</em>). <a href="/read/wind/#grown-ups">See the full reading notes</a>. <a class="source-backlink" href="#about-source-ref-1" role="doc-backlink">Back to source reference 1</a></li>

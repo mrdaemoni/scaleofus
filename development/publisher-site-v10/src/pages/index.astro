@@ -3,13 +3,15 @@ import Publisher from '../layouts/Publisher.astro';
 import StoryShelf from '../components/StoryShelf.astro';
 import StoryFeature from '../components/StoryFeature.astro';
 import DrawnArt from '../components/DrawnArt.astro';
+import { windBookStructuredData, windPublication } from '../../../../src/content/publication';
 ---
-<Publisher>
+<Publisher structuredData={windBookStructuredData()}>
   <section class="first-book wrap" id="first-story">
     <header class="release-heading">
       <p class="eyebrow">INTRODUCING OUR FIRST BOOK</p>
       <h1><DrawnArt name="n00" class="title-wind" eager />The Boy Who Tried to Catch the Wind</h1>
       <p class="story-intro">A story about a boy, a machine, and the part of us no answer can hold.</p>
+      <p class="creator-line">Written and illustrated by <strong>{windPublication.author}</strong></p>
     </header>
     <StoryFeature />
   </section>

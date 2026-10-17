@@ -431,6 +431,15 @@ body.is-cover-wind-awake .cover-living-wind {
   font-optical-sizing: auto;
   line-height: 1.45;
 }
+.cover-byline {
+  margin: 14px auto 0;
+  max-width: 34rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.cover-byline strong { font-weight: 650; }
 
 .cover-story-entry {
   width: min(510px, 100%);

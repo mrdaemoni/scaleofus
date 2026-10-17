@@ -1,0 +1,71 @@
+{
+  "title": "The Boy Who Tried to Catch the Wind — homepage photographs",
+  "source": "development/publisher-site-v10/src/data/photos.ts",
+  "updated": "2026-10-17",
+  "suppliedBy": "Hector Ouilhet Olmos",
+  "artworkCredit": "Text and illustrations © 2026 Hector Ouilhet Olmos / Scale of Us.",
+  "photographyCredit": "Photographs supplied by Hector Ouilhet Olmos. Separate photographer attribution is not recorded; do not infer a photography copyright credit.",
+  "permission": "Supplied for editorial coverage of the book. Retain the artwork credit; do not alter the artwork beyond ordinary cropping for layout. No other use or third-party licence is asserted.",
+  "photos": [
+    {
+      "file": "photo-01.webp",
+      "source": "/edition/photo-01.webp",
+      "caption": "Cover & spine",
+      "alt": "The blue clothbound book on a grey surface, with the handwritten title and wind motif in gold on its cover and spine",
+      "width": 960,
+      "height": 1280,
+      "bytes": 211650,
+      "sha256": "345531db03817492d1ced205e148d6111286980deca7d35ce5c38a9780475ec7"
+    },
+    {
+      "file": "photo-02.webp",
+      "source": "/edition/photo-02.webp",
+      "caption": "The wind on paper",
+      "alt": "A close view of the hand-drawn wind motif in black and pale blue on a cream page",
+      "width": 960,
+      "height": 1280,
+      "bytes": 44264,
+      "sha256": "9b312c6c61fcee853cfbc8e87cfef59ffedd05c05ca610cdd80d4d2e8e315067"
+    },
+    {
+      "file": "photo-03.webp",
+      "source": "/edition/photo-03.webp",
+      "caption": "Title & endpapers",
+      "alt": "The handwritten title page beside blue endpapers patterned with gold wind drawings",
+      "width": 959,
+      "height": 1280,
+      "bytes": 98922,
+      "sha256": "018a78be7b9c52948b58627fe9cf4e184c53b7714e367844305488fc842295b1"
+    },
+    {
+      "file": "photo-04.webp",
+      "source": "/edition/photo-04.webp",
+      "caption": "The boy & the wind",
+      "alt": "A close view of the boy carrying a bag, with the wind curling around him on an illustrated page",
+      "width": 960,
+      "height": 1280,
+      "bytes": 90376,
+      "sha256": "e79fae67e91fa032000599b56f06a1597bf50bfefaba4c7aee91d99b8048995d"
+    },
+    {
+      "file": "photo-05.webp",
+      "source": "/edition/photo-05.webp",
+      "caption": "Words & drawings",
+      "alt": "Page 37 of the book, pairing the story text with hand-drawn illustrations of the boy and the machine’s card",
+      "width": 960,
+      "height": 1280,
+      "bytes": 94156,
+      "sha256": "40a8f65656f546d334eb8e80120cd3c6537b2eaf4ec5fa3d24bf5107f59eadcb"
+    },
+    {
+      "file": "photo-06.webp",
+      "source": "/edition/photo-06.webp",
+      "caption": "Cloth & endpapers",
+      "alt": "A close view of blue cloth binding and blue endpapers printed with gold wind motifs",
+      "width": 960,
+      "height": 1280,
+      "bytes": 321514,
+      "sha256": "7d787e407db24f5b0c39de09f33178f60ec0640d19ffbe829f484c8cacd3226d"
+    }
+  ]
+}

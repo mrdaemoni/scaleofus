@@ -1,0 +1,44 @@
+{
+  "publisher": {
+    "name": "Scale of Us",
+    "url": "https://scaleofus.com"
+  },
+  "book": {
+    "title": "The Boy Who Tried to Catch the Wind",
+    "spanishTitle": "El niño que quiso atrapar el viento",
+    "slug": "the-boy-who-tried-to-catch-the-wind",
+    "isbn": "979-8-9979686-0-1",
+    "copyrightYear": 2026,
+    "description": "An illustrated philosophical fable for children and adults that explores what it means to be human in the age of AI.",
+    "rightsStatement": "Text and illustrations © 2026 Hector Ouilhet Olmos. All rights reserved.",
+    "audience": "Ages 8+ and adults",
+    "isbnRegistry": {
+      "url": "https://bookwire.bowker.com/book/USA/The-Boy-Who-Tried-to-Catch-the-Wind-9798997968601-Ouilhet-Olmos-Hector-130702805",
+      "status": "Public record found; title, author, ISBN, hardback format, and publisher match"
+    },
+    "roles": {
+      "author": "Hector Ouilhet Olmos",
+      "illustrator": "Hector Ouilhet Olmos",
+      "designer": "Hector Ouilhet Olmos",
+      "spanishLanguageAuthor": "Hector Ouilhet Olmos"
+    },
+    "digital": {
+      "projectWebsiteFirstPublished": "2026-06-28",
+      "englishImmersiveFirstPublished": "2026-07-16",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "englishAudioDuration": "19 minutes 58 seconds",
+      "spanishAudioDuration": "20 minutes 9 seconds"
+    },
+    "print": {
+      "printPublicationDate": null,
+      "publicationLabel": "Forthcoming; date to be recorded after first public availability",
+      "language": "English",
+      "pages": 64,
+      "format": "Clothbound hardcover",
+      "dimensions": "5½ × 8½ inches"
+    }
+  }
+}

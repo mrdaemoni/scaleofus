@@ -1,3 +1,5 @@
+import { windPublication } from '../../../../src/content/publication';
+
 // Edition facts supplied by the author’s print specification and latest mock.
 // Manufacturing prices and delivery information remain private source material.
 export const windEdition = {
@@ -7,7 +9,11 @@ export const windEdition = {
     'In English.'
   ],
   details: [
+    ['Author & illustrator', windPublication.author],
     ['Publisher', 'Scale of Us'],
+    ['ISBN', windPublication.isbn],
+    ['Publication', windPublication.printPublicationLabel],
+    ['Readership', windPublication.audience],
     ['Format', 'Clothbound hardcover'],
     ['Dimensions', '5½ × 8½ inches'],
     ['Pages', '64'],

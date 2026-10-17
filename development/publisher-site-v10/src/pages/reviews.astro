@@ -1,0 +1,42 @@
+---
+import Publisher from '../layouts/Publisher.astro';
+import { linkedInPost } from '../data/stories';
+import { windPublication } from '../../../../src/content/publication';
+---
+<Publisher
+  title="Reviews — The Boy Who Tried to Catch the Wind"
+  description="Review information and reader responses for The Boy Who Tried to Catch the Wind by Hector Ouilhet Olmos."
+  active="press"
+>
+  <section class="page-intro wrap">
+    <p class="eyebrow">REVIEWS & READER RESPONSES</p>
+    <h1>What stayed<br /><em>with you?</em></h1>
+    <p>For independent reviewers, librarians, educators, reading groups, and readers of the free digital story.</p>
+  </section>
+  <div class="prose-layout wrap">
+    <aside aria-label="On this page"><a href="#review">Review the work</a><a href="#policy">Review policy</a><a href="#responses">Reader responses</a></aside>
+    <article>
+      <section id="review">
+        <h2>Review the complete work.</h2>
+        <p><em>{windPublication.title}</em> is available as a complete English and Spanish online reading, with optional synchronized narration. The printed edition is forthcoming.</p>
+        <ul>
+          <li><a href="/immerse/wind/">English: read or listen</a></li>
+          <li><a href="/immerse/es/" lang="es">Español: leer o escuchar</a></li>
+          <li><a href="/press/">Publication facts and press materials</a></li>
+          <li><a href="/press/scale-of-us-discussion-guide.txt" download>Discussion guide</a></li>
+        </ul>
+      </section>
+      <section id="policy">
+        <h2>A clear review policy.</h2>
+        <p>Honest positive and critical responses are welcome. A complimentary copy does not require a positive review. Reviewers should disclose a complimentary copy, a personal relationship with the author, or another material connection. Excerpts will not be republished as endorsements without permission and agreed attribution.</p>
+        <p>Physical review copies will be considered after the books arrive and are inspected. The site does not currently collect private review submissions or email addresses.</p>
+      </section>
+      <section id="responses">
+        <h2>The first conversation.</h2>
+        <p>Early readers responded to the digital story in the original public conversation on LinkedIn.</p>
+        <p><a href={linkedInPost} target="_blank" rel="noopener noreferrer">Read the public reader conversation ↗</a></p>
+        <p class="fact-note">No quotation from that conversation is presented here as an endorsement without the speaker’s approval.</p>
+      </section>
+    </article>
+  </div>
+</Publisher>

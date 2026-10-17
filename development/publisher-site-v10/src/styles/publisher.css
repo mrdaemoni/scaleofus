@@ -177,6 +177,7 @@ h1 em,h2 em { font-weight:350; }
 .review-disclosure>summary::-webkit-details-marker { display:none; }
 .review-form { margin-top:25px; max-width:800px; background:var(--wash); padding:28px; border-radius:25px 34px 26px 30px; }
 .local-notice { font-size:10px; line-height:1.7; margin-bottom:24px; max-width:700px; }
+.fact-note { margin-top:18px; padding:14px 18px; background:var(--wash); font-size:11px!important; line-height:1.7; }
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
 .review-form label { display:flex; flex-direction:column; gap:8px; font-size:12px; margin-bottom:20px; }
 .review-form small { font-size:10px; }

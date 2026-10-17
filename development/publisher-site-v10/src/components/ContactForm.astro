@@ -1,0 +1,89 @@
+---
+import DrawnButton from './DrawnButton.astro';
+---
+<section class="contact-section wrap" id="contact" aria-labelledby="contact-title">
+  <div class="contact-intro">
+    <p class="eyebrow">GET IN TOUCH</p>
+    <h2 id="contact-title">Start a<br /> <em>conversation.</em></h2>
+    <p>A question about the book, an invitation to read together, or an idea to share.</p>
+  </div>
+  <form class="contact-form" aria-label="Contact Scale of Us" aria-describedby="contact-notice" method="dialog" data-contact-form>
+    <p class="contact-notice" id="contact-notice"><strong>Local preview.</strong> Sending is not available yet. You can try the form; your inquiry will not be sent or saved.</p>
+    <fieldset disabled>
+      <legend class="contact-required">All fields are required.</legend>
+      <div class="contact-grid">
+        <label for="contact-name">Your name<input id="contact-name" name="name" autocomplete="name" required maxlength="120" /></label>
+        <label for="contact-email">Your email<input id="contact-email" name="email" type="email" autocomplete="email" required maxlength="254" /></label>
+      </div>
+      <label for="contact-type">What is your inquiry about?
+        <select id="contact-type" name="inquiry" required>
+          <option value="">Choose a topic</option>
+          <option value="general">General question</option>
+          <option value="readings">Readings or events</option>
+          <option value="press">Press or interview</option>
+          <option value="book">Book or order inquiry</option>
+          <option value="rights">Rights, translation, or permissions</option>
+          <option value="other">Something else</option>
+        </select>
+      </label>
+      <label for="contact-message">Your message<textarea id="contact-message" name="message" rows="5" required maxlength="4000" aria-describedby="contact-message-hint"></textarea></label>
+      <p class="contact-hint" id="contact-message-hint">Up to 4,000 characters. Please leave out payment details and other sensitive information.</p>
+      <DrawnButton class="contact-preview" art="n06" data-contact-preview>Preview inquiry</DrawnButton>
+      <div class="contact-result" role="status" aria-live="polite" aria-atomic="true" data-contact-result></div>
+    </fieldset>
+    <noscript><p>This preview needs JavaScript. Email delivery is not connected.</p></noscript>
+  </form>
+</section>
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach(form => {
+    const fields = form.querySelector<HTMLFieldSetElement>('fieldset')!;
+    const result = form.querySelector<HTMLElement>('[data-contact-result]')!;
+    const name = form.querySelector<HTMLInputElement>('[name="name"]')!;
+    const email = form.querySelector<HTMLInputElement>('[name="email"]')!;
+    const inquiry = form.querySelector<HTMLSelectElement>('[name="inquiry"]')!;
+    const message = form.querySelector<HTMLTextAreaElement>('[name="message"]')!;
+    // Fail closed: no endpoint, mailto, network call, logging, or persistent storage.
+    // method="dialog" also prevents native network submission if this script fails.
+    form.addEventListener('submit', event => { event.preventDefault(); preview(); });
+    function preview() {
+      [name, message].forEach(field => field.setCustomValidity(field.value.trim() ? '' : 'Please fill out this field.'));
+      if (!form.reportValidity()) return;
+      const notice = document.createElement('p');
+      notice.textContent = 'Preview only — your inquiry has not been sent or saved.';
+      const summary = document.createElement('p');
+      summary.textContent = `${inquiry.selectedOptions[0].text}: ${name.value.trim()} (${email.value.trim()})`;
+      const body = document.createElement('p');
+      body.className = 'contact-message-preview';
+      body.textContent = message.value.trim();
+      result.replaceChildren(notice, summary, body);
+    }
+    form.querySelector('[data-contact-preview]')!.addEventListener('click', preview);
+    form.addEventListener('input', () => {
+      [name, message].forEach(field => field.setCustomValidity(''));
+      result.replaceChildren();
+    });
+    form.addEventListener('change', () => result.replaceChildren());
+    fields.disabled = false;
+  });
+</script>
+<style>
+  .contact-section { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.45fr); gap:clamp(32px,6vw,88px); padding-block:72px 32px; border-top:1px solid var(--line); }
+  .contact-intro h2 { font-family:var(--serif); font-size:clamp(42px,5vw,64px); line-height:1.08; margin:12px 0 24px; }
+  .contact-intro>p:last-child { max-width:320px; font-size:15px; }
+  .contact-form { min-width:0; padding:28px; border-radius:20px 28px 22px 26px; background:var(--wash); color:#624858; }
+  .contact-form fieldset { margin:0; padding:0; border:0; min-width:0; }
+  .contact-notice { font-size:13px; line-height:1.6; margin:0 0 22px; }
+  .contact-required { font-size:12px; margin-bottom:16px; }
+  .contact-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; }
+  .contact-form label { display:flex; flex-direction:column; gap:7px; margin-bottom:18px; font-size:13px; }
+  .contact-form input,.contact-form select,.contact-form textarea { width:100%; min-width:0; min-height:46px; padding:11px 12px; border:1px solid #a58a9c; border-radius:6px 9px 6px 8px; color:#624858; background:var(--paper); font:inherit; font-size:16px; }
+  .contact-form textarea { resize:vertical; }
+  .contact-form :is(input,select,textarea,button):focus-visible { outline:2px solid #624858; outline-offset:4px; }
+  .contact-hint { margin:-8px 0 22px; font-size:12px; line-height:1.6; }
+  .contact-result { font-size:13px; overflow-wrap:anywhere; }
+  .contact-result:not(:empty) { margin-top:22px; border-top:1px solid #bca6b4; padding-top:18px; }
+  .contact-result p { margin:0 0 10px; }
+  .contact-message-preview { white-space:pre-wrap; }
+  @media(max-width:700px) { .contact-section { grid-template-columns:1fr; gap:24px; padding-top:48px; } .contact-intro h2 br { display:none; } .contact-intro h2 { font-size:44px; } .contact-form { padding:22px; } }
+  @media(max-width:440px) { .contact-grid { grid-template-columns:1fr; gap:0; } .contact-form { padding:18px; } }
+</style>

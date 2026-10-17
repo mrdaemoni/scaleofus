@@ -39,6 +39,8 @@
 .release-heading h1,.release-heading h2 { font-size:clamp(38px,4.3vw,58px); line-height:1.12; }
 .title-wind { width:48px; height:48px; margin-right:16px; }
 .release-heading>.story-intro { margin-top:16px; max-width:850px; }
+.creator-line { margin-top:12px; font-size:13px; line-height:1.6; }
+.creator-line strong { font-weight:650; }
 .story-feature { grid-template-columns:repeat(12,minmax(0,1fr)); gap:24px; }
 .story-tabs { gap:24px; }
 .story-tabs [role=tab] { min-height:48px; padding:8px 0; gap:12px; }

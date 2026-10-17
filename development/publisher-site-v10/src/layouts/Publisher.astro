@@ -6,9 +6,18 @@ import '../styles/publisher.css';
 import '../styles/harmony.css';
 import DrawnArt from '../components/DrawnArt.astro';
 import BrandName from '../components/BrandName.astro';
+import ContactForm from '../components/ContactForm.astro';
 import { cloudflareWebAnalyticsToken } from '../../../../site.config.mjs';
 const isPreview = import.meta.env.BASE_URL.startsWith('/publisher');
-const { title = 'Scale of Us — Stories at the human scale', description = 'Stories about being human in the age of AI. In print, online, and in immersive reading.', active = '' } = Astro.props;
+const {
+  title = 'Scale of Us — Stories at the human scale',
+  description = 'Stories about being human in the age of AI. In print, online, and in immersive reading.',
+  active = '',
+  socialImage = '/edition/cover.webp',
+  structuredData,
+} = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname.replace(/^\/publisher(?=\/|$)/, '' ) || '/', 'https://scaleofus.com');
+const socialImageUrl = new URL(socialImage, 'https://scaleofus.com');
 ---
 <!doctype html>
 <html lang="en" data-palette="pink">
@@ -16,11 +25,23 @@ const { title = 'Scale of Us — Stories at the human scale', description = 'Sto
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {isPreview && <meta name="robots" content="noindex, nofollow" />}
-    <link rel="canonical" href={new URL(Astro.url.pathname.replace(/^\/publisher(?=\/|$)/, "" ) || "/", "https://scaleofus.com")} />
+    <link rel="canonical" href={canonicalUrl} />
     {cloudflareWebAnalyticsToken && <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({token:cloudflareWebAnalyticsToken})}></script>}
     <meta name="description" content={description} />
     <meta name="theme-color" content="#fff5f9" />
     <link rel="icon" href="/favicon.svg" />
+    <link rel="sitemap" href="https://scaleofus.com/sitemap.xml" />
+    <meta property="og:site_name" content="Scale of Us" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
     <title>{title}</title>
   </head>
   <body>
@@ -30,9 +51,10 @@ const { title = 'Scale of Us — Stories at the human scale', description = 'Sto
       <div class="publisher-identity"><a class="wordmark brand" href="/" aria-label="Scale of Us home"><DrawnArt name="n30" class="brand-scene" eager /><BrandName /></a><p class="publisher-description">Stories about being human in the <span class="statement-ending">age of AI.</span></p></div>
       <nav aria-label="Main navigation">
         <a href="/about/" aria-current={active === 'about' ? 'page' : undefined}>About</a>
+        <a href="/press/" aria-current={active === 'press' ? 'page' : undefined}>Press</a>
       </nav>
     </header>
-    <main id="main"><slot /></main>
+    <main id="main"><slot /><ContactForm /></main>
     <footer class="site-footer">
       <div class="footer-landscape">
         <svg class="footer-horizon" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
@@ -40,7 +62,7 @@ const { title = 'Scale of Us — Stories at the human scale', description = 'Sto
         </svg>
         <div class="footer-world wrap"><p>Scale for humans.<br /><em>A wider view.</em></p><DrawnArt name="n51" class="footer-town" /></div>
       </div>
-      <div class="wrap footer-top"><nav class="footer-links" aria-label="Footer"><a href="/about/" aria-current={active === "about" ? "page" : undefined}>About</a></nav></div>
+      <div class="wrap footer-top"><nav class="footer-links contact-footer-links" aria-label="Footer"><a href="/about/" aria-current={active === "about" ? "page" : undefined}>About</a><a href="/press/" aria-current={active === "press" ? "page" : undefined}>Press & review</a><a href="/help/">Help</a><a href="#contact">Contact</a></nav></div>
       <div class="wrap footer-bottom"><span>© 2026 Scale of Us</span>{isPreview && <span>Publisher preview</span>}</div>
     </footer>
     {isPreview && <details class="preview-tools"><summary aria-label="Compare pastel colour palettes">Colours</summary><div class="preview-tool-panel"><p>DESIGN PREVIEW · 10</p><div class="palette-picker" role="group" aria-label="Preview pastel palettes"><button type="button" data-palette="sky" aria-pressed="false" aria-label="Pale blue palette"><span></span>Sky</button><button type="button" data-palette="pink" aria-pressed="true" aria-label="Blush pink palette"><span></span>Pink</button><button type="button" data-palette="lilac" aria-pressed="false" aria-label="Soft lilac palette"><span></span>Lilac</button></div></div></details>}
@@ -60,3 +82,7 @@ const { title = 'Scale of Us — Stories at the human scale', description = 'Sto
     try { sessionStorage.setItem('publisher-palette', button.dataset.palette!); } catch { /* Palette still works without storage. */ }
   }));
 </script>
+
+<style>
+  .site-footer .contact-footer-links { gap:20px; flex-wrap:wrap; }
+</style>

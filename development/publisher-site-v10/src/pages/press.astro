@@ -1,5 +1,104 @@
 ---
 import Publisher from '../layouts/Publisher.astro';
+import { bookPhotos } from '../data/photos';
 import { windEdition } from '../data/edition';
+import { windBookStructuredData, windPublication } from '../../../../src/content/publication';
 ---
-<Publisher title="Press & review copies — Scale of Us"><section class="page-intro wrap"><p class="eyebrow">FOR REVIEWERS, LIBRARIANS, AND THE PRESS</p><h1>The stories,<br /><em>at a glance.</em></h1><p>Edition information and reading links in one place.</p></section><div class="prose-layout wrap"><aside><a href="#book">The first book</a><a href="#materials">Review materials</a><a href="#contact">Review copies & rights</a></aside><article><section id="book"><h2>The Boy Who Tried<br />to Catch the Wind</h2><p>A story about a boy, a machine, and the part of us no answer can hold.</p><dl class="spec-list"><div><dt>Creator</dt><dd>Hector Ouilhet Olmos</dd></div><div><dt>Publisher</dt><dd>Scale of Us</dd></div><div><dt>Formats</dt><dd>Printed hardcover, online reading, immersive reading</dd></div><div><dt>Digital languages</dt><dd>English and Spanish</dd></div><div><dt>Print language</dt><dd>English</dd></div>{windEdition.details.filter(([label]) => ['Dimensions','Pages','Cover','Cover & spine','Paper','Endpapers','Bookmark'].includes(label)).map(([label,value]) => <div><dt>{label}</dt><dd>{value}</dd></div>) }</dl><p class="local-notice">Before publication of this press page: confirm ISBN, print publication date, retail price, age/readership positioning, and contact details. No award recognition is claimed.</p></section><section id="materials"><h2>See the work.</h2><ul><li><a href="/stories/the-boy-who-tried-to-catch-the-wind/">The book, photographs, and sample spread</a></li><li><a href="/read/wind/#story">Read the complete English story</a></li><li><a href="/read/es/#story">Read the complete Spanish story</a></li><li><a href="/immerse/wind/">Open the immersive edition, then press Listen</a></li><li><a href="/press/book-information.txt" download>Download the draft book information sheet</a></li></ul><p class="local-notice">The information sheet is marked as a draft. Approved high-resolution images, a portrait, a review PDF, captions, and reproduction permissions will form the launch press kit.</p></section><section id="contact"><h2>Review copies & rights.</h2><p>We’ll reserve physical copies for reviewers and award submissions before allocating the rest for gifts and sale. A publisher contact address will be added before launch.</p></section></article></div></Publisher>
+<Publisher
+  title="Press, review & library information — Scale of Us"
+  description="Book information, review materials, library and educator resources for The Boy Who Tried to Catch the Wind."
+  active="press"
+  structuredData={windBookStructuredData()}
+>
+  <section class="page-intro wrap">
+    <p class="eyebrow">FOR REVIEWERS, LIBRARIANS, EDUCATORS, AND THE PRESS</p>
+    <h1>The story,<br /><em>ready to share.</em></h1>
+    <p>Verified book information, review materials, downloadable images, and reading links in one place.</p>
+  </section>
+
+  <div class="prose-layout wrap">
+    <aside aria-label="On this page">
+      <a href="#book">Book information</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#access">Access & teaching</a>
+      <a href="#kit">Press kit</a>
+      <a href="#creation">Creation & rights</a>
+      <a href="#contact">Contact</a>
+    </aside>
+
+    <article>
+      <section id="book">
+        <h2>{windPublication.title}</h2>
+        <p>{windPublication.description}</p>
+        <dl class="spec-list">
+          {windEdition.details.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}
+          <div><dt>Digital languages</dt><dd>English and Spanish</dd></div>
+          <div><dt>Online audio</dt><dd>English 19:58; Spanish 20:09</dd></div>
+          <div><dt>Digital history</dt><dd>Web story first published June 28, 2026; immersive reading and audio first added July 16, 2026</dd></div>
+        </dl>
+        <p class="fact-note">The ISBN was purchased directly from Bowker, matches the printer-facing copyright page, and has a valid check digit. <a href={windPublication.isbnRegistryUrl}>View the public Bowker/Bookwire record ↗</a>. Its price and publication month are being reconciled with the final release plan. The physical release date will be added here after the edition is received, inspected, and released.</p>
+      </section>
+
+      <section id="reviews">
+        <h2>Review the story.</h2>
+        <p>The complete digital story is free to read in English and Spanish. Reviewers can also experience the synchronized narration and animated drawings.</p>
+        <ul>
+          <li><a href="/immerse/wind/">Read or listen in English</a></li>
+          <li><a href="/immerse/es/" lang="es">Leer o escuchar en español</a></li>
+          <li><a href="/stories/the-boy-who-tried-to-catch-the-wind/#edition">See the printed edition</a></li>
+          <li><a href="/reviews/">Review information and disclosure policy</a></li>
+        </ul>
+        <p>The copies currently reserved by the author are personal and relationship-building gifts, not a formal review-copy programme, and carry no expectation of coverage or a positive review. Formal review copies will be considered after the physical edition has arrived and passed inspection. Complimentary copies and personal relationships should be disclosed with any published review.</p>
+      </section>
+
+      <section id="access">
+        <h2>For libraries, classrooms, and reading groups.</h2>
+        <p>The online editions provide selectable text, chapter navigation, keyboard-accessible controls, descriptive text for finished drawings, reduced-motion support, and the complete story alongside audio. The downloadable PDF has not yet been certified as an accessible PDF or EPUB.</p>
+        <ul>
+          <li><a href="/press/scale-of-us-discussion-guide.txt" download>Download the discussion guide</a></li>
+          <li><a href="/books/the-boy-who-tried-to-catch-the-wind/The-Boy-Who-Tried-to-Catch-the-Wind.pdf" download>Download the free reading PDF</a></li>
+          <li><a href="/read/wind/#grown-ups">Read the philosophical notes for grown-ups</a></li>
+        </ul>
+        <p>Libraries, schools, and book clubs may show the free online story during a noncommercial group reading or discussion, with credit, no alteration, and no redistribution. Educators may download and print the discussion guide for those sessions.</p>
+        <p class="fact-note">An accessible EPUB 3 remains a production item. It will not be described as accessible until it has passed EPUBCheck and Ace review.</p>
+      </section>
+
+      <section id="kit">
+        <h2>Download the press kit.</h2>
+        <p>The kit includes the same six photographs shown on our home page, publication facts, short and long descriptions, a creator biography, rights notes, and captions.</p>
+        <div class="press-photographs" aria-label="Homepage book photographs">{bookPhotos.map(photo => <figure><a href={photo.src} download aria-label={`Download photograph: ${photo.label}`}><img src={photo.src} alt={photo.alt} width="960" height="1280" loading="lazy" /></a><figcaption>{photo.label}</figcaption></figure>)}</div>
+        <p><a class="button" href="/press/Scale-of-Us-Wind-Press-Kit.zip" download>Download press kit · ZIP</a></p>
+        <ul>
+          <li><a href="/press/image-manifest.json" download>Photograph captions and source manifest</a></li>
+          <li><a href="/press/book-information.txt" download>Book information sheet</a></li>
+          <li><a href="/press/scale-of-us-press-copy.txt" download>Descriptions, biography, and captions</a></li>
+          <li><a href="/press/scale-of-us-rights-and-credits.txt" download>Rights and creation notes</a></li>
+        </ul>
+        <p class="fact-note">An approved author portrait is not yet in the kit. A dedicated public press address has been selected but will be added only after forwarding is activated and independently verified.</p>
+      </section>
+
+      <section id="creation">
+        <h2>Creation and rights.</h2>
+        <p><strong>Written, illustrated, and designed by Hector Ouilhet Olmos.</strong> The title, chapter lettering, and illustrations are drawn in the creator’s hand, with digital preparation for print and the online reader. The Spanish-language version is by the author.</p>
+        <p>Hector wrote and illustrated the story. He developed its ideas in conversation with <a href="https://www.myalicia.com" target="_blank" rel="noopener noreferrer">Alicia, his personal AI agent ↗</a>. ChatGPT and Codex supported construction of the website, and Gemini generated the generic fictional voices and sound effects for the online edition.</p>
+        <p>{windPublication.rights}</p>
+        <p>Serious enquiries are welcome for translation, audiobook, film or animation, educational, library, and foreign-edition rights. All rights remain with Hector Ouilhet Olmos unless he approves a specific written agreement.</p>
+        <p class="fact-note">Gemini generated generic fictional voices and sound effects; none was intended to imitate a real person. The score uses four Epidemic Sound catalogue tracks: “Never Say No” by Clarence Reed, “The Adventure Begins” by Philip Ayers, “Superior” by Silver Maple, and “Happy Children” by Marc Torch. Music clearance is pending written confirmation from Epidemic Sound and is not represented as complete. No third-party award, review, or accessibility certification is claimed.</p>
+      </section>
+
+      <section id="press-enquiries">
+        <h2>Review copies, interviews, and rights.</h2>
+        <p>The complete digital editions and downloadable materials above are available without a request. The contact form below is a local preview; inquiry delivery is not connected yet.</p>
+      </section>
+    </article>
+  </div>
+</Publisher>
+
+<style>
+  .press-photographs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin:28px 0; }
+  .press-photographs figure { margin:0; min-width:0; }
+  .press-photographs a { display:block; background:var(--wash); }
+  .press-photographs img { display:block; width:100%; height:auto; aspect-ratio:3/4; object-fit:contain; }
+  .press-photographs figcaption { font-size:12px; margin-top:8px; }
+  @media(max-width:600px) { .press-photographs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; } }
+</style>

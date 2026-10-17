@@ -15,6 +15,7 @@ const {
   themeColor = "#f3dfe1",
   lang = "en",
   alternateLanguages = [],
+  structuredData,
 } = Astro.props;
 
 const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, "https://scaleofus.com").toString();
@@ -34,6 +35,7 @@ const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
       <link rel="alternate" hreflang={alternate.locale} href={new URL(alternate.href, "https://scaleofus.com").toString()} />
     ))}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="https://scaleofus.com/sitemap.xml" />
     <meta property="og:site_name" content="Scale of Us" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -46,6 +48,7 @@ const socialImageUrl = new URL(socialImage, "https://scaleofus.com").toString();
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageUrl} />
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, "\\u003c")} />}
     {cloudflareWebAnalyticsToken && (
       <script
         type="module"

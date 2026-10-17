@@ -4,6 +4,7 @@ import FurtherReadingContent from "./FurtherReadingContent.astro";
 import "../styles/global.css";
 import { formatTime, parseStoryMarkdown } from "../lib/story";
 import type { StoryBookSource } from "../lib/story-book";
+import { windBookStructuredData, windPublication } from "../content/publication";
 import {
   storyArt,
   storyArtKind,
@@ -140,6 +141,12 @@ const epigraph = book.presentation?.epigraph;
 const experienceDescription = locale === "es"
   ? `Una experiencia inmersiva de lectura. ${windStoryReader.intro}`
   : `${narrationAvailable ? "An immersive reading and listening experience." : "An immersive reading experience."} ${windStoryReader.intro}`;
+const readerStructuredData = windBookStructuredData({
+  url: new URL(book.presentation?.canonicalPath ?? Astro.url.pathname, "https://scaleofus.com").toString(),
+  language: isSpanish ? "es" : "en",
+  name: windStoryReader.title,
+  audio: narrationAvailable,
+});
 const resolvedSpeaker = (
   chapterNumber: number,
   authoredSpeaker: string,
@@ -185,6 +192,7 @@ const chapterTheme = (chapterNumber: number) =>
   themeColor={book.presentation?.themeColor}
   lang={locale}
   alternateLanguages={languageLinks}
+  structuredData={readerStructuredData}
 >
   <a class="reader-skip-link" href="#story" data-reader-read>{isSpanish ? "Saltar al cuento" : "Skip to story"}</a>
   <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
@@ -280,6 +288,7 @@ const chapterTheme = (chapterNumber: number) =>
           <p class="cover-title-fallback" aria-hidden="true">{windStoryReader.title}</p>
         )}
         <p class="cover-intro">{windStoryReader.intro}</p>
+        <p class="cover-byline">{isSpanish ? "Escrito e ilustrado por" : "Written and illustrated by"} <strong>{windPublication.author}</strong></p>
         <div class={`cover-story-entry ${narrationAvailable ? "" : "is-read-only"}`} role="group" aria-label={narrationAvailable ? `${ui.read} ${isSpanish ? "o" : "or"} ${ui.listen}` : ui.read}>
           <a class="entry-read" href="#story" data-reader-read>
             {entryIcons?.read ? (
