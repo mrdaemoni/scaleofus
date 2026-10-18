@@ -1,6 +1,6 @@
 SCALE OF US PRESS KIT
 The Boy Who Tried to Catch the Wind
-Updated October 17, 2026 — local, unpublished revision
+Updated October 17, 2026
 
 Included:
 - book-information.txt — verified metadata and edition details
@@ -19,7 +19,8 @@ These six photographs are byte-for-byte copies of the current homepage photograp
 
 Not yet included:
 - Approved author portrait
-- Verified public press email or working contact submission
 - Certified accessible EPUB 3
 
-Public destination after approved deployment: https://scaleofus.com/press/
+Press materials: https://scaleofus.com/press/
+Contact: hello@scaleofus.com
+Contact form: https://scaleofus.com/#contact

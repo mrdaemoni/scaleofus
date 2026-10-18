@@ -7,10 +7,12 @@ import DrawnButton from './DrawnButton.astro';
     <h2 id="contact-title">Start a<br /> <em>conversation.</em></h2>
     <p>A question about the book, an invitation to read together, or an idea to share.</p>
   </div>
-  <form class="contact-form" aria-label="Contact Scale of Us" aria-describedby="contact-notice" method="dialog" data-contact-form>
-    <p class="contact-notice" id="contact-notice"><strong>Local preview.</strong> Sending is not available yet. You can try the form; your inquiry will not be sent or saved.</p>
+  <form class="contact-form" aria-label="Contact Scale of Us" aria-describedby="contact-notice" method="post" action="https://formspree.io/f/xqpejzzr" data-contact-form>
+    <p class="contact-notice" id="contact-notice">Your inquiry is sent to Scale of Us through <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>, which processes your name, email, topic and message and keeps a submission history for up to 30 days. We use your details to respond to your inquiry.</p>
     <fieldset disabled>
       <legend class="contact-required">All fields are required.</legend>
+      <input type="hidden" name="_subject" value="Scale of Us contact inquiry" />
+      <div hidden aria-hidden="true"><label>Leave this empty<input name="_gotcha" tabindex="-1" autocomplete="off" /></label></div>
       <div class="contact-grid">
         <label for="contact-name">Your name<input id="contact-name" name="name" autocomplete="name" required maxlength="120" /></label>
         <label for="contact-email">Your email<input id="contact-email" name="email" type="email" autocomplete="email" required maxlength="254" /></label>
@@ -28,43 +30,15 @@ import DrawnButton from './DrawnButton.astro';
       </label>
       <label for="contact-message">Your message<textarea id="contact-message" name="message" rows="5" required maxlength="4000" aria-describedby="contact-message-hint"></textarea></label>
       <p class="contact-hint" id="contact-message-hint">Up to 4,000 characters. Please leave out payment details and other sensitive information.</p>
-      <DrawnButton class="contact-preview" art="n06" data-contact-preview>Preview inquiry</DrawnButton>
+      <DrawnButton class="contact-send" art="n06" data-contact-send>Send inquiry</DrawnButton>
       <div class="contact-result" role="status" aria-live="polite" aria-atomic="true" data-contact-result></div>
     </fieldset>
-    <noscript><p>This preview needs JavaScript. Email delivery is not connected.</p></noscript>
+    <noscript><p>Please enable JavaScript to send an inquiry, or email hello@scaleofus.com directly.</p></noscript>
   </form>
 </section>
 <script>
-  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach(form => {
-    const fields = form.querySelector<HTMLFieldSetElement>('fieldset')!;
-    const result = form.querySelector<HTMLElement>('[data-contact-result]')!;
-    const name = form.querySelector<HTMLInputElement>('[name="name"]')!;
-    const email = form.querySelector<HTMLInputElement>('[name="email"]')!;
-    const inquiry = form.querySelector<HTMLSelectElement>('[name="inquiry"]')!;
-    const message = form.querySelector<HTMLTextAreaElement>('[name="message"]')!;
-    // Fail closed: no endpoint, mailto, network call, logging, or persistent storage.
-    // method="dialog" also prevents native network submission if this script fails.
-    form.addEventListener('submit', event => { event.preventDefault(); preview(); });
-    function preview() {
-      [name, message].forEach(field => field.setCustomValidity(field.value.trim() ? '' : 'Please fill out this field.'));
-      if (!form.reportValidity()) return;
-      const notice = document.createElement('p');
-      notice.textContent = 'Preview only — your inquiry has not been sent or saved.';
-      const summary = document.createElement('p');
-      summary.textContent = `${inquiry.selectedOptions[0].text}: ${name.value.trim()} (${email.value.trim()})`;
-      const body = document.createElement('p');
-      body.className = 'contact-message-preview';
-      body.textContent = message.value.trim();
-      result.replaceChildren(notice, summary, body);
-    }
-    form.querySelector('[data-contact-preview]')!.addEventListener('click', preview);
-    form.addEventListener('input', () => {
-      [name, message].forEach(field => field.setCustomValidity(''));
-      result.replaceChildren();
-    });
-    form.addEventListener('change', () => result.replaceChildren());
-    fields.disabled = false;
-  });
+  import { setupContactForms } from '../scripts/contact';
+  setupContactForms();
 </script>
 <style>
   .contact-section { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.45fr); gap:clamp(32px,6vw,88px); padding-block:72px 32px; border-top:1px solid var(--line); }

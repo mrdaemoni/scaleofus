@@ -52,3 +52,11 @@ The shared publisher layout now includes the bottom contact form on every publis
 This is a static GitHub Pages/Astro site. No backend, SMTP integration, credentials or existing email delivery service was found. Namecheap inbound forwarding is configured but untested and is not a form-submission endpoint. Before enabling delivery, Hector must approve an existing controlled backend plus a transactional sender, or an external form-processing service/account. Confirm receiving-alias delivery separately; configure server-side validation/rate limiting and privacy handling, then perform one explicitly approved end-to-end email test. No service, secret, account, permission or payment has been added.
 
 Press photographs come directly from src/data/photos.ts, shared with the homepage. Run node scripts/build-press-kit.mjs from the repository root to refresh the allowlisted ZIP and image manifest. Six photos are copied without modification; their byte counts, dimensions, captions and SHA-256 values are recorded. Older unrelated image assets remain preserved outside the ZIP. This does not update docs/ or deploy anything.
+
+## Connected local Formspree revision — October 17 PDT
+
+Hector completed signup; hello forwarding and the free endpoint https://formspree.io/f/xqpejzzr are verified by one labeled test reaching the inbox. The connected local form uses scripts/contact.ts, with no key/secret, no automatic retry, explicit-success detection, truthful uncertainty errors and duplicate protection. Run node --test scripts/test-contact.mjs for isolated mocked tests; they never send real email. One actual notification was verified at October 18 00:24:44 UTC. The public site still has the earlier non-sending preview; deploy this separate revision only after the verified release step. hola remains untested. No paid plan or expanded account grant was used.
+
+## Verified contact-form release
+
+The connected form is approved for publication after its single labeled local test reached the receiving inbox. Press copy and the ZIP identify hello@scaleofus.com and the public contact form. The 50/month free tier and 30-day archive apply; no API key or paid service is required. Sale/checkout remains closed. Earlier local-only notes above describe the preceding verification stage.
