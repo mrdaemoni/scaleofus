@@ -200,3 +200,10 @@ reader suite passes, including all chapters, pause/resume, reduced motion and
 old root chapter bookmarks. All 1,691 local references pass. Evidence:
 `development/publisher-site-v10/proof/direct-english-reader/` (ignored).
 No push or deployment is authorized for this follow-up.
+
+
+## Music-free narration release — October 19, 2026
+
+The English v17 and Spanish v1 original pre-score masters were recovered and directly encoded as the existing progressive MP3 and fast-start M4A assets. No separation model, voice regeneration, new music, trimming, time stretching or narrator muting was used. Procedurally generated scene ambience remains. Master and web durations agree within 0.00002 seconds, so all heading/beat/word timings remain unchanged. Both source masters remain untouched; the previous four web files and detailed checksum/sample audit are preserved privately outside the deployed build.
+
+Validation: 24 full-decoded sample comparisons across both languages and formats exceed .98 source correlation with at most a few samples of codec alignment; narration signal is non-silent. At 390px both readers play unmuted, advance their media clock, highlight words, pause/resume and seek to all seven existing chapter targets. Build budgets and all 1,827 local references pass. Only four compressed narration files are in docs; legacy HLS is excluded. Existing audio paths remain, with new music-free cache versions, preserving old links and the award-entry URLs. Press notes and ZIP describe current narration/ambience without a music soundtrack. Competition submissions are unchanged.

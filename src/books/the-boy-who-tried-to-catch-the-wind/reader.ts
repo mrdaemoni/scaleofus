@@ -34,14 +34,14 @@ export const windStoryReader: StoryReaderConfig = {
     // Keep playback on one progressive MP3. It has no container handoffs or
     // MP4 index dependency, and every mobile browser can resume it with an
     // ordinary byte-range request if the connection briefly goes quiet.
-    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v17-scored-20260809",
+    src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v17-music-free-20261019",
     sources: [
       {
-        src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v17-scored-20260809",
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.mp3?v=story-v17-music-free-20261019",
         type: "audio/mpeg",
       },
       {
-        src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=story-v17-scored-20260809",
+        src: "/audio/the-boy-who-tried-to-catch-the-wind.m4a?v=story-v17-music-free-20261019",
         type: 'audio/mp4; codecs="mp4a.40.2"',
       },
     ],

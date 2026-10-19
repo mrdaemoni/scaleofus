@@ -22,14 +22,14 @@ const spanishReader = {
   intro: "Una historia sobre un niño, una máquina y esa parte de nosotros que ninguna respuesta puede contener.",
   narrationAvailable: true,
   audio: {
-    src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-scored-20260729",
+    src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-music-free-20261019",
     sources: [
       {
-        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-scored-20260729",
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-music-free-20261019",
         type: "audio/mpeg",
       },
       {
-        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a?v=story-es-v1-scored-20260729",
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a?v=story-es-v1-music-free-20261019",
         type: 'audio/mp4; codecs="mp4a.40.2"',
       },
     ],
