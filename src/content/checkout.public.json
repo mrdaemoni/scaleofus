@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "priceUsd": 75,
+  "shippingUsd": 12,
+  "maximumQuantity": 2,
+  "oneCopyUrl": "https://buy.stripe.com/eVqfZhgZFfZ3grL6t24wM00",
+  "twoCopyUrl": "https://buy.stripe.com/5kQ9AT4cT7sx2AV9Fe4wM01"
+}

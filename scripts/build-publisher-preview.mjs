@@ -56,6 +56,8 @@ for(const file of files.filter(file=>file.endsWith('.html'))) {
   let html=await readFile(file,'utf8');
   html=html.replace(/\b(href|src|action|data-src)="(\/[^"<>]*)"/g, (match,attribute,url)=> {
     if(url.startsWith('//') || /^\/publisher(?:\/|$)/.test(url)) return match;
+    // Checkout is shared with the public site, outside the publisher preview.
+    if(url === '/order/') return match;
     if(shared.has(url.split('/')[1])) return match;
     return `${attribute}="/publisher${url}"`;
   });
