@@ -620,6 +620,17 @@ const chapterTheme = (chapterNumber: number) =>
             <a class="return-link" href="#top" data-reader-home>{ui.backToBeginning}</a>
           </section>
         )}
+        {Boolean(windStoryReader.audio.credits?.length) && (
+          <section id="soundtrack-credits" class="story-music-credits" aria-labelledby="soundtrack-title">
+            <h2 id="soundtrack-title">{isSpanish ? "Música" : "Music"}</h2>
+            <ul>{windStoryReader.audio.credits?.map((credit) => (
+              <li><a href={credit.href}>{credit.title}</a> — {credit.composer}, <a href={credit.licenseHref}>CC BY 4.0</a></li>
+            ))}</ul>
+            <p>{isSpanish
+              ? "Música editada para este cuento: fragmentos, fundidos, ecualización, reducción bajo las voces y sincronización con la narración."
+              : "Music edited for this story: excerpts, fades, EQ, speech ducking, and synchronization with narration."}</p>
+          </section>
+        )}
       </div>
     </div>
   </main>
@@ -657,6 +668,8 @@ const chapterTheme = (chapterNumber: number) =>
     <div class="dock-options" id="dock-options">
       <a href="#story" data-reader-read>{isSpanish ? "Leer a tu ritmo" : "Read at your pace"}</a>
       <a href="#top" data-reader-home>{ui.backToBeginning}</a>
+      {Boolean(windStoryReader.audio.credits?.length) && <a href="#soundtrack-credits" data-reader-read>{isSpanish ? "Créditos de la música" : "Music credits"}</a>}
+      <a href={windStoryReader.audio.src} download>{isSpanish ? "Descargar MP3" : "Download MP3"}</a>
     </div>
     <div class="dock-player">
       <button class="dock-play" type="button" data-play aria-label={isSpanish ? "Reproducir narración" : "Play narration"}>

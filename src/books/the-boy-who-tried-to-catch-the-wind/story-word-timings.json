@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "audioDuration": 1198.474,
+  "audioDuration": 1236.218,
   "model": "openai-whisper-v17-aligned-to-v17-score",
   "chapterStarts": [
     8.28,

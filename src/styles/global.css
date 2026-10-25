@@ -2682,6 +2682,19 @@ body.is-listening .mountain-climber {
     var(--paper);
 }
 
+.story-music-credits {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.story-music-credits h2 { font-size: 24px; margin-bottom: 18px; }
+.story-music-credits ul { padding-left: 20px; }
+.story-music-credits li { margin: 8px 0; }
+
 .grown-main-embedded {
   scroll-margin-top: 40px;
 }
@@ -4336,6 +4349,7 @@ body.story-page[data-staged-listener][data-reader-mode="listen"] .chapter-headin
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-beat,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-epigraph,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-grownups,
+body.story-page[data-staged-listener][data-reader-mode="listen"] .story-music-credits,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-endmark,
 body.story-page[data-staged-listener][data-reader-mode="listen"] .story-after {
   display: none;

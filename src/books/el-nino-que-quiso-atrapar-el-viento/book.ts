@@ -8,6 +8,7 @@ import { windStoryReader } from "../the-boy-who-tried-to-catch-the-wind/reader";
 import { windStoryBook } from "../the-boy-who-tried-to-catch-the-wind/book";
 import type { StoryBookSource } from "../../lib/story-book";
 import type { StoryArtworkSource } from "../../lib/story-reader";
+import soundtrackRelease from "../../content/wind-soundtrack.json";
 
 const spanishLive = (name: string): StoryArtworkSource => ({
   src: `/images/wind-story/live/${name}.svg`,
@@ -22,18 +23,19 @@ const spanishReader = {
   intro: "Una historia sobre un niño, una máquina y esa parte de nosotros que ninguna respuesta puede contener.",
   narrationAvailable: true,
   audio: {
-    src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-music-free-20261019",
+    src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=canonical-soundtrack-v1-20261025",
     sources: [
       {
-        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=story-es-v1-music-free-20261019",
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3?v=canonical-soundtrack-v1-20261025",
         type: "audio/mpeg",
       },
       {
-        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a?v=story-es-v1-music-free-20261019",
+        src: "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a?v=canonical-soundtrack-v1-20261025",
         type: 'audio/mp4; codecs="mp4a.40.2"',
       },
     ],
-    duration: 1208.554,
+    duration: soundtrackRelease.editions.es.duration,
+    credits: soundtrackRelease.music,
   },
   artwork: {
     ...windStoryReader.artwork,

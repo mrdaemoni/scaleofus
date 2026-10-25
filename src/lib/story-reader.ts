@@ -37,6 +37,12 @@ export type StoryReaderConfig = {
       type: string;
     }>;
     duration: number;
+    credits?: ReadonlyArray<{
+      title: string;
+      composer: string;
+      href: string;
+      licenseHref: string;
+    }>;
   };
   artwork: {
     cover?: string;

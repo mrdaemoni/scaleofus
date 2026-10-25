@@ -29,8 +29,9 @@
         "English",
         "Spanish"
       ],
-      "englishAudioDuration": "19 minutes 58 seconds",
-      "spanishAudioDuration": "20 minutes 9 seconds"
+      "englishAudioDuration": "20 minutes 36 seconds",
+      "spanishAudioDuration": "20 minutes 46 seconds",
+      "soundtrackVersion": "canonical-soundtrack-v1-20261025"
     },
     "print": {
       "printPublicationDate": "2026-10-25",

@@ -20,7 +20,23 @@ The print edition embeds Libre Caslon Text, released under the SIL Open Font Lic
 Narration and music
 The online narration was generated through the Gemini API. Local production records identify Gemini 2.5 Flash Preview TTS and the synthetic voices Sulafat, Puck, Enceladus, Algenib, Callirrhoe, Leda, and Charon.
 
-The current English and Spanish online editions use the original pre-score narration masters, with generated ambient scene effects and no music soundtrack. These are direct encodings of the existing narration, with the same chapter and word timing. No replacement music has been added.
+The current English and Spanish online editions use the original narration performances and generated ambient scene effects with a new owner-selected music soundtrack. Spoken chapter and word timing is unchanged. A joyful musical coda follows the last words. Full durations: English 20:36; Spanish 20:46.
+
+Music credits (all five recordings are released under Creative Commons Attribution 4.0):
+- Echoes Of Home — Scott Buckley
+  Source: https://www.scottbuckley.com.au/library/echoes-of-home/
+- Call To Adventure — Scott Buckley
+  Source: https://www.scottbuckley.com.au/library/call-to-adventure/
+- Magic Forest — Kevin MacLeod
+  Source: https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1600044
+- Anabasis I — Scott Buckley
+  Source: https://www.scottbuckley.com.au/library/anabasis-i/
+- Hiraeth — Scott Buckley
+  Source: https://www.scottbuckley.com.au/library/hiraeth/
+License: https://creativecommons.org/licenses/by/4.0/
+Changes: excerpts, fades, EQ, speech ducking, and synchronization with narration.
+Scott Buckley usage guidance: https://www.scottbuckley.com.au/library/using-this-music/
+The music is not registered in Content ID. Text and illustration rights remain separate from the music licenses.
 
 These notes do not make a legal determination about copyright eligibility, third-party licence scope, or competition eligibility.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Soundtrack Picker"
+  short_description: "Choose and mix music around story narration"
+  default_prompt: "Use $soundtrack-picker to find, audition, and mix a soundtrack for my story."

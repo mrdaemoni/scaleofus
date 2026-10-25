@@ -1,0 +1,94 @@
+{
+  "version": "canonical-soundtrack-v1-20261025",
+  "date": "2026-10-25",
+  "title": "The Boy Who Tried to Catch the Wind",
+  "music": [
+    {
+      "title": "Echoes Of Home",
+      "composer": "Scott Buckley",
+      "href": "https://www.scottbuckley.com.au/library/echoes-of-home/",
+      "license": "CC BY 4.0",
+      "licenseHref": "https://creativecommons.org/licenses/by/4.0/",
+      "recordingSha256": "b980963ac01d5211e2729906e2f5e74915a9d5df22fc8744e2d95045bb120e8e"
+    },
+    {
+      "title": "Call To Adventure",
+      "composer": "Scott Buckley",
+      "href": "https://www.scottbuckley.com.au/library/call-to-adventure/",
+      "license": "CC BY 4.0",
+      "licenseHref": "https://creativecommons.org/licenses/by/4.0/",
+      "recordingSha256": "ed871ff603184cd40a995f15150237e35f95aeb6257a686a5af9a1abd3b5350f"
+    },
+    {
+      "title": "Magic Forest",
+      "composer": "Kevin MacLeod",
+      "href": "https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1600044",
+      "license": "CC BY 4.0",
+      "licenseHref": "https://creativecommons.org/licenses/by/4.0/",
+      "recordingSha256": "0e8f92a3dfb5e71398502478d6d3be14b705b0dfc0afabccf5831bc741592f55"
+    },
+    {
+      "title": "Anabasis I",
+      "composer": "Scott Buckley",
+      "href": "https://www.scottbuckley.com.au/library/anabasis-i/",
+      "license": "CC BY 4.0",
+      "licenseHref": "https://creativecommons.org/licenses/by/4.0/",
+      "recordingSha256": "964e693611445d808d4cdb748006ae22c7fa8534b126acdca39bcc74de95d76c"
+    },
+    {
+      "title": "Hiraeth",
+      "composer": "Scott Buckley",
+      "href": "https://www.scottbuckley.com.au/library/hiraeth/",
+      "license": "CC BY 4.0",
+      "licenseHref": "https://creativecommons.org/licenses/by/4.0/",
+      "recordingSha256": "f790c7d53b8d802981ff7cdd8c59e22cdfe103ea66aba296c6cf1a65fe7fcf01"
+    }
+  ],
+  "modifications": "Excerpts, fades, EQ, speech ducking and synchronization with narration. Spoken timing is unchanged; a joyful coda follows the last words.",
+  "editions": {
+    "en": {
+      "duration": 1236.218,
+      "narrationVersion": "English v17",
+      "narrationSha256": "5e7af1b6cb42dbaccba647e9852ef61c3c7f58d859861f69e29f57494514834a",
+      "codaStart": 1194.5,
+      "masterWavSha256": "d295d2517d82c463dbcd2faaea0a6cff73de201a5f9281362970199b7315f505",
+      "canonicalMp3Sha256": "5ce629e4c487e45f4bb871fb5de71e0e1d2a6b2c8cfb8426da3443666150f9b4",
+      "webFiles": {
+        "mp3": {
+          "url": "/audio/the-boy-who-tried-to-catch-the-wind.mp3",
+          "sha256": "232eb0e70081a3da17d050fd323ac10840bd43c81e1cb10b04e50290b90b02a6",
+          "bytes": 14836046,
+          "bitrateKbps": 96
+        },
+        "m4a": {
+          "url": "/audio/the-boy-who-tried-to-catch-the-wind.m4a",
+          "sha256": "f36ac3363258aec4f771931a55ab7b96938956abb1e962a6a88834d5cc423f14",
+          "bytes": 13819393,
+          "bitrateKbps": 88
+        }
+      }
+    },
+    "es": {
+      "duration": 1246.318,
+      "narrationVersion": "Spanish v1",
+      "narrationSha256": "82a2097013e174ccd2f1cf5c78960ec25d303149140e76ccea35eb595067e341",
+      "codaStart": 1204.6,
+      "masterWavSha256": "de263e3ee4f378d899b739a92a2a2a9d4b0982277d8e08c24563a5b509367821",
+      "canonicalMp3Sha256": "052857dcf51afce6cd70cefd4de70d1bd122b7d6ddfa78cfa50039ef1be01fb6",
+      "webFiles": {
+        "mp3": {
+          "url": "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.mp3",
+          "sha256": "16fc05c9979a9bbcbed7249bf9f5050f9883bdd395b7c9fef972695d623ae586",
+          "bytes": 14957359,
+          "bitrateKbps": 96
+        },
+        "m4a": {
+          "url": "/books/el-nino-que-quiso-atrapar-el-viento/audio/narration.m4a",
+          "sha256": "cc67002f4464602595f35d6284187bc288f4778de0f5be61071bcfef6d0a6da1",
+          "bytes": 14005157,
+          "bitrateKbps": 88
+        }
+      }
+    }
+  }
+}
