@@ -1,5 +1,19 @@
 # Simple reader reflections — latest verification
 
+## Simplified invitation — October 24, 2026
+
+Hector approved removing the star selector and publishing the simpler form.
+The introduction now reads “Your thoughts, ideas, and feedback are welcome.”
+Provider and inbox details sit inside a small, initially collapsed Privacy
+link below the form. The unchecked public-sharing choice, conditional optional
+attribution, delivery handling and existing inbox connection are unchanged.
+Historical rating records remain readable; the form sends no new rating field.
+
+All 13 root/publisher browser cases at 320/390/1440 pixels pass, including
+Privacy disclosure, consent toggles, private exclusion and retry handling.
+The full public builds, reader budgets, 1,883 local references and whitespace
+checks pass. The release excludes unrelated local authoring and checkout work.
+
 ## Public release — October 24, 2026
 
 Hector authorized public deployment of the connected reflections form and an

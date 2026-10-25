@@ -43,6 +43,12 @@ try {
       for (const selector of ['#reflection-text', '[data-reflection-submit]', '.reflection-consent']) assert((await page.locator(selector).boundingBox()).height >= 44);
       await page.locator('#reflection-text').focus(); assert.equal(await page.locator('#reflection-text').evaluate(node => getComputedStyle(node).outlineStyle), 'solid');
       assert.equal(await page.locator('.reflection-language').count(), 0);
+      assert.equal(await page.locator('[name="rating"]').count(), 0);
+      assert.equal(await page.locator('.reflection-invitation-copy').innerText(), 'Your thoughts, ideas, and feedback are welcome.');
+      assert.equal(await page.locator('.reflection-privacy p').isVisible(), false);
+      await page.getByText('Privacy', {exact:true}).click();
+      assert.equal(await page.locator('.reflection-privacy p').isVisible(), true);
+      await page.getByText('Privacy', {exact:true}).click();
       await page.evaluate(() => { document.activeElement?.blur(); scrollTo(0, 0); });
       if (!prefix) await page.screenshot({path:path.join(output, `${es ? 'es' : 'en'}-${width}.png`), fullPage:true});
     }); await page.context().close();
@@ -60,26 +66,6 @@ try {
     const record = (await store.list()).at(-1); assert.equal(record.name, ''); assert.equal(record.status, 'private'); assert.equal(record.quoteConsent, false);
     assert.equal(await page.locator('[data-reflection-success]').innerText(), es ? 'Gracias.' : 'Thank you.');
     await page.context().close();
-  });
-  await check('optional star rating supports hover, keyboard selection and clearing', async () => {
-    const page = await pageFor({viewport:{width:390, height:844}}); await ready(page);
-    assert.equal(await page.locator('[name="rating"]:checked').count(), 0);
-    const fourth = page.locator('.reflection-stars label').nth(3);
-    assert.equal(await fourth.getAttribute('title'), '4 out of 5 stars');
-    await fourth.hover();
-    await page.waitForFunction(() => {
-      const stars = [...document.querySelectorAll('.reflection-stars span')];
-      return getComputedStyle(stars[3]).color !== getComputedStyle(stars[4]).color;
-    });
-    const colors = await page.locator('.reflection-stars span').evaluateAll(nodes => nodes.map(node => getComputedStyle(node).color));
-    assert.equal(new Set(colors.slice(0, 4)).size, 1); assert.notEqual(colors[3], colors[4]);
-    await fourth.click(); assert.equal(await page.locator('[name="rating"]:checked').inputValue(), '4');
-    await page.getByRole('button', {name:'Clear rating'}).click(); assert.equal(await page.locator('[name="rating"]:checked').count(), 0);
-    await page.getByRole('radio', {name:'3 out of 5 stars', exact:true}).focus(); await page.keyboard.press('ArrowRight');
-    assert.equal(await page.locator('[name="rating"]:checked').inputValue(), '4');
-    await page.locator('#reflection-text').fill('TEST FIXTURE — optional rating.');
-    await page.locator('[data-reflection-submit]').click(); await page.locator('[data-reflection-success]').waitFor({state:'visible'});
-    assert.equal((await store.list()).at(-1).rating, 4); await page.context().close();
   });
   await check('consented responses are eligible immediately; private responses and names never enter export', async () => {
     const page = await pageFor(); await ready(page);

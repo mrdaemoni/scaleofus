@@ -1,7 +1,7 @@
 # Reader reflections
 
 The English-only form asks “Tell us what stayed with you,” followed by an
-optional 1–5 star rating, an unchecked “OK to share publicly” checkbox and Submit. Checking the box reveals
+unchecked “OK to share publicly” checkbox and Submit. Checking the box reveals
 an optional name-or-initials field. Unchecking clears and disables attribution.
 There is no personal approval step. Previous Spanish form links open English;
 the Spanish book reader is unchanged.
@@ -20,7 +20,8 @@ provided it adds no charge. Created **Scale of Us — Reader reflections**:
 - Existing contact endpoint `xqpejzzr` stays separate.
 
 Ordinary previews and future static builds send directly to this inbox. They
-show the Formspree privacy link and explain that a copy is kept in our inbox. JavaScript
+show “Your thoughts, ideas, and feedback are welcome.” Privacy details are
+behind a small expandable Privacy link. The star selector has been removed. JavaScript
 must initialize before submission is enabled. There are no accounts, email or relationship questions in the reader form.
 
 The sender normalizes and validates text, records explicit boolean sharing

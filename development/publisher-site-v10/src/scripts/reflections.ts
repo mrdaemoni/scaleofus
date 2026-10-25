@@ -13,13 +13,6 @@ if (root) {
   const consent = form.querySelector<HTMLInputElement>('#reflection-consent')!;
   const name = form.querySelector<HTMLInputElement>('#reflection-name')!;
   const attribution = form.querySelector<HTMLElement>('#reflection-attribution')!;
-  const clearRating = form.querySelector<HTMLButtonElement>('[data-reflection-rating-clear]')!;
-  clearRating.addEventListener('click', () => {
-    form.querySelectorAll<HTMLInputElement>('[name="rating"]').forEach(input => { input.checked = false; });
-    clearRating.hidden = true;
-    form.dispatchEvent(new Event('input', {bubbles:true}));
-  });
-  form.addEventListener('change', () => { clearRating.hidden = !form.querySelector('[name="rating"]:checked'); });
   // Local storage is an explicit sandbox. Ordinary previews use the real inbox.
   const local = ['127.0.0.1', 'localhost', '[::1]'].includes(location.hostname) && new URLSearchParams(location.search).get('local') === '1';
   let token = '', requestId = '', inFlight = false;
@@ -34,6 +27,7 @@ if (root) {
   syncAttribution();
   async function prepare() {
     fields.disabled = true; connect.hidden = true;
+    availability.hidden = !local;
     if (!local) { fields.disabled = false; return; }
     try {
       const response = await fetch('/api/reflections/config', {headers:{'X-Reflection-Client':'1'}, cache:'no-store', signal:AbortSignal.timeout(5000)});
@@ -57,7 +51,7 @@ if (root) {
     syncAttribution();
     const values = new FormData(form);
     if (!requestId) requestId = crypto.randomUUID();
-    const body = {book:values.get('book'), language:values.get('language'), consentVersion:values.get('consentVersion'), text:values.get('text'), name:consent.checked ? name.value : '', quoteConsent:consent.checked, website:values.get('website'), requestId, ...(values.has('rating') ? {rating:Number(values.get('rating'))} : {})};
+    const body = {book:values.get('book'), language:values.get('language'), consentVersion:values.get('consentVersion'), text:values.get('text'), name:consent.checked ? name.value : '', quoteConsent:consent.checked, website:values.get('website'), requestId};
     inFlight = true; fields.disabled = true; error.hidden = true;
     button.textContent = es ? 'Enviando…' : 'Sending…';
     try {

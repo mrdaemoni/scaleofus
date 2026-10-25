@@ -8,7 +8,8 @@ const es = language === 'es';
 const quotes = loadPublicReflections(records);
 ---
 <section class="reader-reflections" lang={language} data-reflections data-language={language}>
-  <p data-reflection-availability class="reflection-local" role="status">{es ? 'Tu reflexión se envía a Scale of Us a través de' : 'Your reflection is sent to Scale of Us through'} <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. {es ? 'Guardamos una copia en nuestro correo.' : 'We keep a copy in our inbox.'}</p>
+  <p class="reflection-invitation-copy">{es ? 'Tus pensamientos, ideas y comentarios son bienvenidos.' : 'Your thoughts, ideas, and feedback are welcome.'}</p>
+  <p data-reflection-availability class="reflection-local" role="status" hidden></p>
   <button class="text-link reflection-retry" data-reflection-connect type="button" hidden>{es ? 'Volver a intentar' : 'Try again'}</button>
   <form id="reflect" data-reflection-form class="reflection-form" action="/reflections/" method="post">
     <fieldset disabled>
@@ -16,13 +17,6 @@ const quotes = loadPublicReflections(records);
       <input type="hidden" name="book" value={BOOK} /><input type="hidden" name="language" value={language} /><input type="hidden" name="consentVersion" value={CONSENT_VERSION} />
       <label class="sr-only" for="reflection-text">{es ? 'Tu reflexión' : 'Your reflection'}</label>
       <textarea id="reflection-text" name="text" required minlength="3" maxlength="2000" rows="5"></textarea>
-      <fieldset class="reflection-rating">
-        <legend>{es ? 'Tu valoración (opcional)' : 'Your rating (optional)'}</legend>
-        <div class="reflection-stars">
-          {[1, 2, 3, 4, 5].map(value => <label title={es ? `${value} de 5 estrellas` : `${value} out of 5 stars`}><input type="radio" name="rating" value={value} aria-label={es ? `${value} de 5 estrellas` : `${value} out of 5 stars`} /><span aria-hidden="true">★</span></label>)}
-        </div>
-        <button type="button" class="reflection-rating-clear" data-reflection-rating-clear hidden>{es ? 'Quitar valoración' : 'Clear rating'}</button>
-      </fieldset>
       <div class="reflection-trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
       <label class="reflection-consent" for="reflection-consent"><input id="reflection-consent" type="checkbox" name="quoteConsent" aria-controls="reflection-attribution" /><span>{es ? 'Está bien compartirlo públicamente' : 'OK to share publicly'}</span></label>
       <div id="reflection-attribution" hidden><label for="reflection-name">{es ? 'Nombre o iniciales (opcional)' : 'Name or initials (optional)'}<input id="reflection-name" name="name" maxlength="80" autocomplete="off" disabled /></label></div>
@@ -32,6 +26,10 @@ const quotes = loadPublicReflections(records);
   <p data-reflection-error role="alert" hidden></p>
   <div data-reflection-success hidden role="status"><h2 tabindex="-1">{es ? 'Gracias.' : 'Thank you.'}</h2></div>
   <noscript><p>{es ? 'Activa JavaScript para usar el formulario. No se ha enviado nada.' : 'Enable JavaScript to use the form. Nothing has been sent.'}</p></noscript>
+  <details class="reflection-privacy">
+    <summary>{es ? 'Privacidad' : 'Privacy'}</summary>
+    <p>{es ? 'Tu reflexión se envía a Scale of Us a través de' : 'Your reflection is sent to Scale of Us through'} <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. {es ? 'Guardamos una copia en nuestro correo. Solo compartimos tus palabras públicamente si eliges permitirlo.' : 'We keep a copy in our inbox. Your words are shared publicly only if you select “OK to share publicly.”'}</p>
+  </details>
   {quotes.length > 0 && <section id="responses" aria-label={es ? 'Reflexiones compartidas' : 'Shared reflections'} class="reflection-quotes">{quotes.map(quote => <figure lang={quote.language}><blockquote>{quote.text}</blockquote><figcaption>— {quote.name}</figcaption></figure>)}</section>}
 </section>
 <script>
