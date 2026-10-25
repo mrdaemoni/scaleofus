@@ -1,0 +1,39 @@
+---
+import records from '../../../../src/content/public-reflections.json';
+import {BOOK, CONSENT_VERSION} from '../../../../reflections/policy.mjs';
+import {loadPublicReflections} from '../../../../reflections/public.mjs';
+import '../styles/reflections.css';
+const {language = 'en'} = Astro.props;
+const es = language === 'es';
+const quotes = loadPublicReflections(records);
+---
+<section class="reader-reflections" lang={language} data-reflections data-language={language}>
+  <p data-reflection-availability class="reflection-local" role="status">{es ? 'Tu reflexión se envía a Scale of Us a través de' : 'Your reflection is sent to Scale of Us through'} <a href="https://formspree.io/legal/privacy-policy/" target="_blank" rel="noopener noreferrer">Formspree</a>. {es ? 'Guardamos una copia en nuestro correo.' : 'We keep a copy in our inbox.'}</p>
+  <button class="text-link reflection-retry" data-reflection-connect type="button" hidden>{es ? 'Volver a intentar' : 'Try again'}</button>
+  <form id="reflect" data-reflection-form class="reflection-form" action="/reflections/" method="post">
+    <fieldset disabled>
+      <legend class="sr-only">{es ? 'Cuéntanos qué se te quedó' : 'Tell us what stayed with you'}</legend>
+      <input type="hidden" name="book" value={BOOK} /><input type="hidden" name="language" value={language} /><input type="hidden" name="consentVersion" value={CONSENT_VERSION} />
+      <label class="sr-only" for="reflection-text">{es ? 'Tu reflexión' : 'Your reflection'}</label>
+      <textarea id="reflection-text" name="text" required minlength="3" maxlength="2000" rows="5"></textarea>
+      <fieldset class="reflection-rating">
+        <legend>{es ? 'Tu valoración (opcional)' : 'Your rating (optional)'}</legend>
+        <div class="reflection-stars">
+          {[1, 2, 3, 4, 5].map(value => <label title={es ? `${value} de 5 estrellas` : `${value} out of 5 stars`}><input type="radio" name="rating" value={value} aria-label={es ? `${value} de 5 estrellas` : `${value} out of 5 stars`} /><span aria-hidden="true">★</span></label>)}
+        </div>
+        <button type="button" class="reflection-rating-clear" data-reflection-rating-clear hidden>{es ? 'Quitar valoración' : 'Clear rating'}</button>
+      </fieldset>
+      <div class="reflection-trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+      <label class="reflection-consent" for="reflection-consent"><input id="reflection-consent" type="checkbox" name="quoteConsent" aria-controls="reflection-attribution" /><span>{es ? 'Está bien compartirlo públicamente' : 'OK to share publicly'}</span></label>
+      <div id="reflection-attribution" hidden><label for="reflection-name">{es ? 'Nombre o iniciales (opcional)' : 'Name or initials (optional)'}<input id="reflection-name" name="name" maxlength="80" autocomplete="off" disabled /></label></div>
+      <button class="button" type="submit" data-reflection-submit>{es ? 'Enviar' : 'Submit'}</button>
+    </fieldset>
+  </form>
+  <p data-reflection-error role="alert" hidden></p>
+  <div data-reflection-success hidden role="status"><h2 tabindex="-1">{es ? 'Gracias.' : 'Thank you.'}</h2></div>
+  <noscript><p>{es ? 'Activa JavaScript para usar el formulario. No se ha enviado nada.' : 'Enable JavaScript to use the form. Nothing has been sent.'}</p></noscript>
+  {quotes.length > 0 && <section id="responses" aria-label={es ? 'Reflexiones compartidas' : 'Shared reflections'} class="reflection-quotes">{quotes.map(quote => <figure lang={quote.language}><blockquote>{quote.text}</blockquote><figcaption>— {quote.name}</figcaption></figure>)}</section>}
+</section>
+<script>
+  import '../scripts/reflections';
+</script>

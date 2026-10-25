@@ -63,3 +63,11 @@ and story fragment links forward there. `/es/`, `/library/`, and `/grown-ups/`
 remain available. Root publisher routes reuse the v10 source, and `public/edition`
 and `public/press` link to its existing assets. See [QA_WEBSITE.md](./QA_WEBSITE.md)
 for local validation and the publication boundary.
+
+## Reader reflections
+
+The English-only form and consent-controlled public feed are documented in
+[reflections/README.md](./reflections/README.md). Run `npm run build` and
+`npm run reflections:serve` for a loopback preview connected to the separate
+Formspree reader-reflections inbox. Use `/reflections/?local=1` for the local-only
+test inbox. The public form is at https://scaleofus.com/reflections/.

@@ -5,6 +5,7 @@ const pages = [
   "/about/",
   "/press/",
   "/reviews/",
+  "/reflections/",
   "/help/",
   "/stories/",
   "/stories/the-boy-who-tried-to-catch-the-wind/",

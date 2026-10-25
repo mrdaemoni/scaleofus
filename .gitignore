@@ -2,3 +2,7 @@ node_modules/
 dist/
 .astro/
 .DS_Store
+
+# Private reader words and local preview evidence never enter Git or the build.
+.local-reflections/
+.reflections-proof/

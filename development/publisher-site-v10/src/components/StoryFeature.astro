@@ -1,5 +1,6 @@
 ---
 import BookGallery from './BookGallery.astro';
+import '../styles/reflections.css';
 import DrawnArt from './DrawnArt.astro';
 import PurchaseButton from './PurchaseButton.astro';
 import { windSlug } from '../data/stories';
@@ -27,6 +28,7 @@ const { purchaseHere = false } = Astro.props;
     </div>
   </div>
 </div>
+<a class="reflection-invitation" href="/reflections/">Tell us what stayed with you →</a>
 <script>
   // Bookmarks to the removed English preview now open the full English reader.
   const englishReader = document.querySelector<HTMLAnchorElement>('#digital-tab');

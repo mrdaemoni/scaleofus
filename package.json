@@ -17,7 +17,12 @@
     "render:mobile-drawings": "node scripts/generate-mobile-drawings.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "build:publisher": "node scripts/build-publisher-preview.mjs"
+    "build:publisher": "node scripts/build-publisher-preview.mjs",
+    "reflections:serve": "node reflections/server.mjs",
+    "reflections": "node reflections/cli.mjs",
+    "test:reflections": "node --test tests/reflections.test.mjs tests/reflections-formspree.test.mjs",
+    "test:reflections:browser": "node scripts/test-reflections-browser.mjs",
+    "test:reflections:public": "node scripts/test-reflections-public-build.mjs"
   },
   "dependencies": {
     "@fontsource-variable/newsreader": "^5.2.10",
