@@ -35,11 +35,12 @@
     },
     "print": {
       "printPublicationDate": "2026-10-25",
-      "publicationLabel": "Orders temporarily paused",
+      "publicationLabel": "Signed clothbound copies available",
       "language": "English",
       "pages": 64,
       "format": "Clothbound hardcover",
-      "dimensions": "5½ × 8½ inches"
+      "dimensions": "5½ × 8½ inches",
+      "forSale": true
     }
   }
 }

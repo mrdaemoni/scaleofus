@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "priceUsd": 75,
   "shippingUsd": 12,
   "maximumQuantity": 1,
