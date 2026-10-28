@@ -22,12 +22,13 @@ Written, illustrated, and designed by Hector Ouilhet Olmos.
 Spanish-language version by the author.
 
 SUGGESTED PHOTOGRAPH CAPTIONS
-photo-01.webp — Cover and spine of The Boy Who Tried to Catch the Wind, with blue cloth and gold title lettering.
+book-cover-sunlight.webp — The blue clothbound cover in sunlight, with the handwritten title and wind motif in gold.
 photo-02.webp — The hand-drawn wind motif on a cream page.
-photo-03.webp — Handwritten title page beside patterned blue endpapers.
+book-title-endpapers.webp — Handwritten title page beside blue endpapers patterned with gold wind drawings.
 photo-04.webp — The boy and the wind on an illustrated page.
 photo-05.webp — Story text and hand-drawn illustrations on page 37.
-photo-06.webp — Blue cloth binding and blue endpapers with gold wind motifs.
+book-blue-cloth-copies.webp — Three blue clothbound copies stacked in sunlight, with gold lettering on the top book.
+book-keep-going.webp — The boy, a spiral pebble, and story text ending with KEEP GOING.
 
 IMAGE PROVENANCE AND CREDIT
-These are the six photographs currently used on the Scale of Us homepage, supplied by Hector Ouilhet Olmos. Separate photographer attribution is not recorded; do not infer a photography copyright credit. Book text and illustrations © 2026 Hector Ouilhet Olmos / Scale of Us. Supplied for editorial coverage of the book only; retain the artwork credit and do not alter the artwork beyond ordinary cropping for layout. See image-manifest.json for exact source paths, dimensions and checksums.
+These are the seven photographs currently used on the Scale of Us homepage, supplied by Hector Ouilhet Olmos. Separate photographer attribution is not recorded; do not infer a photography copyright credit. Book text and illustrations © 2026 Hector Ouilhet Olmos / Scale of Us. Supplied for editorial coverage of the book only; retain the artwork credit and do not alter the artwork beyond ordinary cropping for layout. See image-manifest.json for exact source paths, dimensions and checksums.

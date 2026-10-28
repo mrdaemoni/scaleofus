@@ -1,21 +1,21 @@
 {
   "title": "The Boy Who Tried to Catch the Wind — homepage photographs",
   "source": "development/publisher-site-v10/src/data/photos.ts",
-  "updated": "2026-10-17",
+  "updated": "2026-10-27",
   "suppliedBy": "Hector Ouilhet Olmos",
   "artworkCredit": "Text and illustrations © 2026 Hector Ouilhet Olmos / Scale of Us.",
   "photographyCredit": "Photographs supplied by Hector Ouilhet Olmos. Separate photographer attribution is not recorded; do not infer a photography copyright credit.",
   "permission": "Supplied for editorial coverage of the book. Retain the artwork credit; do not alter the artwork beyond ordinary cropping for layout. No other use or third-party licence is asserted.",
   "photos": [
     {
-      "file": "photo-01.webp",
-      "source": "/edition/photo-01.webp",
-      "caption": "Cover & spine",
-      "alt": "The blue clothbound book on a grey surface, with the handwritten title and wind motif in gold on its cover and spine",
+      "file": "book-cover-sunlight.webp",
+      "source": "/edition/book-cover-sunlight.webp",
+      "caption": "The cover in sunlight",
+      "alt": "The blue clothbound book in sunlight on a grey surface, with its handwritten title and wind motif stamped in gold",
       "width": 960,
       "height": 1280,
-      "bytes": 211650,
-      "sha256": "345531db03817492d1ced205e148d6111286980deca7d35ce5c38a9780475ec7"
+      "bytes": 248490,
+      "sha256": "31698357b9b4fb37aff2c26b3e18c36aa86003310468d7efb12f7c65ba9744cc"
     },
     {
       "file": "photo-02.webp",
@@ -28,14 +28,14 @@
       "sha256": "9b312c6c61fcee853cfbc8e87cfef59ffedd05c05ca610cdd80d4d2e8e315067"
     },
     {
-      "file": "photo-03.webp",
-      "source": "/edition/photo-03.webp",
+      "file": "book-title-endpapers.webp",
+      "source": "/edition/book-title-endpapers.webp",
       "caption": "Title & endpapers",
-      "alt": "The handwritten title page beside blue endpapers patterned with gold wind drawings",
-      "width": 959,
+      "alt": "The handwritten title and Hector Ouilhet Olmos’s name on the title page beside blue endpapers patterned with gold wind drawings",
+      "width": 1058,
       "height": 1280,
-      "bytes": 98922,
-      "sha256": "018a78be7b9c52948b58627fe9cf4e184c53b7714e367844305488fc842295b1"
+      "bytes": 46418,
+      "sha256": "0a3815ef5c909df1f44ab1d183ab82076414103473f68f529fc8efa1a7ac7049"
     },
     {
       "file": "photo-04.webp",
@@ -58,14 +58,24 @@
       "sha256": "40a8f65656f546d334eb8e80120cd3c6537b2eaf4ec5fa3d24bf5107f59eadcb"
     },
     {
-      "file": "photo-06.webp",
-      "source": "/edition/photo-06.webp",
-      "caption": "Cloth & endpapers",
-      "alt": "A close view of blue cloth binding and blue endpapers printed with gold wind motifs",
+      "file": "book-blue-cloth-copies.webp",
+      "source": "/edition/book-blue-cloth-copies.webp",
+      "caption": "Blue cloth & gold",
+      "alt": "Three blue clothbound copies stacked in sunlight, with the gold title and wind motif visible on the top book",
       "width": 960,
       "height": 1280,
-      "bytes": 321514,
-      "sha256": "7d787e407db24f5b0c39de09f33178f60ec0640d19ffbe829f484c8cacd3226d"
+      "bytes": 332474,
+      "sha256": "a5cdf096b2520ef4ec3547daef34bdea6b9c9663036943d8ff1045d4e4fa8d2b"
+    },
+    {
+      "file": "book-keep-going.webp",
+      "source": "/edition/book-keep-going.webp",
+      "caption": "Keep going",
+      "alt": "An angled close view of the boy and a spiral pebble on an illustrated page, above story text ending with the words KEEP GOING",
+      "width": 960,
+      "height": 1280,
+      "bytes": 40216,
+      "sha256": "00bab60210b53eb85b79a09b4ded7e8a1c1f68479e775549714904aaf7231967"
     }
   ]
 }

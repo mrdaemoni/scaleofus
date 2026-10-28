@@ -65,7 +65,7 @@ import { windBookStructuredData, windPublication } from '../../../../src/content
 
       <section id="kit">
         <h2>Download the press kit.</h2>
-        <p>The kit includes the same six photographs shown on our home page, publication facts, short and long descriptions, a creator biography, rights notes, and captions.</p>
+        <p>The kit includes the same {bookPhotos.length} photographs shown on our home page, publication facts, short and long descriptions, a creator biography, rights notes, and captions.</p>
         <div class="press-photographs" aria-label="Homepage book photographs">{bookPhotos.map(photo => <figure><a href={photo.src} download aria-label={`Download photograph: ${photo.label}`}><img src={photo.src} alt={photo.alt} width="960" height="1280" loading="lazy" /></a><figcaption>{photo.label}</figcaption></figure>)}</div>
         <p><a class="button" href="/press/Scale-of-Us-Wind-Press-Kit.zip" download>Download press kit · ZIP</a></p>
         <ul>
