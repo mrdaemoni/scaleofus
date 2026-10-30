@@ -1,7 +1,8 @@
 ---
 import DrawnButton from './DrawnButton.astro';
+const { showEmailOption = false } = Astro.props;
 ---
-<section class="contact-section wrap" id="contact" aria-labelledby="contact-title">
+<section class="contact-section wrap" id="contact" aria-labelledby="contact-title" style={showEmailOption ? "row-gap:16px" : undefined}>
   <div class="contact-intro">
     <p class="eyebrow">GET IN TOUCH</p>
     <h2 id="contact-title">Start a<br /> <em>conversation.</em></h2>
@@ -34,7 +35,7 @@ import DrawnButton from './DrawnButton.astro';
       <div class="contact-result" role="status" aria-live="polite" aria-atomic="true" data-contact-result></div>
     </fieldset>
     <noscript><p>Please enable JavaScript to send an inquiry, or email hello@scaleofus.com directly.</p></noscript>
-  </form>
+  </form>{showEmailOption && <p class="contact-notice" style="grid-column:-2 / -1;margin:0">Prefer email? <a href="mailto:hello@scaleofus.com">hello@scaleofus.com</a></p>}
 </section>
 <script>
   import { setupContactForms } from '../scripts/contact';

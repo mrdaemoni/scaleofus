@@ -56,7 +56,7 @@ const socialImageUrl = new URL(socialImage, 'https://scaleofus.com');
         <a href="/press/" aria-current={active === 'press' ? 'page' : undefined}>Press</a>
       </nav>
     </header>
-    <main id="main"><slot />{showContact && <div lang="en"><ContactForm /></div>}</main>
+    <main id="main"><slot />{showContact && <div lang="en"><ContactForm showEmailOption={canonicalUrl.pathname === '/'} /></div>}</main>
     <footer class="site-footer" lang="en">
       <div class="footer-landscape">
         <svg class="footer-horizon" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
